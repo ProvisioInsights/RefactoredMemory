@@ -4,9 +4,9 @@ All tests, examples and benchmarks in this record use synthetic data. Executed L
 
 ## Combined final Linux run
 
-The full suite passed **82 tests in 13.125 seconds**, with no skips, using `python -m unittest discover -s tests -v` on 7 November 2026. This includes 23 independent acceptance, 19 MCP, 17 sync, 16 importer, 5 real CLI subprocess and 2 additional storage-hardening tests. See the [raw unittest output](results/linux-unittest.txt). The runtime source digest matches the raw benchmark artifact linked below.
+The full suite passed **83 tests in 13.422 seconds**, with no skips, using `python -m unittest discover -s tests -v` on 7 November 2026. This includes 23 independent acceptance, 19 MCP, 18 sync, 16 importer, 5 real CLI subprocess and 2 additional storage-hardening tests. See the [raw unittest output](results/linux-unittest.txt). The runtime source digest matches the raw benchmark artifact linked below.
 
-The first macOS CI run exposed normal parent-directory aliases in the importer and an opaque multiprocessing test startup failure. The importer now pins the canonical approved root while rejecting descendant symlinks; three new regressions cover those boundaries. The sync fixture now uses a plain independent interpreter subprocess with explicit readiness and failure diagnostics. Cross-platform CI results remain separately visible on the pull request.
+The first macOS CI run exposed normal parent-directory aliases in the importer and an opaque multiprocessing test startup failure. The importer now pins the canonical approved root while rejecting descendant symlinks; three new regressions cover those boundaries. The sync fixture now uses a plain independent interpreter subprocess with explicit readiness and failure diagnostics. Those diagnostics isolated startup at HTTP binding; the production listener now binds without the standard library's unnecessary reverse-DNS lookup, with a regression that forbids that lookup. The canonical-path repeat test uses the actual root returned by the plan, including macOS ancestor aliases. Cross-platform CI results remain separately visible on the pull request.
 
 The integrated run includes the installed independent MCP SDK, production HTTP/stdio paths, worker-isolated TLS handshakes, two separately writable peer processes, verified recovery, and the three selected day-one workflows. Actual owner's-Mac and installed-Praxis qualification remain open.
 
@@ -64,17 +64,17 @@ python -m benchmarks.personal_store --entities 1100 --samples 31 --output /tmp/r
 
 The benchmark runs the actual graph contract with 1,100 synthetic entities/assertions, 31 owner corrections, 20 relationship edges, 31 samples per read workload and 50-entity seed transactions. It includes current and historical subject queries, text search, four-hop traversal, acknowledged writes, signed operation transfer, rebuilding, backup, fresh-identity restore and reopen. It verifies answers before reporting timings. Raw output records individual samples, p50/p95, Python/SQLite/platform, source digest, Git state, workload/cache assumptions and observed database/WAL sizes.
 
-The final development run at `2026-11-07T19:12:30.429903+00:00` passed the benchmark's correctness checks. [Raw measurements and source identity](../benchmarks/results/personal-linux-1100.json) include all samples and the working-tree source digest; the Git commit identifies the preceding commit, while the digest identifies the measured working-tree code. This shared Linux environment was not a dedicated performance host. The benchmark ran separately from this agent's acceptance tests, but no machine-wide isolation or CPU-frequency control is claimed.
+The final development run at `2026-11-07T19:18:26.782167+00:00` passed the benchmark's correctness checks. [Raw measurements and source identity](../benchmarks/results/personal-linux-1100.json) include all samples and the working-tree source digest; the Git commit identifies the preceding commit, while the digest identifies the measured working-tree code. This shared Linux environment was not a dedicated performance host. The benchmark ran separately from this agent's acceptance tests, but no machine-wide isolation or CPU-frequency control is claimed.
 
 | Workload | p50 ms | p95 ms |
 | --- | ---: | ---: |
-| Acknowledged single correction | 0.686 | 1.227 |
-| Current subject lookup | 0.685 | 1.215 |
-| Historical subject lookup | 0.668 | 0.971 |
-| Text search | 105.871 | 114.866 |
-| Four-hop traversal | 11.710 | 13.953 |
+| Acknowledged single correction | 0.582 | 1.619 |
+| Current subject lookup | 0.696 | 1.449 |
+| Historical subject lookup | 0.698 | 1.300 |
+| Text search | 109.501 | 116.284 |
+| Four-hop traversal | 11.913 | 14.759 |
 
-One signed in-process transfer of 55 operations (339,352 serialized bytes) took **121.863 ms**. Rebuild took **93.105 ms**, backup **10.550 ms**, verified fresh-identity restore **142.726 ms**, and reopen **1.869 ms**. These are single operation measurements, not latency distributions. Signed transfer excludes HTTP/TLS and network delay. The observed main database was 1,179,648 bytes with 4,169,472 bytes in WAL at measurement time.
+One signed in-process transfer of 55 operations (339,352 serialized bytes) took **126.812 ms**. Rebuild took **55.862 ms**, backup **7.906 ms**, verified fresh-identity restore **148.711 ms**, and reopen **2.060 ms**. These are single operation measurements, not latency distributions. Signed transfer excludes HTTP/TLS and network delay. The observed main database was 1,179,648 bytes with 4,169,472 bytes in WAL at measurement time.
 
 Text search and traversal remain visibly more expensive than selective subject lookup on this fixture. These results describe the implemented correctness/authority/history contract at this workload; they do not select an engine winner or establish larger-store capacity. They are not comparable to the historical 110,000-assertion selective-read test.
 

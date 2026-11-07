@@ -226,8 +226,9 @@ class ImportTests(unittest.TestCase):
         self.assertEqual(plan.summary()["files"][0]["relative_path"], "note.md")
         result = apply_import(self.store, plan, backup_path=self.base / "alias-backup.sqlite")
         self.assertEqual(result["status"], "complete")
-        # The canonical target spelling is also accepted under the same approval.
-        repeated = import_path(self.store, canonical_root / "note.md", approved_root=named_root,
+        # Use the observed canonical spelling; the temporary directory itself
+        # can have an OS parent alias on macOS (/var -> /private/var).
+        repeated = import_path(self.store, plan.root / "note.md", approved_root=named_root,
                                dry_run=False, backup_path=self.base / "alias-repeat-backup.sqlite")
         self.assertEqual(repeated["status"], "unchanged")
 

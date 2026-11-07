@@ -13,10 +13,11 @@ import tempfile
 import threading
 import unittest
 from contextlib import contextmanager
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler
 from pathlib import Path
 from unittest.mock import patch
 
+from refactoredmemory.cli import PeerHTTPServer
 from refactoredmemory.store import (
     AuthorizationError, ConflictError, Store, ValidationError, canonical, utcnow,
 )
@@ -74,7 +75,7 @@ def _server_process(path, initial_actions=None, drop_response=False):
             pass
 
     print("sync-test-peer: binding-http", file=sys.stderr, flush=True)
-    server = HTTPServer(("127.0.0.1", 0), Handler)
+    server = PeerHTTPServer(("127.0.0.1", 0), Handler)
     server.timeout = 0.1
     threading.Thread(target=await_shutdown, daemon=True).start()
     print(json.dumps({"state": "ready", "port": server.server_address[1]}), flush=True)
@@ -184,6 +185,18 @@ class DirectPeerTests(unittest.TestCase):
             b.admit_peer(identity_a["peer_id"], identity_a["key_hex"])
             self.token = b.create_grant("synthetic direct peer", ["sync"], kind="peer",
                                         peer_id=identity_a["peer_id"])
+
+    def test_peer_server_binding_does_not_depend_on_reverse_dns(self):
+        # A numeric local listener must become usable even when reverse DNS is
+        # unavailable or indefinitely slow; it is not needed for Host checks.
+        with patch("socket.getfqdn", side_effect=AssertionError("Reverse DNS must not gate binding")) as lookup:
+            server = PeerHTTPServer(("127.0.0.1", 0), BaseHTTPRequestHandler)
+            try:
+                self.assertGreater(server.server_address[1], 0)
+                self.assertEqual(server.server_port, server.server_address[1])
+                lookup.assert_not_called()
+            finally:
+                server.server_close()
 
     def test_offline_corrections_converge_over_paginated_process_exchange(self):
         self.a.submit(seed_actions())
@@ -302,7 +315,7 @@ class DirectPeerTests(unittest.TestCase):
             def log_message(self, *args):
                 pass
 
-        server = HTTPServer(("127.0.0.1", 0), RedirectHandler)
+        server = PeerHTTPServer(("127.0.0.1", 0), RedirectHandler)
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         try:

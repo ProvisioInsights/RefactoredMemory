@@ -10,6 +10,7 @@ import ssl
 import sys
 import threading
 from http.server import ThreadingHTTPServer
+from socketserver import TCPServer
 
 from .store import Store, MemoryError, AuthorizationError, ValidationError, canonical
 from .service import Service
@@ -90,6 +91,12 @@ class PeerHTTPServer(ThreadingHTTPServer):
         self.tls_context = tls_context
         self.connection_slots = threading.BoundedSemaphore(32)
         super().__init__(address, handler)
+
+    def server_bind(self):
+        # HTTPServer's default reverse DNS lookup can stall startup on a host
+        # without working reverse resolution. Host policy uses explicit values.
+        TCPServer.server_bind(self)
+        self.server_name, self.server_port = self.server_address[:2]
 
     def get_request(self):
         connection, address = super().get_request()

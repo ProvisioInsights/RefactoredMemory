@@ -67,6 +67,7 @@ test_lost_response_retries_durable_group_without_duplicate (test_sync.DirectPeer
 test_missing_predecessor_waits_durably_and_replay_is_idempotent (test_sync.DirectPeerTests.test_missing_predecessor_waits_durably_and_replay_is_idempotent) ... ok
 test_nonloopback_cleartext_and_redirects_are_not_allowed (test_sync.DirectPeerTests.test_nonloopback_cleartext_and_redirects_are_not_allowed) ... ok
 test_offline_corrections_converge_over_paginated_process_exchange (test_sync.DirectPeerTests.test_offline_corrections_converge_over_paginated_process_exchange) ... ok
+test_peer_server_binding_does_not_depend_on_reverse_dns (test_sync.DirectPeerTests.test_peer_server_binding_does_not_depend_on_reverse_dns) ... ok
 test_protocol_bounds_and_ambiguous_json_fail_closed (test_sync.DirectPeerTests.test_protocol_bounds_and_ambiguous_json_fail_closed) ... ok
 test_rejected_groups_report_semantic_failure_without_spinning (test_sync.DirectPeerTests.test_rejected_groups_report_semantic_failure_without_spinning) ... ok
 test_response_identity_change_is_rejected_before_application (test_sync.DirectPeerTests.test_response_identity_change_is_rejected_before_application) ... ok
@@ -82,6 +83,6 @@ test_wrong_credential_does_not_apply_operations (test_sync.DirectPeerTests.test_
 test_wrong_store_is_rejected_before_receipt (test_sync.DirectPeerTests.test_wrong_store_is_rejected_before_receipt) ... ok
 
 ----------------------------------------------------------------------
-Ran 82 tests in 13.125s
+Ran 83 tests in 13.422s
 
 OK

@@ -8,7 +8,7 @@ Proposed team: **RefactoredMemory (RFM)** in **Provisio Insights**. Planning key
 
 ## Current implementation evidence
 
-Core, MCP, import, direct synchronization and CLI implemented; current coordinated Linux run reports 82 passing tests including an independent real MCP SDK client. This aggregate count is not a claim that all personal-v1 acceptance requirements passed.
+Core, MCP, import, direct synchronization and CLI implemented; current coordinated Linux run reports 83 passing tests including an independent real MCP SDK client. This aggregate count is not a claim that all personal-v1 acceptance requirements passed.
 
 Remaining qualification:
 
@@ -250,7 +250,7 @@ Sources: [EXECUTION_PROMPT.md](https://github.com/ProvisioInsights/RefactoredMem
 
 Project state: **In Progress**. One owner; Mac + Linux offline writes/sync; required MCP; Markdown/Logseq and LivingAtlas migration.
 
-Coordinated personal-v1 implementation is authorized and implemented core/MCP/import/sync/CLI streams are In Progress against their full criteria. The current Linux run reports 82 passing synthetic tests, including independent MCP SDK workflows; evidence reports distinguish that result from unexecuted actual Mac/Praxis and full original-archive qualification. Corporate tenancy, product content encryption, transitive mesh and browser UI are excluded. Live imports, keys, installations, credentials/permissions and external deployments retain separate approval requirements.
+Coordinated personal-v1 implementation is authorized and implemented core/MCP/import/sync/CLI streams are In Progress against their full criteria. The current Linux run reports 83 passing synthetic tests, including independent MCP SDK workflows; evidence reports distinguish that result from unexecuted actual Mac/Praxis and full original-archive qualification. Corporate tenancy, product content encryption, transitive mesh and browser UI are excluded. Live imports, keys, installations, credentials/permissions and external deployments retain separate approval requirements.
 
 Milestones: Temporal core and personal authority; MCP and import compatibility; Mac/Linux offline synchronization; Qualification and usable delivery.
 
@@ -804,7 +804,7 @@ Sources: [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/bl
 
 Repository-work status: **In Progress**.
 
-Coordinated Linux implementation verification reports 82 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.
+Coordinated Linux implementation verification reports 83 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.
 
 Remaining evidence:
 
@@ -826,7 +826,7 @@ Sources: [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/bl
 
 Repository-work status: **In Progress**.
 
-Coordinated Linux implementation verification reports 82 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.
+Coordinated Linux implementation verification reports 83 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.
 
 Remaining evidence:
 
@@ -852,7 +852,7 @@ Sources: [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/bl
 
 Repository-work status: **In Progress**.
 
-Coordinated Linux implementation verification reports 82 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.
+Coordinated Linux implementation verification reports 83 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.
 
 Remaining evidence:
 
@@ -903,7 +903,7 @@ Sources: [RESEARCH.md](https://github.com/ProvisioInsights/RefactoredMemory/blob
 
 Repository-work status: **In Progress**.
 
-Coordinated Linux implementation verification reports 82 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.
+Coordinated Linux implementation verification reports 83 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.
 
 Remaining evidence:
 
@@ -928,7 +928,7 @@ Sources: [DECISIONS.md](https://github.com/ProvisioInsights/RefactoredMemory/blo
 
 Repository-work status: **In Progress**.
 
-Coordinated Linux implementation verification reports 82 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.
+Coordinated Linux implementation verification reports 83 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.
 
 Remaining evidence:
 
