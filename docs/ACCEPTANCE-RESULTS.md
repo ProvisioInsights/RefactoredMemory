@@ -23,6 +23,12 @@ The full [Docker smoke test](../deploy/smoke_test.py) passed using real Keycloak
 
 The container test is a reproducible local integration test, not a NAS installation or general penetration test. No actual DSM/VLAN/IPv6, hardware failure, owner Mac or hosted client connection has been qualified. No real personal data was ingested.
 
+### Hosted Ubuntu and macOS qualification
+
+[The hosted CI run](https://github.com/ProvisioInsights/RefactoredMemory/actions/runs/42411467535) passed at `73ab9e8948de969854d74488445b6e37bf0175f0`: **146 tests without skips on each platform**, in 21.028 seconds on Ubuntu and 57.781 seconds on macOS. Both also passed the three synthetic demonstrations. Declared optional OAuth and independent MCP SDK dependencies were installed explicitly by CI. [Machine-readable summary](results/nas-hosted-ci.json).
+
+The preceding macOS run found a test-only path comparison between `/var` and `/private/var`. The assertion now compares the expected canonical path; the runtime already pinned that configuration directory correctly. No runtime source changed for this correction. These hosted checks do not qualify the owner's actual Mac/NAS pair.
+
 ### Current contract benchmark
 
 [Raw NAS-extension runtime benchmark](../benchmarks/results/nas-linux-1100.json) repeats the 1,100-entity contract workload and passes its correctness checks. It identifies the same runtime digest above. Core Store defaults are measured; this is not an OAuth, TLS, NAS-disk or end-to-end client benchmark. The shared Linux host also ran container qualification, so the timings do not establish a regression or improvement against earlier runs.

@@ -3731,7 +3731,7 @@
     "date": "2026-11-07",
     "platform": "Local Linux; hosted-OS and Docker results recorded separately",
     "syntheticTestsPassed": 146,
-    "summary": "The personal graph, MCP/OAuth, imports, split TLS listeners, guarded writes and resumable automatic synchronization are implemented. Native Linux qualification passed 146 tests. The acceptance report records current container and hosted-OS evidence separately. Actual NAS/Mac networking, hosted provider clients and original archives remain unqualified. The real Keycloak/Postgres Docker smoke workflow passed, including OAuth capture/read, private TLS sync, restart and revocation.",
+    "summary": "The personal graph, MCP/OAuth, imports, split TLS listeners, guarded writes and resumable automatic synchronization are implemented. Native Linux qualification passed 146 tests. The acceptance report records current container and hosted-OS evidence separately. Actual NAS/Mac networking, hosted provider clients and original archives remain unqualified. The real Keycloak/Postgres Docker smoke workflow passed, including OAuth capture/read, private TLS sync, restart and revocation. Hosted Ubuntu and macOS each passed all 146 tests and the three demonstrations at 73ab9e8.",
     "evidenceLinks": [
       "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/ACCEPTANCE-RESULTS.md",
       "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/MCP-CONFORMANCE.md",
@@ -3779,7 +3779,31 @@
         "qualificationBoundary": "Hosted runners do not qualify the owner’s actual Mac/Linux peer pair or installed Praxis2 application."
       }
     },
-    "containerEvidence": "docs/results/nas-docker-smoke.json; passed, package hash matched runtime commit a0ff34b8"
+    "containerEvidence": "docs/results/nas-docker-smoke.json; passed, package hash matched runtime commit a0ff34b8",
+    "hostedCI": {
+      "commit": "73ab9e8948de969854d74488445b6e37bf0175f0",
+      "run_url": "https://github.com/ProvisioInsights/RefactoredMemory/actions/runs/42411467535",
+      "suite_tests": 146,
+      "skipped": 0,
+      "jobs": [
+        {
+          "platform": "Ubuntu",
+          "job_id": 128520326770,
+          "tests_seconds": 21.028,
+          "result": "passed",
+          "demonstrations": "passed"
+        },
+        {
+          "platform": "macOS",
+          "job_id": 128520327132,
+          "tests_seconds": 57.781,
+          "result": "passed",
+          "demonstrations": "passed"
+        }
+      ],
+      "runtime_sha256": "2ad9d8ddd1954ae25b426e4d242f7d6e34aab334b8d25ecf78c51e2c4537a169",
+      "boundary": "Hosted runners are not the owner Mac or NAS. A test-only canonical-path expectation was corrected after the earlier macOS run; runtime source did not change."
+    }
   },
   "clientTarget": {
     "application": "Praxis2",

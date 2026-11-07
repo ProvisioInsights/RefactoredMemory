@@ -12,6 +12,8 @@ The personal graph, MCP/OAuth, imports, split TLS listeners, guarded writes and 
 
 See [acceptance results](../ACCEPTANCE-RESULTS.md), [NAS deployment](../NAS-DEPLOYMENT.md) and [maintenance access](../REMOTE-ADMIN.md).
 
+Hosted Ubuntu and macOS each passed all 146 tests and the three demonstrations at `73ab9e8`; see [CI evidence](../results/nas-hosted-ci.json).
+
 ## Accepted decisions
 
 - **Q6 (accepted)**: Automatically accept model-inferred additions within configured client/agent grants, without per-item human review. Preserve source/evidence, actor/model/derivation attribution, uncertainty, conflicts and correction history. Acceptance is neither human verification nor established truth and cannot create or widen authority.

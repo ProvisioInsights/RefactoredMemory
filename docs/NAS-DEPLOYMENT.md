@@ -63,6 +63,6 @@ Before personal data is loaded, verify:
 5. The Mac and NAS exchange offline synthetic writes, converge, resume after interruption and correctly report insufficient disk space or a paused sync cycle.
 6. An acknowledged write survives restart, a consistent backup restores under a fresh identity, and a stale restore cannot resurrect revoked grants or bypass newer deletion state.
 
-Local container and authentication test evidence will be recorded separately from this NAS qualification. Public provider application access also remains unverified until exercised with the actual accounts.
+Passing local container and authentication evidence is recorded in [the acceptance report](ACCEPTANCE-RESULTS.md) and [raw container result](results/nas-docker-smoke.json), separately from this NAS qualification. Public provider application access also remains unverified until exercised with the actual accounts.
 
 For ongoing engineering access, use [REMOTE-ADMIN.md](REMOTE-ADMIN.md). The operator runbook remains [RUNBOOK.md](RUNBOOK.md).
