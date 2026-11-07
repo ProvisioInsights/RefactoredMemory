@@ -1,0 +1,21 @@
+name: Synthetic qualification
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify preinstalled runtime
+        run: python3 -c 'import sys; print(sys.version); assert sys.version_info >= (3, 12), "Python 3.12+ required; no automatic installation"'
+      - name: Run synthetic tests
+        run: python3 -m unittest discover -s tests -v
+      - name: Run the three day-one journeys
+        run: python3 -m examples.synthetic_demo

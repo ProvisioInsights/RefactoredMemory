@@ -1,6 +1,6 @@
 # Personal v1 validation and migration
 
-This is a planned qualification matrix, not test results. Product code and new experimental code remain behind the explicit documentation/proceed gate unless a separate bounded experiment is authorized. Tests, benchmarks and demonstration files are synthetic-only.
+This matrix defines qualification requirements. Actual executed results are recorded in [ACCEPTANCE-RESULTS.md](ACCEPTANCE-RESULTS.md), [MCP-CONFORMANCE.md](MCP-CONFORMANCE.md) and [SYNC-PROTOCOL.md](SYNC-PROTOCOL.md). The owner explicitly authorized implementation on 7 November 2026; new product code and tests are in scope. Tests, benchmarks and demonstration files are synthetic-only.
 
 | V1 area | Required evidence | Historical mapping |
 | --- | --- | --- |
@@ -23,10 +23,10 @@ Inventory prior source artifacts read-only before selecting adapters. Test every
 
 Maintain original backups, stable source identities, repeat-safe import manifests and explicit ID mappings. Compare meaningful temporal/provenance answers before accepting a migration. Never overwrite the original archive as part of qualification. When original input is encrypted, test the adapter with synthetic keys and require approved original key access for any later live run. Do not request secrets in chat or commit them.
 
-The requested v1 importer does not authorize using real personal data now. Prepare a concrete live-import plan and reviewable source inventory before requesting the separate data authorization. Q6 confirms automatic acceptance within configured client/agent grants, with no per-item human review. Test permitted automatic additions, rejection outside the grant, source-text attempts to expand authority, preserved evidence/actor/model/derivation attribution and uncertainty, and retained correction/conflict history. Acceptance must not be labelled human verification or established truth. Capture triggers and preferred-claim expectations await Q7/Q8; the management surface and concrete day-one tasks await Q9/Q10.
+The requested v1 importer does not authorize using real personal data now. Prepare a concrete live-import plan and reviewable source inventory before requesting the separate data authorization. Q6 confirms automatic acceptance within configured client/agent grants, with no per-item human review. Test permitted automatic additions, rejection outside the grant, source-text attempts to expand authority, preserved evidence/actor/model/derivation attribution and uncertainty, and retained correction/conflict history. Acceptance must not be labelled human verification or established truth. Q7 requires proactive capture; Q8 requires preferred authenticated owner corrections with conflicts retained. Q9 selects MCP/CLI and Q10 requires all three day-one tasks: project decisions/why, relationship evidence, and recent changes.
 
 ## Performance evidence
 
 Pin source commits, runtime/engine versions, machine/OS/filesystem, durability settings, fixtures, indexes, cache state, group sizes and sample method. Test correctness and comparable durability before ranking latency. Keep independent workloads/runs separate; report p50/p95, throughput, memory/storage, startup/rebuild and relevant transfer/recovery costs. A process kill is not physical-power-loss proof.
 
-The historical 110,000-assertion selective-read benchmark favors the exercised indexed SQLite path, but does not establish full semantic/API equivalence, comparative writes, sync, concurrency or scale-out. Its raw ZIP has not been independently inspected in this planning work. No v1 qualification has run or passed yet.
+The historical 110,000-assertion selective-read benchmark favors the exercised indexed SQLite path, but does not establish full semantic/API equivalence, comparative writes, sync, concurrency or scale-out. Its raw ZIP has not been independently inspected in this planning work. Synthetic Linux qualification and real independent SDK workflows have now run; consult the evidence reports for exact results and unqualified Mac/Praxis/original-archive boundaries.

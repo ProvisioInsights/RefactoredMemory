@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-*
+*.pem
+*.key
+*.token
+.env
+.venv/
+dist/
+build/
+*.egg-info/
+.local/
+*.identity.json

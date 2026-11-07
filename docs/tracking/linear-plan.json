@@ -2,16 +2,16 @@
   "team": {
     "name": "RefactoredMemory",
     "suggestedKey": "RFM",
-    "description": "Personal temporal knowledge store: Mac/Linux offline peers, MCP and source-preserving import. Planning and explicit implementation gate; enterprise/encryption roadmap later."
+    "description": "Personal temporal knowledge store: Mac/Linux offline peers, MCP/CLI and source-preserving import. Implementation authorized 2026-11-07; enterprise/encryption roadmap later. Linear setup paused."
   },
   "rules": [
     "Linear setup is paused by the owner. Maintain this repository plan; do not create remote teams/projects/issues or request a manual setup step until the owner resumes it. Linear availability is not a readiness gate.",
     "Reuse an existing matching team/project/issue if discovered; avoid duplicates.",
     "Use actual workspace workflow statuses; suggested states are semantic names, not assumed IDs.",
     "Do not invent assignees, estimates, cycles or due dates.",
-    "R01 records the completed documentation baseline and R03 records the accepted Q6 policy; both may be Done as documentation evidence only. No product implementation or tests are claimed complete. R00 remains deferred while Linear is paused. Other work remains unstarted or awaits decisions/evidence.",
-    "Create all v1 issues in backlog/blocked state and add a direct blocked-by relation to R09. Parent links alone do not enforce authorization.",
-    "R09 must never auto-close merely because prerequisites finish.",
+    "R01/R03 record completed documentation/policy evidence and R09 records explicit implementation authorization received 2026-11-07. Implemented streams remain In Progress with partial Linux evidence; no complete personal-v1 release qualification is claimed. R00 stays deferred while Linear is paused; R06/R08 and remaining evidence/qualification criteria remain open.",
+    "All v1 issues retain a direct R09 authorization dependency. R09 is satisfied by the explicit owner Proceed on 2026-11-07; mark implementation progress only when work actually starts, without fabricating completion.",
+    "R09 records the actual owner instruction, never inferred consent or automatic closure from prerequisites. Its completion does not pass readiness or release qualification.",
     "Later-roadmap issues never block v1 and require separately agreed future scope.",
     "Use public repository links and non-sensitive synthetic acceptance criteria; no private source excerpts or credentials.",
     "Source documents remain authoritative; track delivery/evidence in Linear without silently accepting design choices."
@@ -34,8 +34,8 @@
       "key": "research",
       "name": "RefactoredMemory — Research and documentation gate",
       "state": "In Progress",
-      "summary": "Complete evidence, decisions and reconciled docs; stop for explicit owner proceed.",
-      "description": "Active authorized planning for personal v1. Q6 is accepted and recorded: inferred additions are accepted automatically within configured client/agent grants without per-item review, with provenance and uncertainty retained. Q7–Q10, detailed contracts, source/migration evidence and architecture acceptance remain open. No product implementation starts until R09 is explicitly satisfied.",
+      "summary": "Complete remaining contracts, source evidence and reconciled docs; owner decisions and implementation authorization are recorded.",
+      "description": "Q6–Q10 are accepted: scoped automatic inferred additions, proactive capture, preferred explicit owner corrections with alternatives/history retained, MCP plus CLI without browser UI, and all three day-one workflows. Explicit Proceed was received 2026-11-07. Detailed contracts, source/migration evidence and readiness criteria remain open where unverified; authorization does not pass them.",
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/DECISIONS.md",
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/EXECUTION_PROMPT.md"
@@ -49,9 +49,9 @@
     {
       "key": "v1",
       "name": "RefactoredMemory — Personal knowledge store v1",
-      "state": "Planned",
+      "state": "In Progress",
       "summary": "One owner; Mac + Linux offline writes/sync; required MCP; Markdown/Logseq and LivingAtlas migration.",
-      "description": "Implementation and qualification backlog. Every issue requires the explicit owner proceed gate. Corporate tenancy, product content encryption and transitive mesh are excluded. Synthetic data only; live imports, keys, installs and external deployments retain their separate approval requirements.",
+      "description": "Coordinated personal-v1 implementation is authorized and implemented core/MCP/import/sync/CLI streams are In Progress against their full criteria. The current Linux run reports 79 passing synthetic tests, including independent MCP SDK workflows; evidence reports distinguish that result from unexecuted actual Mac/Praxis and full original-archive qualification. Corporate tenancy, product content encryption, transitive mesh and browser UI are excluded. Live imports, keys, installations, credentials/permissions and external deployments retain separate approval requirements.",
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md",
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md",
@@ -69,7 +69,7 @@
       "name": "RefactoredMemory — Later roadmap",
       "state": "Backlog",
       "summary": "Deferred corporate, encryption, mesh, advanced memory, scale and richer UI work.",
-      "description": "Future options retained for visibility. These issues do not block personal v1 and are not authorized for implementation by the current scope or its eventual proceed gate. No invented dates or estimates.",
+      "description": "Future options retained for visibility. These issues do not block personal v1 and are not authorized for implementation by the current scope or the received personal-v1 implementation authorization. No invented dates or estimates.",
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/DECISIONS.md",
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ADRS.md"
@@ -86,8 +86,8 @@
       "acceptance": [
         "After a new owner request to resume, verify the intended Provisio Insights workspace and create/reuse the exact RefactoredMemory team without duplicating existing work.",
         "Create/reconcile the three projects, workstream parents and actionable issues, with public-safe repository links and requirement/test mappings.",
-        "Verify every C01–C24 and M01–M19 is tracked in its correct v1/later scope, all v1 implementation issues are directly blocked by R09, and no dependency cycle or fabricated completion exists.",
-        "Record actual team/project/issue URLs and tracking conventions only after resumed setup and verification. R01 and R03 may be Done for their completed documentation/decision evidence; R00 remains deferred until actual external setup is requested and completed. No implementation or tests are implied."
+        "Verify every C01–C25 and M01–M20 is tracked in its correct v1/later scope, all v1 implementation issues retain their satisfied R09 authorization dependency, and no dependency cycle or fabricated completion exists.",
+        "Record actual team/project/issue URLs and tracking conventions only after resumed setup and verification. R01/R03 record documentation/policy evidence; R09 records received authorization only. R00 remains deferred until requested external setup is actually completed. No product or qualification completion is implied."
       ],
       "requirements": [],
       "tests": [],
@@ -118,7 +118,7 @@
       "acceptance": [
         "Accepted scope records one personal owner; Mac plus Linux both write offline and sync; MCP, Markdown/Logseq and prior LivingAtlas import are v1.",
         "Repository docs and companion Pages are reconciled; corporate tenancy, content encryption and transitive mesh remain later.",
-        "Baseline published at commit 7303a93aeed3b15f24dc03b411d043404100b13f. The later accepted Q6 policy is recorded under R03; Q7–Q10 and the explicit proceed gate remain open. Baseline completion does not imply architecture or product acceptance."
+        "Baseline published at commit 7303a93aeed3b15f24dc03b411d043404100b13f. Q6 is recorded under R03; Q7–Q10 answers and explicit Proceed were received 2026-11-07 and are recorded in DECISIONS/R09. Baseline completion does not imply architecture or product acceptance."
       ],
       "requirements": [],
       "tests": [],
@@ -156,7 +156,7 @@
       "adrs": [],
       "dependsOn": [],
       "parent": null,
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 3,
       "requiresProceed": false,
       "sourceLinks": [
@@ -173,10 +173,10 @@
       "key": "R03",
       "project": "research",
       "title": "Record accepted Q6: scoped automatic acceptance of inferred knowledge",
-      "description": "The owner has accepted automatic inferred additions within configured client/agent grants, without per-item human review. This issue records the policy in planning documents only. No product implementation, executed tests or permission to proceed is claimed. Q7–Q10 remain unanswered.",
+      "description": "The owner accepted automatic inferred additions within configured client/agent grants, without per-item human review. This completed item records policy in planning docs only, with no product implementation or tests claimed. Q7–Q10 are now accepted separately; explicit implementation authorization is recorded under R09.",
       "acceptance": [
         "Record Q6 as accepted: model-inferred additions are automatically accepted within configured client/agent grants without per-item human review; preserve the distinction from explicit owner instructions and any actual human verification.",
-        "Propagate the accepted policy through PRD, ADRs, MCP/import contracts, prompt, validation plan and tracking records. Track Q7–Q10 separately without inferring their answers or reopening Q6.",
+        "Propagate the accepted policy through PRD, ADRs, MCP/import contracts, prompt, validation plan and tracking records. Record Q7–Q10 separately without reopening Q6.",
         "Require evidence/source links, actor/model/derivation attribution, uncertainty, conflicting claims and correction history. Acceptance is not human verification or established truth; source text and accepted assertions cannot create or widen grants."
       ],
       "requirements": [
@@ -236,28 +236,38 @@
         "R02"
       ],
       "parent": null,
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 3,
       "requiresProceed": false,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md"
       ],
       "milestone": "Evidence and owner decisions",
       "labels": [
         "v1",
         "research"
-      ]
+      ],
+      "progress": {
+        "summary": "Selected A17 implementation and recorded synthetic Linux evidence are now available. Complete this research/contract/readiness item only against its actual criteria; access and qualification gaps remain explicit.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md"
+        ],
+        "remainingGaps": [
+          "Actual Mac/Praxis and original legacy-run evidence remain incomplete where applicable."
+        ]
+      }
     },
     {
       "key": "R05",
       "project": "research",
       "title": "Select persistence and peer synchronization technology against the full contract",
-      "description": "",
+      "description": "ADR A17 selects Python 3.12+ standard library, SQLite WAL/synchronous=FULL and explicit dependency-based direct synchronization. The implementation and Linux evidence exist; source comparison, durability limits and actual target/client qualification remain subject to the recorded evidence boundaries.",
       "acceptance": [
         "Compare credible candidates for personal temporal semantics, durable acknowledgment, bounded graph retrieval, two offline writers, concurrency, recovery, portability and operating burden.",
         "Pin sources/versions, workload and durability assumptions; distinguish actual measurements from provider claims and missing contract features.",
-        "Record selected stack, alternatives, migration cost and revisit triggers in ADRs. Propose only necessary bounded experiments; no new experimental/product code without separate approval before the proceed gate."
+        "Record the selected stack, alternatives, migration cost and revisit triggers in ADR A17 and the related ADRs. Use the received R09 authorization for bounded synthetic engineering work; installation, real-data and external-deployment permissions remain separate."
       ],
       "requirements": [
         "C02",
@@ -269,36 +279,49 @@
       "tests": [],
       "adrs": [
         "A04",
-        "A09"
+        "A09",
+        "A17"
       ],
       "dependsOn": [
         "R02"
       ],
       "parent": null,
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 2,
       "requiresProceed": false,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ADRS.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RESEARCH.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RESEARCH.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md"
       ],
       "milestone": "Evidence and owner decisions",
       "labels": [
         "v1",
         "research",
         "decision"
-      ]
+      ],
+      "progress": {
+        "summary": "Selected A17 implementation and recorded synthetic Linux evidence are now available. Complete this research/contract/readiness item only against its actual criteria; access and qualification gaps remain explicit.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md"
+        ],
+        "remainingGaps": [
+          "Actual Mac/Praxis and original legacy-run evidence remain incomplete where applicable."
+        ]
+      }
     },
     {
       "key": "R06",
       "project": "research",
       "title": "Finalize versioned temporal, query, authority and sync contracts",
-      "description": "Apply accepted Q6. Q7 capture triggers, Q8 preferred-claim handling, Q9 owner interface and Q10 day-one tasks remain consequential open choices; do not resolve them by implication.",
+      "description": "Accepted Q6–Q10 and selected ADR A17 are reflected in implementation contracts. Detailed conformance and source/client evidence gaps remain open; the received Proceed and partial Linux results do not complete this contract/readiness record.",
       "acceptance": [
         "Specify identities/types, evidence, world-time uncertainty, replica-scoped knowledge/frontiers, source disputes, correction actions and concurrent lineage resolution.",
         "Define atomic operation groups, dependency visibility, durable progress, personal peer/client authority, current permissions across history and delete/rejoin/restore semantics.",
         "Define common query coverage/fidelity/error responses and limits; preserve an export/migration path without building corporate tenancy or encryption infrastructure.",
-        "Reconcile diagrams, PRD and ADRs with accepted Q6, technology and migration decisions. Obtain and record Q7–Q10 answers for capture triggers, owner-correction/claim preference, v1 interface and three day-one tasks; do not treat Q6 as answering those questions."
+        "Reconcile diagrams, PRD and ADRs with accepted Q6–Q10, technology and migration decisions. Specify proactive capture within grants, explicit owner-correction preference without loss of conflicts/history, MCP/CLI only in v1, and observable project-decision/why, relationship/evidence and last-month-change workflows."
       ],
       "requirements": [
         "C01",
@@ -326,7 +349,8 @@
         "A06",
         "A09",
         "A10",
-        "A15"
+        "A15",
+        "A17"
       ],
       "dependsOn": [
         "R03",
@@ -334,13 +358,16 @@
         "R05"
       ],
       "parent": null,
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 2,
       "requiresProceed": false,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md",
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ADRS.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ADRS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md"
       ],
       "milestone": "Evidence and owner decisions",
       "labels": [
@@ -355,7 +382,18 @@
         "Q8",
         "Q9",
         "Q10"
-      ]
+      ],
+      "progress": {
+        "summary": "Selected A17 implementation and recorded synthetic Linux evidence are now available. Complete this research/contract/readiness item only against its actual criteria; access and qualification gaps remain explicit.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md"
+        ],
+        "remainingGaps": [
+          "Actual Mac/Praxis and original legacy-run evidence remain incomplete where applicable."
+        ]
+      }
     },
     {
       "key": "R07",
@@ -381,30 +419,40 @@
       ],
       "dependsOn": [],
       "parent": null,
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 2,
       "requiresProceed": false,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ADRS.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ADRS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md"
       ],
       "milestone": "Evidence and owner decisions",
       "labels": [
         "v1",
         "research",
         "decision"
-      ]
+      ],
+      "progress": {
+        "summary": "Selected A17 implementation and recorded synthetic Linux evidence are now available. Complete this research/contract/readiness item only against its actual criteria; access and qualification gaps remain explicit.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md"
+        ],
+        "remainingGaps": [
+          "Actual Mac/Praxis and original legacy-run evidence remain incomplete where applicable."
+        ]
+      }
     },
     {
       "key": "R08",
       "project": "research",
       "title": "Finish documentation reconciliation and the personal-v1 readiness review",
-      "description": "",
+      "description": "Repository contracts, run instructions and evidence reports are being reconciled against the implemented scope and accepted decisions. Keep remaining source/client/platform qualification criteria open; R09 authorization does not auto-pass readiness.",
       "acceptance": [
         "PRD, ADRs, architecture, MCP, validation, research, decisions, execution prompt and companion Pages agree on scope and accepted decisions.",
         "Every required C/M item maps to an observable acceptance check and a delivery issue; deferred C22/M17, M08 and P01–P06 cannot block v1.",
-        "Resolve Q7–Q10 and other implementation-blocking ambiguities, or record explicit owner acceptance of any remaining limitation; present document links and readiness summary. Accepted Q6 and its recording are not implementation authorization.",
-        "Do not start product implementation or mark the separate owner-proceed issue complete automatically."
+        "Record accepted Q7–Q10 and resolve genuinely new implementation-blocking ambiguities, or record explicit owner acceptance of remaining limitations; present document links and an honest readiness summary. Keep source/client evidence gaps visible.",
+        "Verify remaining readiness criteria on their own evidence. Explicit Proceed was received 2026-11-07 and is recorded by R09; this authorization does not itself complete R06/R08 or any release qualification."
       ],
       "requirements": [],
       "tests": [],
@@ -419,14 +467,19 @@
         "R07"
       ],
       "parent": null,
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 2,
       "requiresProceed": false,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md",
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md",
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/DECISIONS.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/EXECUTION_PROMPT.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/EXECUTION_PROMPT.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "Reconciled architecture and readiness",
       "labels": [
@@ -439,27 +492,38 @@
         "Q8",
         "Q9",
         "Q10"
-      ]
+      ],
+      "progress": {
+        "summary": "Selected A17 implementation and recorded synthetic Linux evidence are now available. Complete this research/contract/readiness item only against its actual criteria; access and qualification gaps remain explicit.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "Actual Mac/Praxis and original legacy-run evidence remain incomplete where applicable."
+        ]
+      }
     },
     {
       "key": "R09",
       "project": "research",
-      "title": "Gate: record the owner’s explicit “proceed” before product implementation",
-      "description": "Manual authorization gate. Do not auto-close from dependency completion or inferred consent.",
+      "title": "Record received owner Proceed for personal-v1 implementation",
+      "description": "Owner explicitly said Proceed on 2026-11-07 after answering Q7–Q10. This Done item records permission to implement the agreed personal-v1 scope, not completion of contracts, research/readiness evidence or product qualification. Do not request the same authorization again.",
       "acceptance": [
-        "Documentation readiness review is complete and presented to the owner.",
-        "Record a specific owner message explicitly authorizing implementation of the agreed personal-v1 scope.",
-        "Close this gate only on that explicit instruction. Answers to research questions, accepted ADRs or the Linear setup request do not satisfy it.",
-        "Keep all personal-v1 implementation issues blocked by this gate until authorization; later roadmap and real-data/deployment approvals remain separate."
+        "Record the explicit owner instruction “Proceed” on 2026-11-07 authorizing implementation of the agreed personal-v1 scope after accepted Q7–Q10.",
+        "Reconcile accepted decisions throughout the docs before core coding; retain R06/R08 detailed-contract/readiness and source/client evidence gaps until their actual criteria are met.",
+        "Keep all v1 items linked to this satisfied authorization record. Its completion is not product completion, passed tests or release acceptance.",
+        "Keep Linear paused and later-roadmap, real-data, installation, external-deployment/provisioning, credentials/permissions, agreements and private-data exposure boundaries separate."
       ],
       "requirements": [],
       "tests": [],
       "adrs": [],
-      "dependsOn": [
-        "R08"
-      ],
+      "dependsOn": [],
       "parent": null,
-      "state": "Backlog",
+      "state": "Done",
       "priority": 2,
       "requiresProceed": false,
       "sourceLinks": [
@@ -470,15 +534,25 @@
       "labels": [
         "v1",
         "research",
-        "decision",
-        "needs-owner"
+        "decision"
+      ],
+      "relatedTo": [
+        "R08"
+      ],
+      "authorizationDate": "2026-11-07",
+      "decisionRefs": [
+        "Q6",
+        "Q7",
+        "Q8",
+        "Q9",
+        "Q10"
       ]
     },
     {
       "key": "G00",
       "project": "v1",
       "title": "Personal temporal graph, storage and authority",
-      "description": "",
+      "description": "Temporal graph, storage, grants and lifecycle code are implemented with synthetic Linux acceptance evidence. This workstream remains In Progress while the complete cross-runtime/client/import qualification matrix is unfinished; passing Linux tests does not certify the owner’s Mac, Praxis or original archives.",
       "acceptance": [
         "Complete graph/schema, time/lineage, durable storage, consistent queries, personal access and lifecycle subissues.",
         "Provide source-linked, bounded and inspectable personal knowledge with correct history after restart; retain one owner, not corporate tenancy."
@@ -514,23 +588,38 @@
         "M16",
         "M18"
       ],
-      "adrs": [],
+      "adrs": [
+        "A17"
+      ],
       "dependsOn": [
         "R09"
       ],
       "parent": null,
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 2,
       "requiresProceed": true,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "Temporal core and personal authority",
       "labels": [
         "v1",
         "graph"
-      ]
+      ],
+      "progress": {
+        "summary": "Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "No actual Mac runtime/filesystem qualification or physical-power-loss certification.",
+          "Individual acceptance criteria remain subject to the complete evidence matrix; this state is not release completion."
+        ]
+      }
     },
     {
       "key": "G01",
@@ -560,11 +649,13 @@
         "R06"
       ],
       "parent": "G00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 3,
       "requiresProceed": true,
       "sourceLinks": [
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "Temporal core and personal authority",
       "labels": [
@@ -573,7 +664,18 @@
       ],
       "decisionRefs": [
         "Q6"
-      ]
+      ],
+      "progress": {
+        "summary": "Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "No actual Mac runtime/filesystem qualification or physical-power-loss certification.",
+          "Individual acceptance criteria remain subject to the complete evidence matrix; this state is not release completion."
+        ]
+      }
     },
     {
       "key": "G02",
@@ -582,7 +684,7 @@
       "description": "",
       "acceptance": [
         "World time and peer-scoped knowledge positions/frontiers are independent; preserve origin, receipt and application metadata, unknown/approximate dates and half-open intervals.",
-        "Correct/retract/invalidate/reinstate append sourced lineage and reasons; retain past beliefs and concurrent heads without wall-clock winners. Apply the Q8 owner-correction/preferred-claim policy once answered, preserving competing claims and history. An authorized, attributed resolution references the heads considered; automatic acceptance does not impose a human-review gate or silently resolve competing claims.",
+        "Correct/retract/invalidate/reinstate append sourced lineage and reasons; retain past beliefs and concurrent heads without wall-clock winners. Prefer explicit owner corrections in answers under accepted Q8 while preserving competing claims, evidence, concurrent branches and history. An authorized, attributed resolution references the heads considered; automatic acceptance does not impose a human-review gate or silently resolve competing claims.",
         "Distinguish conflicting independent sources from revision branches and copied evidence; verify late receipt never backdates local knowledge."
       ],
       "requirements": [
@@ -607,12 +709,14 @@
         "G01"
       ],
       "parent": "G00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 2,
       "requiresProceed": true,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "Temporal core and personal authority",
       "labels": [
@@ -621,7 +725,18 @@
       ],
       "decisionRefs": [
         "Q8"
-      ]
+      ],
+      "progress": {
+        "summary": "Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "No actual Mac runtime/filesystem qualification or physical-power-loss certification.",
+          "Individual acceptance criteria remain subject to the complete evidence matrix; this state is not release completion."
+        ]
+      }
     },
     {
       "key": "G03",
@@ -646,7 +761,8 @@
       ],
       "adrs": [
         "A04",
-        "A09"
+        "A09",
+        "A17"
       ],
       "dependsOn": [
         "R09",
@@ -654,18 +770,31 @@
         "R05"
       ],
       "parent": "G00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 2,
       "requiresProceed": true,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "Temporal core and personal authority",
       "labels": [
         "v1",
         "graph"
-      ]
+      ],
+      "progress": {
+        "summary": "Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "No actual Mac runtime/filesystem qualification or physical-power-loss certification.",
+          "Individual acceptance criteria remain subject to the complete evidence matrix; this state is not release completion."
+        ]
+      }
     },
     {
       "key": "G04",
@@ -690,25 +819,40 @@
         "M14",
         "M16"
       ],
-      "adrs": [],
+      "adrs": [
+        "A17"
+      ],
       "dependsOn": [
         "R09",
         "G02",
         "G03"
       ],
       "parent": "G00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 3,
       "requiresProceed": true,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "Temporal core and personal authority",
       "labels": [
         "v1",
         "graph"
-      ]
+      ],
+      "progress": {
+        "summary": "Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "No actual Mac runtime/filesystem qualification or physical-power-loss certification.",
+          "Individual acceptance criteria remain subject to the complete evidence matrix; this state is not release completion."
+        ]
+      }
     },
     {
       "key": "G05",
@@ -716,7 +860,7 @@
       "title": "Enforce personal client grants, current authority and safe boundaries",
       "description": "",
       "acceptance": [
-        "Authenticate personal clients and scope read/write/admin authority. Automatically accept inferred additions within configured client/agent grants without per-item review; deny out-of-grant operations and source-text attempts to widen authority. Q7 still determines capture triggers.",
+        "Authenticate personal clients and scope read/write/admin authority. Automatically accept inferred additions within configured client/agent grants without per-item review; deny out-of-grant operations and source-text attempts to widen authority. Allow proactive capture within configured grants under accepted Q7; do not widen source access or authority.",
         "Current grants govern historical queries and output destinations; local revocation prevents old known-at access from re-enabling authority.",
         "Bound input/query sizes, protect credentials and local paths, redact logs and label actual plaintext/processing profile honestly; HTTPS/TLS protects remote transport.",
         "Retain source/evidence, actor/model/derivation attribution, uncertainty, conflicts and correction history for automatic acceptance; do not label acceptance as human verification or established truth."
@@ -746,12 +890,14 @@
         "G01"
       ],
       "parent": "G00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 2,
       "requiresProceed": true,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "Temporal core and personal authority",
       "labels": [
@@ -761,7 +907,18 @@
       "decisionRefs": [
         "Q6",
         "Q7"
-      ]
+      ],
+      "progress": {
+        "summary": "Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "No actual Mac runtime/filesystem qualification or physical-power-loss certification.",
+          "Individual acceptance criteria remain subject to the complete evidence matrix; this state is not release completion."
+        ]
+      }
     },
     {
       "key": "G06",
@@ -796,18 +953,31 @@
         "G05"
       ],
       "parent": "G00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 3,
       "requiresProceed": true,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "Temporal core and personal authority",
       "labels": [
         "v1",
         "graph"
-      ]
+      ],
+      "progress": {
+        "summary": "Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "No actual Mac runtime/filesystem qualification or physical-power-loss certification.",
+          "Individual acceptance criteria remain subject to the complete evidence matrix; this state is not release completion."
+        ]
+      }
     },
     {
       "key": "S00",
@@ -839,22 +1009,39 @@
         "M15",
         "M16"
       ],
-      "adrs": [],
+      "adrs": [
+        "A17"
+      ],
       "dependsOn": [
         "R09"
       ],
       "parent": null,
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 2,
       "requiresProceed": true,
       "sourceLinks": [
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md"
       ],
       "milestone": "Mac/Linux offline synchronization",
       "labels": [
         "v1",
         "sync"
-      ]
+      ],
+      "progress": {
+        "summary": "Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md"
+        ],
+        "remainingGaps": [
+          "Actual owner Mac/Linux cross-machine qualification remains unavailable.",
+          "Production certificates/endpoints and external deployment were not qualified or authorized."
+        ]
+      }
     },
     {
       "key": "S01",
@@ -878,7 +1065,8 @@
       ],
       "adrs": [
         "A06",
-        "A09"
+        "A09",
+        "A17"
       ],
       "dependsOn": [
         "R09",
@@ -886,17 +1074,32 @@
         "G05"
       ],
       "parent": "S00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 3,
       "requiresProceed": true,
       "sourceLinks": [
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md"
       ],
       "milestone": "Mac/Linux offline synchronization",
       "labels": [
         "v1",
         "sync"
-      ]
+      ],
+      "progress": {
+        "summary": "Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md"
+        ],
+        "remainingGaps": [
+          "Actual owner Mac/Linux cross-machine qualification remains unavailable.",
+          "Production certificates/endpoints and external deployment were not qualified or authorized."
+        ]
+      }
     },
     {
       "key": "S02",
@@ -919,7 +1122,8 @@
         "M06"
       ],
       "adrs": [
-        "A09"
+        "A09",
+        "A17"
       ],
       "dependsOn": [
         "R09",
@@ -928,18 +1132,33 @@
         "G03"
       ],
       "parent": "S00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 2,
       "requiresProceed": true,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md"
       ],
       "milestone": "Mac/Linux offline synchronization",
       "labels": [
         "v1",
         "sync"
-      ]
+      ],
+      "progress": {
+        "summary": "Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md"
+        ],
+        "remainingGaps": [
+          "Actual owner Mac/Linux cross-machine qualification remains unavailable.",
+          "Production certificates/endpoints and external deployment were not qualified or authorized."
+        ]
+      }
     },
     {
       "key": "S03",
@@ -947,7 +1166,7 @@
       "title": "Converge offline corrections and expose peer knowledge, conflicts and sync state",
       "description": "",
       "acceptance": [
-        "Preserve concurrent offline lineage changes including retract versus invalidate and append an authorized resolution naming considered heads with actor/evidence attribution. Apply Q8 preferred-claim behavior once answered; an automatic acceptance is not a human review event.",
+        "Preserve concurrent offline lineage changes including retract versus invalidate and append an authorized resolution naming considered heads with actor/evidence attribution. Prefer explicit owner corrections while retaining conflicting claims/evidence/history under Q8; an automatic acceptance is not a human review event.",
         "Compare semantic answers at common frontiers; retain differing earlier local-known histories and distinguish source disputes from revision branches.",
         "Expose sync progress, dependency gaps, peer errors, unresolved branches, frontier and coverage to clients/inspection."
       ],
@@ -971,12 +1190,15 @@
         "G04"
       ],
       "parent": "S00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 3,
       "requiresProceed": true,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md"
       ],
       "milestone": "Mac/Linux offline synchronization",
       "labels": [
@@ -986,7 +1208,19 @@
       "decisionRefs": [
         "Q6",
         "Q8"
-      ]
+      ],
+      "progress": {
+        "summary": "Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md"
+        ],
+        "remainingGaps": [
+          "Actual owner Mac/Linux cross-machine qualification remains unavailable.",
+          "Production certificates/endpoints and external deployment were not qualified or authorized."
+        ]
+      }
     },
     {
       "key": "S04",
@@ -1025,17 +1259,32 @@
         "G06"
       ],
       "parent": "S00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 2,
       "requiresProceed": true,
       "sourceLinks": [
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md"
       ],
       "milestone": "Mac/Linux offline synchronization",
       "labels": [
         "v1",
         "sync"
-      ]
+      ],
+      "progress": {
+        "summary": "Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md"
+        ],
+        "remainingGaps": [
+          "Actual owner Mac/Linux cross-machine qualification remains unavailable.",
+          "Production certificates/endpoints and external deployment were not qualified or authorized."
+        ]
+      }
     },
     {
       "key": "M00",
@@ -1060,23 +1309,37 @@
         "M19"
       ],
       "adrs": [
-        "A16"
+        "A16",
+        "A17"
       ],
       "dependsOn": [
         "R09"
       ],
       "parent": null,
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 2,
       "requiresProceed": true,
       "sourceLinks": [
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "MCP and import compatibility",
       "labels": [
         "v1",
         "mcp"
-      ]
+      ],
+      "progress": {
+        "summary": "Current-standard MCP stdio/HTTP and explicit legacy stdio compatibility are implemented. The installed independent Python MCP SDK 1.29.0 passed real Store/Service workflows over the 2025-11-25 compatibility path; modern 2026-07-28 checks are protocol/schema evidence.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "Actual Praxis application integration is unexecuted; a compatible application/configuration path and runtime are still needed.",
+          "Independent SDK evidence does not certify that SDK for the modern protocol or every LLM host."
+        ]
+      }
     },
     {
       "key": "M01",
@@ -1085,7 +1348,7 @@
       "description": "",
       "acceptance": [
         "Implement selected revision discovery, metadata/capabilities, schemas and supported stdio/Streamable HTTP behavior using verified SDK support.",
-        "Expose bounded capture, query, search/traversal, history/evidence and correction tools with consistent graph/provenance/coverage results. Accept inferred additions automatically within configured grants under Q6; apply the Q7 capture-trigger policy once answered.",
+        "Expose bounded capture, query, search/traversal, history/evidence and correction tools with consistent graph/provenance/coverage results. Accept inferred additions automatically within configured grants under Q6; support proactive capture within configured grants under accepted Q7 without widening authority or source access.",
         "Implement only deliberate tested compatibility for actual client needs; keep consumer, peer and owner-administration authority separate."
       ],
       "requirements": [
@@ -1101,7 +1364,8 @@
         "M19"
       ],
       "adrs": [
-        "A16"
+        "A16",
+        "A17"
       ],
       "dependsOn": [
         "R09",
@@ -1110,11 +1374,13 @@
         "G05"
       ],
       "parent": "M00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 2,
       "requiresProceed": true,
       "sourceLinks": [
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "MCP and import compatibility",
       "labels": [
@@ -1124,7 +1390,18 @@
       "decisionRefs": [
         "Q6",
         "Q7"
-      ]
+      ],
+      "progress": {
+        "summary": "Current-standard MCP stdio/HTTP and explicit legacy stdio compatibility are implemented. The installed independent Python MCP SDK 1.29.0 passed real Store/Service workflows over the 2025-11-25 compatibility path; modern 2026-07-28 checks are protocol/schema evidence.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "Actual Praxis application integration is unexecuted; a compatible application/configuration path and runtime are still needed.",
+          "Independent SDK evidence does not certify that SDK for the modern protocol or every LLM host."
+        ]
+      }
     },
     {
       "key": "M02",
@@ -1157,12 +1434,14 @@
         "G05"
       ],
       "parent": "M00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 3,
       "requiresProceed": true,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "MCP and import compatibility",
       "labels": [
@@ -1171,7 +1450,18 @@
       ],
       "decisionRefs": [
         "Q6"
-      ]
+      ],
+      "progress": {
+        "summary": "Current-standard MCP stdio/HTTP and explicit legacy stdio compatibility are implemented. The installed independent Python MCP SDK 1.29.0 passed real Store/Service workflows over the 2025-11-25 compatibility path; modern 2026-07-28 checks are protocol/schema evidence.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "Actual Praxis application integration is unexecuted; a compatible application/configuration path and runtime are still needed.",
+          "Independent SDK evidence does not certify that SDK for the modern protocol or every LLM host."
+        ]
+      }
     },
     {
       "key": "M03",
@@ -1181,14 +1471,17 @@
       "acceptance": [
         "Record actual client/SDK/protocol versions and connection configuration without secrets.",
         "From Praxis and an independent client, discover capabilities, submit an automatically accepted sourced inference within a configured grant without per-item review, query temporal evidence, inspect/correct it and verify denied unauthorized use. Acceptance retains provenance/uncertainty and is not human verification.",
-        "Provide repeatable setup/run instructions and distinguish unavailable-client gaps from passed harness checks."
+        "Provide repeatable setup/run instructions and distinguish unavailable-client gaps from passed harness checks.",
+        "Exercise all three C25/M20 day-one workflows through supported MCP clients and retain source/time/history/coverage fidelity; the installed independent SDK result does not substitute for actual Praxis application qualification."
       ],
       "requirements": [
         "C08",
-        "C24"
+        "C24",
+        "C25"
       ],
       "tests": [
-        "M19"
+        "M19",
+        "M20"
       ],
       "adrs": [],
       "dependsOn": [
@@ -1196,12 +1489,14 @@
         "M02"
       ],
       "parent": "M00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 2,
       "requiresProceed": true,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "MCP and import compatibility",
       "labels": [
@@ -1210,7 +1505,18 @@
       ],
       "decisionRefs": [
         "Q6"
-      ]
+      ],
+      "progress": {
+        "summary": "Current-standard MCP stdio/HTTP and explicit legacy stdio compatibility are implemented. The installed independent Python MCP SDK 1.29.0 passed real Store/Service workflows over the 2025-11-25 compatibility path; modern 2026-07-28 checks are protocol/schema evidence.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "Actual Praxis application integration is unexecuted; a compatible application/configuration path and runtime are still needed.",
+          "Independent SDK evidence does not certify that SDK for the modern protocol or every LLM host."
+        ]
+      }
     },
     {
       "key": "I00",
@@ -1245,18 +1551,31 @@
         "R09"
       ],
       "parent": null,
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 2,
       "requiresProceed": true,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "MCP and import compatibility",
       "labels": [
         "v1",
         "import"
-      ]
+      ],
+      "progress": {
+        "summary": "Markdown/Logseq and inspected legacy-format adapters, manifests, source bounds, repeat/change accounting and backup/rollback are implemented and exercised with synthetic SQLite fixtures.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "No original run inventory, personal archive or original keys were available.",
+          "Encrypted adapters, old journal replay/hash qualification, identity alias handling and other documented fidelity gaps remain incomplete."
+        ]
+      }
     },
     {
       "key": "I01",
@@ -1289,11 +1608,13 @@
         "G05"
       ],
       "parent": "I00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 3,
       "requiresProceed": true,
       "sourceLinks": [
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "MCP and import compatibility",
       "labels": [
@@ -1302,7 +1623,18 @@
       ],
       "decisionRefs": [
         "Q6"
-      ]
+      ],
+      "progress": {
+        "summary": "Markdown/Logseq and inspected legacy-format adapters, manifests, source bounds, repeat/change accounting and backup/rollback are implemented and exercised with synthetic SQLite fixtures.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "No original run inventory, personal archive or original keys were available.",
+          "Encrypted adapters, old journal replay/hash qualification, identity alias handling and other documented fidelity gaps remain incomplete."
+        ]
+      }
     },
     {
       "key": "I02",
@@ -1311,7 +1643,7 @@
       "description": "",
       "acceptance": [
         "Convert the inventoried supported Markdown/Logseq layouts with source references, supported structured facts and bounded unresolved observations.",
-        "Automatically accept inferred additions within configured client/agent grants without per-item human review; retain evidence, actor/model/derivation, uncertainty, conflicts and correction history rather than presenting inference as source-stated or human-verified. Follow the eventual Q7 capture-trigger decision without assuming proactive capture.",
+        "Automatically accept inferred additions within configured client/agent grants without per-item human review; retain evidence, actor/model/derivation, uncertainty, conflicts and correction history rather than presenting inference as source-stated or human-verified. Support proactive capture within configured grants under accepted Q7; importing real sources or adding a separate extraction service remains separately scoped.",
         "Test unchanged reimport, changed content/source versions, duplicate references, removals, malformed/unsupported inputs and source-level accounting with synthetic files."
       ],
       "requirements": [
@@ -1333,12 +1665,14 @@
         "R03"
       ],
       "parent": "I00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 3,
       "requiresProceed": true,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "MCP and import compatibility",
       "labels": [
@@ -1348,7 +1682,18 @@
       "decisionRefs": [
         "Q6",
         "Q7"
-      ]
+      ],
+      "progress": {
+        "summary": "Markdown/Logseq and inspected legacy-format adapters, manifests, source bounds, repeat/change accounting and backup/rollback are implemented and exercised with synthetic SQLite fixtures.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "No original run inventory, personal archive or original keys were available.",
+          "Encrypted adapters, old journal replay/hash qualification, identity alias handling and other documented fidelity gaps remain incomplete."
+        ]
+      }
     },
     {
       "key": "I03",
@@ -1381,18 +1726,31 @@
         "R04"
       ],
       "parent": "I00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 2,
       "requiresProceed": true,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "MCP and import compatibility",
       "labels": [
         "v1",
         "import"
-      ]
+      ],
+      "progress": {
+        "summary": "Markdown/Logseq and inspected legacy-format adapters, manifests, source bounds, repeat/change accounting and backup/rollback are implemented and exercised with synthetic SQLite fixtures.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "No original run inventory, personal archive or original keys were available.",
+          "Encrypted adapters, old journal replay/hash qualification, identity alias handling and other documented fidelity gaps remain incomplete."
+        ]
+      }
     },
     {
       "key": "I04",
@@ -1425,13 +1783,26 @@
       "requiresProceed": true,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "MCP and import compatibility",
       "labels": [
         "v1",
         "import"
-      ]
+      ],
+      "progress": {
+        "summary": "Encrypted legacy inputs are identified and reported unavailable. No decryption compatibility implementation or original-key qualification is claimed; the conditional task remains Backlog.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "No original run inventory, personal archive or original keys were available.",
+          "Encrypted adapters, old journal replay/hash qualification, identity alias handling and other documented fidelity gaps remain incomplete."
+        ]
+      }
     },
     {
       "key": "I05",
@@ -1465,17 +1836,30 @@
         "G06"
       ],
       "parent": "I00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 2,
       "requiresProceed": true,
       "sourceLinks": [
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "MCP and import compatibility",
       "labels": [
         "v1",
         "import"
-      ]
+      ],
+      "progress": {
+        "summary": "Markdown/Logseq and inspected legacy-format adapters, manifests, source bounds, repeat/change accounting and backup/rollback are implemented and exercised with synthetic SQLite fixtures.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "No original run inventory, personal archive or original keys were available.",
+          "Encrypted adapters, old journal replay/hash qualification, identity alias handling and other documented fidelity gaps remain incomplete."
+        ]
+      }
     },
     {
       "key": "Q00",
@@ -1484,7 +1868,7 @@
       "description": "",
       "acceptance": [
         "Complete synthetic semantic/failure qualification, inspectability, comparable performance evidence, runtime packaging and the final acceptance matrix.",
-        "Provide reproducible run/MCP/import/sync/restore instructions with limitations; no current implementation/qualification is presumed passed."
+        "Provide reproducible run/MCP/import/sync/restore instructions with limitations; distinguish measured Linux results from remaining actual Mac, Praxis and full-archive qualification."
       ],
       "requirements": [
         "C01",
@@ -1509,7 +1893,8 @@
         "C20",
         "C21",
         "C23",
-        "C24"
+        "C24",
+        "C25"
       ],
       "tests": [
         "M01",
@@ -1528,24 +1913,44 @@
         "M15",
         "M16",
         "M18",
-        "M19"
+        "M19",
+        "M20"
       ],
       "adrs": [],
       "dependsOn": [
         "R09"
       ],
       "parent": null,
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 2,
       "requiresProceed": true,
       "sourceLinks": [
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "Qualification and usable delivery",
       "labels": [
         "v1",
         "validation"
-      ]
+      ],
+      "progress": {
+        "summary": "Coordinated Linux implementation verification reports 79 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "Actual Mac, actual Praxis and full original-archive qualification remain blocked on runtime/access/source evidence.",
+          "No complete personal-v1 release acceptance, real-data migration or external deployment is claimed."
+        ]
+      }
     },
     {
       "key": "Q01",
@@ -1553,9 +1958,10 @@
       "title": "Run integrated temporal, durability and failure-injection qualification",
       "description": "",
       "acceptance": [
-        "Exercise the Rae/Northstar two-time fixture, correction/retract/invalidate/reinstate, uncertainty, source disputes and fixed-frontier cross-view equivalence. Include an automatically accepted but wrong in-grant inference, denied out-of-grant writes and a later owner correction; acceptance must not be marked human verification. Add Q8 preferred-claim assertions once answered.",
+        "Exercise the Rae/Northstar two-time fixture, correction/retract/invalidate/reinstate, uncertainty, source disputes and fixed-frontier cross-view equivalence. Include an automatically accepted but wrong in-grant inference, denied out-of-grant writes and a later owner correction; acceptance must not be marked human verification. Verify the Q8 preference for an explicit owner correction while conflicting claims, evidence and correction history remain inspectable.",
         "Inject local/sync commit/checkpoint failures, disorder/gaps/duplicate-ID conflicts, restore corruption and stale rejoin; verify acknowledged data, atomic visibility, source lineage and current authority.",
-        "Publish reproducible synthetic fixtures/commands and failures, distinguishing process-kill coverage from physical-power-loss proof."
+        "Publish reproducible synthetic fixtures/commands and failures, distinguishing process-kill coverage from physical-power-loss proof.",
+        "Exercise C25/M20 synthetic project-decision/why, relationship/evidence and last-month-change journeys with source-linked results, owner-correction preference, time/history and incomplete-coverage labels."
       ],
       "requirements": [
         "C01",
@@ -1569,7 +1975,8 @@
         "C19",
         "C20",
         "C21",
-        "C23"
+        "C23",
+        "C25"
       ],
       "tests": [
         "M01",
@@ -1582,7 +1989,8 @@
         "M14",
         "M15",
         "M16",
-        "M18"
+        "M18",
+        "M20"
       ],
       "adrs": [],
       "dependsOn": [
@@ -1591,11 +1999,16 @@
         "S03"
       ],
       "parent": "Q00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 2,
       "requiresProceed": true,
       "sourceLinks": [
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "Qualification and usable delivery",
       "labels": [
@@ -1605,7 +2018,21 @@
       "decisionRefs": [
         "Q6",
         "Q8"
-      ]
+      ],
+      "progress": {
+        "summary": "Coordinated Linux implementation verification reports 79 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "Actual Mac, actual Praxis and full original-archive qualification remain blocked on runtime/access/source evidence.",
+          "No complete personal-v1 release acceptance, real-data migration or external deployment is claimed."
+        ]
+      }
     },
     {
       "key": "Q02",
@@ -1613,9 +2040,9 @@
       "title": "Verify usable inspection, bounds, coverage and safe operational reporting",
       "description": "",
       "acceptance": [
-        "Owner/client can inspect source, actor/model/derivation, actual human review, time/history, conflicts, peer progress and effective personal grants through the v1 interface selected under Q9. Automatic acceptance is visibly distinct from human verification and truth.",
+        "Owner/client can inspect source, actor/model/derivation, actual human review, time/history, conflicts, peer progress and effective personal grants through MCP plus CLI under accepted Q9. Automatic acceptance is visibly distinct from human verification and truth.",
         "Exercise empty/error/offline and partial-history responses, high-degree/bounded traversal, request/payload limits and redacted logs.",
-        "Q9 remains open between MCP/CLI only and a simple browser UI; no rich/cinematic GUI is required. Use the three Q10 day-one tasks once supplied, with honest coverage and actual storage/processing profile."
+        "No browser UI is required in v1. Verify all three Q10 tasks through MCP/CLI: project decisions and why; relationships and evidence; and changes since last month, with honest temporal coverage and the actual storage/processing profile."
       ],
       "requirements": [
         "C08",
@@ -1623,14 +2050,16 @@
         "C15",
         "C16",
         "C21",
-        "C23"
+        "C23",
+        "C25"
       ],
       "tests": [
         "M02",
         "M12",
         "M16",
         "M18",
-        "M19"
+        "M19",
+        "M20"
       ],
       "adrs": [],
       "dependsOn": [
@@ -1641,12 +2070,17 @@
         "M01"
       ],
       "parent": "Q00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 3,
       "requiresProceed": true,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "Qualification and usable delivery",
       "labels": [
@@ -1657,7 +2091,21 @@
         "Q6",
         "Q9",
         "Q10"
-      ]
+      ],
+      "progress": {
+        "summary": "Coordinated Linux implementation verification reports 79 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "Actual Mac, actual Praxis and full original-archive qualification remain blocked on runtime/access/source evidence.",
+          "No complete personal-v1 release acceptance, real-data migration or external deployment is claimed."
+        ]
+      }
     },
     {
       "key": "Q03",
@@ -1682,7 +2130,9 @@
         "M12",
         "M16"
       ],
-      "adrs": [],
+      "adrs": [
+        "A17"
+      ],
       "dependsOn": [
         "R09",
         "G04",
@@ -1690,18 +2140,38 @@
         "Q01"
       ],
       "parent": "Q00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 3,
       "requiresProceed": true,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RESEARCH.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "Qualification and usable delivery",
       "labels": [
         "v1",
         "validation"
-      ]
+      ],
+      "progress": {
+        "summary": "A correctness-checked 1,100-entity/assertion Linux benchmark records repeated reads/writes and single transfer/rebuild/backup/restore/reopen measurements with raw output and source digest. This is measured personal-workload evidence, not an engine comparison or capacity claim.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "Actual Mac, actual Praxis and full original-archive qualification remain blocked on runtime/access/source evidence.",
+          "No complete personal-v1 release acceptance, real-data migration or external deployment is claimed.",
+          "Actual Mac performance, larger stores and repeated cross-network convergence/recovery distributions are not established."
+        ]
+      }
     },
     {
       "key": "Q04",
@@ -1710,7 +2180,7 @@
       "description": "",
       "acceptance": [
         "Provide reproducible installation/run/configuration instructions for the agreed runtimes, with dependencies and any approval requirements explicit.",
-        "Document MCP connections, the v1 owner interface selected under Q9, personal peer admission, offline/reconnect flows, import dry-run/rehearsal, backup/restore, troubleshooting and rollback.",
+        "Document MCP connections, MCP plus CLI, with no browser UI in v1 under Q9, personal peer admission, offline/reconnect flows, import dry-run/rehearsal, backup/restore, troubleshooting and rollback.",
         "Keep examples synthetic, credentials external and real-data/deployment approvals separate; do not provision external infrastructure automatically."
       ],
       "requirements": [
@@ -1729,7 +2199,9 @@
         "M12",
         "M19"
       ],
-      "adrs": [],
+      "adrs": [
+        "A17"
+      ],
       "dependsOn": [
         "R09",
         "S04",
@@ -1737,12 +2209,17 @@
         "I05"
       ],
       "parent": "Q00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 3,
       "requiresProceed": true,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/DECISIONS.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "Qualification and usable delivery",
       "labels": [
@@ -1752,7 +2229,21 @@
       ],
       "decisionRefs": [
         "Q9"
-      ]
+      ],
+      "progress": {
+        "summary": "Coordinated Linux implementation verification reports 79 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "Actual Mac, actual Praxis and full original-archive qualification remain blocked on runtime/access/source evidence.",
+          "No complete personal-v1 release acceptance, real-data migration or external deployment is claimed."
+        ]
+      }
     },
     {
       "key": "Q05",
@@ -1761,7 +2252,7 @@
       "description": "",
       "acceptance": [
         "Link each in-scope C/M requirement to actual passing evidence or a named unresolved gap; deferred M08/M17/P01–P06 remain deferred, not passed.",
-        "Verify real Praxis/independent-client workflows, actual Mac/Linux offline sync, importer compatibility and rollback, scoped automatic inferred-addition acceptance without per-item review, personal authority and representative performance. Prove the three Q10 day-one tasks and the resolved Q7–Q9 behavior with evidence.",
+        "Verify real Praxis/independent-client workflows, actual Mac/Linux offline sync, importer compatibility and rollback, scoped automatic inferred-addition acceptance without per-item review, personal authority and representative performance. Prove all three Q10 tasks (project decisions/why, relationships/evidence, changes since last month) and accepted proactive capture, owner-correction preference with retained conflicts/history, and MCP/CLI-only v1 with evidence.",
         "Reconcile final PRD/ADRs/run instructions and report what was built, passed, remains, and how to use it. Do not declare release acceptance with missing required evidence or infer permission for a live cutover."
       ],
       "requirements": [
@@ -1787,7 +2278,8 @@
         "C20",
         "C21",
         "C23",
-        "C24"
+        "C24",
+        "C25"
       ],
       "tests": [
         "M01",
@@ -1806,7 +2298,8 @@
         "M15",
         "M16",
         "M18",
-        "M19"
+        "M19",
+        "M20"
       ],
       "adrs": [],
       "dependsOn": [
@@ -1820,12 +2313,17 @@
         "S04"
       ],
       "parent": "Q00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 2,
       "requiresProceed": true,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
       ],
       "milestone": "Qualification and usable delivery",
       "labels": [
@@ -1838,7 +2336,21 @@
         "Q8",
         "Q9",
         "Q10"
-      ]
+      ],
+      "progress": {
+        "summary": "Coordinated Linux implementation verification reports 79 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.",
+        "evidenceLinks": [
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+          "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+        ],
+        "remainingGaps": [
+          "Actual Mac, actual Praxis and full original-archive qualification remain blocked on runtime/access/source evidence.",
+          "No complete personal-v1 release acceptance, real-data migration or external deployment is claimed."
+        ]
+      }
     },
     {
       "key": "L01",
@@ -1974,7 +2486,7 @@
       "acceptance": [
         "Evaluate optional vectors/associative retrieval, linked summaries, consolidation, maintained decisions and procedural memory only against useful measured tasks.",
         "Preserve graph/source authority, derivation/review, scoped jobs, budgets, retry semantics and original evidence; use R01–R06 as appropriate.",
-        "Adopt advanced modules only with measured quality/cost/operating benefit. Accepting authorized client-generated inferences is already v1 under Q6; separate extraction engines and consolidation remain later unless explicitly added. Proactive capture versus explicit requests remains Q7, and Q6 alone does not authorize continuous monitoring."
+        "Adopt advanced modules only with measured quality/cost/operating benefit. Accepting authorized client-generated inferences is already v1 under Q6; separate extraction engines and consolidation remain later unless explicitly added. Proactive capture by configured clients/agents within grants is v1 under Q7. It does not authorize arbitrary source monitoring or a separate extraction/background service."
       ],
       "requirements": [],
       "tests": [],
@@ -2056,7 +2568,7 @@
       "title": "Later: richer personal inspection and graphical exploration",
       "description": "",
       "acceptance": [
-        "Identify advanced owner workflows beyond the v1 interface selected under Q9. Whether v1 includes a simple browser UI remains an open Q9 choice; this later item must not decide it.",
+        "Identify later owner workflows beyond accepted MCP plus CLI v1. Browser UI is excluded from v1 under Q9 and may be evaluated here only under separately agreed future scope.",
         "Expose evidence/history/conflicts/authority accessibly without implying a visual graph is needed for v1 acceptance.",
         "Keep advanced visual/cinematic or automatic identity features separate from current source-linked inspection requirements."
       ],
@@ -2360,6 +2872,13 @@
         "Q00",
         "Q04",
         "Q05"
+      ],
+      "C25": [
+        "M03",
+        "Q00",
+        "Q01",
+        "Q02",
+        "Q05"
       ]
     },
     "tests": {
@@ -2565,6 +3084,13 @@
         "Q02",
         "Q04",
         "Q05"
+      ],
+      "M20": [
+        "M03",
+        "Q00",
+        "Q01",
+        "Q02",
+        "Q05"
       ]
     },
     "laterEvolution": {
@@ -2607,6 +3133,96 @@
         "L04",
         "L06"
       ]
+    },
+    "adrs": {
+      "A01": [],
+      "A02": [
+        "R06",
+        "G01",
+        "G02"
+      ],
+      "A03": [
+        "R03",
+        "R04",
+        "G01",
+        "I00"
+      ],
+      "A04": [
+        "R05",
+        "G03"
+      ],
+      "A05": [
+        "R06",
+        "G05",
+        "L02"
+      ],
+      "A06": [
+        "R06",
+        "G05",
+        "S01"
+      ],
+      "A07": [
+        "L04"
+      ],
+      "A08": [
+        "L04"
+      ],
+      "A09": [
+        "R05",
+        "R06",
+        "G02",
+        "G03",
+        "S01",
+        "S02",
+        "L03"
+      ],
+      "A10": [
+        "R04",
+        "R06",
+        "I00"
+      ],
+      "A11": [
+        "L01",
+        "L02",
+        "L03",
+        "L05"
+      ],
+      "A12": [
+        "L01"
+      ],
+      "A13": [
+        "L02"
+      ],
+      "A14": [
+        "L01",
+        "L02"
+      ],
+      "A15": [
+        "R03",
+        "R06",
+        "G05",
+        "L04",
+        "L06"
+      ],
+      "A16": [
+        "R07",
+        "M00",
+        "M01"
+      ],
+      "A17": [
+        "R05",
+        "R06",
+        "G00",
+        "G03",
+        "G04",
+        "S00",
+        "S01",
+        "S02",
+        "M00",
+        "M01",
+        "Q03",
+        "Q04"
+      ]
     }
   },
   "teamCreationStatus": "Paused by owner. No Linear team, projects or issues were created. Resume external setup only when requested; Linear is not a product/readiness prerequisite.",
@@ -2634,47 +3250,80 @@
       ]
     },
     "Q7": {
-      "status": "pending_owner_answer",
-      "summary": "Should configured clients proactively capture useful knowledge or write only on explicit requests? Q6 does not select capture triggers or authorize a separate extraction/background service.",
+      "status": "accepted",
+      "summary": "Configured clients/agents proactively capture useful knowledge within their grants. This does not authorize arbitrary source access, widened grants, unapproved continuous monitoring or a separate extraction service.",
       "trackedBy": [
         "R06",
         "R08",
         "G05",
         "M01",
         "I02"
-      ]
+      ],
+      "acceptedDate": "2026-11-07"
     },
     "Q8": {
-      "status": "pending_owner_answer",
-      "summary": "How should an explicit owner correction be preferred when competing claims remain, versus returning a dispute without a preferred claim? Preserve alternatives, provenance and correction history under either choice.",
+      "status": "accepted",
+      "summary": "Prefer an explicit owner correction in answers while preserving conflicting claims, evidence, concurrent branches and history. An authorized, attributed resolution references heads considered; preference is neither destructive overwrite nor proof of truth.",
       "trackedBy": [
         "R06",
         "R08",
         "G02",
         "S03",
         "Q01"
-      ]
+      ],
+      "acceptedDate": "2026-11-07"
     },
     "Q9": {
-      "status": "pending_owner_answer",
-      "summary": "Should the v1 owner interface use MCP/CLI only or include a simple browser UI? Rich graphical/cinematic exploration remains separate later work.",
+      "status": "accepted",
+      "summary": "MCP plus CLI first; no browser UI in v1. Richer graphical exploration remains later.",
       "trackedBy": [
         "R06",
         "R08",
         "Q02",
         "Q04",
         "L06"
-      ]
+      ],
+      "acceptedDate": "2026-11-07"
     },
     "Q10": {
-      "status": "pending_owner_answer",
-      "summary": "Which three day-one user tasks should v1 prove end to end? Use the answer to make usefulness and acceptance scenarios concrete.",
+      "status": "accepted",
+      "summary": "Prove all three day-one workflows: retrieve project decisions and why; find relationships and supporting evidence; explain changes since last month. Use observable synthetic end-to-end scenarios.",
       "trackedBy": [
         "R06",
         "R08",
         "Q02",
         "Q05"
-      ]
+      ],
+      "acceptedDate": "2026-11-07"
     }
+  },
+  "implementationAuthorization": {
+    "status": "authorized",
+    "date": "2026-11-07",
+    "ownerInstruction": "Proceed",
+    "trackedBy": "R09",
+    "scope": "Accepted personal v1 including Q6–Q10",
+    "readinessVerified": false,
+    "qualificationPassed": false,
+    "note": "Authorization is recorded independently of unfinished R06/R08 contracts/readiness and evidence gaps. Live-data use, installations, external deployments/provisioning, credentials/permissions, agreements and private-data exposure retain separate approval boundaries. Linear remains paused."
+  },
+  "implementationEvidence": {
+    "date": "2026-11-07",
+    "platform": "Linux",
+    "syntheticTestsPassed": 79,
+    "summary": "Core, MCP, import, direct synchronization and CLI implemented; current coordinated Linux run reports 79 passing tests including an independent real MCP SDK client. This aggregate count is not a claim that all personal-v1 acceptance requirements passed.",
+    "evidenceLinks": [
+      "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+      "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+      "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+      "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+      "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md"
+    ],
+    "remainingGaps": [
+      "Actual owner Mac runtime/filesystem and Mac/Linux cross-machine qualification.",
+      "Actual Praxis application integration and compatible configuration path.",
+      "Complete original legacy-run inventory/archive fidelity and encrypted-input/key qualification."
+    ],
+    "releaseAccepted": false
   }
 }

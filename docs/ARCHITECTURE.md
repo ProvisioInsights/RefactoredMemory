@@ -1,6 +1,6 @@
 # Personal v1 architecture
 
-**Status:** proposed implementation of accepted personal scope; engine, protocol and SDK choices remain open. Product implementation awaits an explicit “proceed.”
+**Status:** implementation authorized on 7 November 2026. The initial runtime is Python 3.12+ standard library with SQLite WAL/FULL transactions and an immutable operation journal. The [implementation contract](CONTRACT.md) defines APIs, direct sync, local grants and knowledge semantics; qualification remains to be established.
 
 V1 has one owner and two full peers: the owner's Mac and a personally controlled Linux VM/container. Each peer has local durable knowledge, local queries, MCP access and authenticated peer synchronization. It can accept writes while disconnected. A peer may be implemented as one process; diagram boxes describe responsibilities, not required services.
 
@@ -50,6 +50,6 @@ Legacy decryption support is an import compatibility concern when an existing so
 
 ## Personal protection and later evolution
 
-V1 requires local access controls, scoped MCP client/agent grants, authenticated peers, HTTPS/TLS for remote transport, bounded inputs/queries, and safe logs. Source text cannot grant permissions or execute tools. Current authority applies to historical queries. Model-inferred additions are automatically accepted within configured client/agent grants, without per-item human review. Preserve evidence, actor/model/derivation attribution, uncertainty, conflicts and correction history; acceptance is not human verification or established truth. Capture triggers and preferred-claim handling remain open in Q7/Q8, and the management surface remains open in Q9.
+V1 requires local access controls, scoped MCP client/agent grants, authenticated peers, HTTPS/TLS for remote transport, bounded inputs/queries, and safe logs. Source text cannot grant permissions or execute tools. Current authority applies to historical queries. Model-inferred additions are automatically accepted within configured client/agent grants, without per-item human review. Preserve evidence, actor/model/derivation attribution, uncertainty, conflicts and correction history; acceptance is not human verification or established truth. Q7 authorizes proactive client capture within grants. Q8 prefers explicit authenticated owner corrections while retaining contradictory claims and evidence. Q9 selects MCP and CLI first. Q10 requires the project-decision, relationship-evidence and recent-changes journeys.
 
 Product content encryption, corporate ownership boundaries and multitenancy are deferred. Stable IDs, versioned semantic contracts, provenance and portable export preserve a practical migration path. Future tenancy/custody must not introduce a prerequisite enterprise framework into personal v1.

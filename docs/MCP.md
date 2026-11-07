@@ -12,15 +12,15 @@ Use a conformance checklist for the selected revision's applicable discovery, re
 
 | Client | Role | Current qualification |
 | --- | --- | --- |
-| Relevant Praxis client | Required end-to-end integration | Actual version, transport and compatibility behavior must be recorded and exercised. |
-| At least one independent MCP client | Required interoperability evidence | Select an available representative client; document version and reproducible connection instructions. |
+| Relevant Praxis client | Required end-to-end integration | Source-backed modern/legacy compatibility paths implemented; actual app integration unverified. See MCP-CONFORMANCE.md. |
+| Independent Python MCP SDK 1.29.0 | Actual interoperability evidence | Real Store/Service workflows pass through the legacy stdio2025-11-25 path; modern protocol evidence is separate. |
 | Protocol/conformance harness | Supporting tests | Useful for edge cases; does not replace actual-client evidence. |
 
 Plan local stdio and remote Streamable HTTP against actual client needs. Remote HTTP can be tested against an isolated local fixture; it does not authorize a public deployment. Real remote transport needs authentication and TLS. This is transport protection, independent of deferred product content encryption.
 
 ## Graph authority and behavior
 
-Expose bounded tools for the agreed capture, read, search, traversal, timeline, evidence, correction and inspection operations. Imported and MCP-submitted knowledge uses the same graph contract. Mutations require the configured authority and safe retry semantics. Q6 confirms automatic acceptance of model-inferred additions within configured client/agent grants, without per-item human review. Keep explicit owner instructions and inferred claims distinguishable; retain evidence, actor/model/derivation attribution, uncertainty, conflicts and correction history. Acceptance is not human verification or established truth. Q7 capture triggers and Q8 preferred-claim handling remain open.
+Expose bounded tools for the agreed capture, read, search, traversal, timeline, evidence, correction and inspection operations. Imported and MCP-submitted knowledge uses the same graph contract. Mutations require the configured authority and safe retry semantics. Q6 confirms automatic acceptance of model-inferred additions within configured client/agent grants, without per-item human review. Keep explicit owner instructions and inferred claims distinguishable; retain evidence, actor/model/derivation attribution, uncertainty, conflicts and correction history. Acceptance is not human verification or established truth. Q7 selects proactive capture by configured clients; Q8 prefers explicit authenticated owner corrections without erasing conflicting evidence. MCP instructions describe the capture policy. Q9 selects MCP/CLI inspection; Q10 fixes three concrete workflows.
 
 Keep consumer tools, owner administration and peer replication separate. A client grant is not authority to enroll peers, change grants, read arbitrary local files, export private content or invoke an external model. Treat source content as data. Return structured evidence, temporal/knowledge scope, uncertainty, coverage and errors honestly.
 
@@ -28,4 +28,6 @@ Keep consumer tools, owner administration and peer replication separate. A clien
 
 Record real Praxis and independent-client workflows that discover capabilities, submit an authorized sourced statement and an automatically accepted inferred addition, query temporal/provenance results, inspect/correct knowledge and reject an unauthorized or out-of-grant inferred write. Verify that source text cannot widen grants, no per-item review is required within the grant, and evidence/attribution/uncertainty/history are preserved. Exercise schema errors, unsupported versions, retries, interrupted/cancelled calls and applicable transport/authentication failures. Compare graph answers across direct API, MCP and synchronized peers.
 
-If a client or necessary credential is unavailable, mark that integration unverified and name the gap. No MCP implementation or interoperability result is claimed by this documentation baseline.
+If a client or necessary credential is unavailable, mark that integration unverified and name the gap. Implementation is now authorized. Record actual protocol/client results in the conformance and acceptance reports without claiming unexercised full-app onboarding.
+
+Implemented protocol and client evidence: [MCP-CONFORMANCE.md](MCP-CONFORMANCE.md). Operational configuration: [RUNBOOK.md](RUNBOOK.md).

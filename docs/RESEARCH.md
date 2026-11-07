@@ -18,7 +18,7 @@ The direct MCP website was unavailable from the selected environment during the 
 
 At 110,000 assertions, the supplied M5 Max experiment reports Atlas median selective-read latency of **0.6814 ms current / 0.6845 ms historical**, and indexed SQLite **0.0377 / 0.0320 ms**. It reports 1,200 matching assertion-content comparisons and six reopen/count/idempotent-retry checks.
 
-These are attributed supplied results. SQLite omitted coverage metadata and the full contract. Equivalent writes, concurrency, synchronization, failure recovery and scale-out were not compared. Reopen/retry checks are not crash/power-loss qualification. Keep this test distinct from the standalone SQLite and JavaScript reference experiments. SQLite remains a candidate; no engine is selected.
+These are attributed supplied results. SQLite omitted coverage metadata and the full contract. Equivalent writes, concurrency, synchronization, failure recovery and scale-out were not compared. Reopen/retry checks are not crash/power-loss qualification. Keep this test distinct from the standalone SQLite and JavaScript reference experiments. The initial implementation selects SQLite for its transactional durability, portability, backup support and small operational footprint; these historical measurements do not establish that selection as a performance winner.
 
 ## Reconciled contradictions
 
@@ -38,4 +38,13 @@ Inventory the actual available LivingAtlas source generations, formats and outpu
 
 Memory research from Apple, OpenAI, Anthropic and others may motivate later retrieval/consolidation experiments. Include source attribution, stale/corrected knowledge, evaluation quality and total maintenance cost. Do not select a mechanism solely from provider claims or make enterprise/privacy research completion a prerequisite for personal v1.
 
-Q6 now confirms automatic acceptance of model-inferred additions within configured client/agent grants, without per-item human review; source/evidence, attribution, uncertainty, conflicts and correction history remain required. Acceptance is not human verification or established truth. Q7–Q10 remain open on capture triggers, preferred claims, management surface and concrete day-one tasks. The documentation set is a reconciled scope baseline, not a completed architecture decision gate. No product code, deployments, keys, real-data ingestion or migration were changed by this update.
+Q6 now confirms automatic acceptance of model-inferred additions within configured client/agent grants, without per-item human review; source/evidence, attribution, uncertainty, conflicts and correction history remain required. Acceptance is not human verification or established truth. Q7–Q10 are now accepted: proactive capture, preferred explicit owner corrections with conflicts retained, MCP/CLI first, and the three day-one tasks. The owner explicitly said “Proceed” on 7 November 2026. Implementation and synthetic qualification are authorized; deployments, live data and credential changes remain separately controlled. See CONTRACT.md for selected engineering decisions and forthcoming evidence for their limits.
+
+
+## Implementation evidence added after authorization
+
+The initial engine now implements the complete personal operation path in Python/SQLite, including transactional admission, source-linked temporal query, direct signed synchronization, and verified replay recovery. The synthetic benchmark measures this actual implementation and records its source digest and raw samples; see [acceptance evidence](ACCEPTANCE-RESULTS.md). It is not a comparative engine experiment.
+
+The current legacy-code inventory identified old plaintext/encrypted object envelopes and journal/snapshot forms, plus newer committed assertion and identity segment formats. [Import formats](IMPORT-FORMATS.md) records which can be structurally converted and which remain preserved-only or unavailable. Original personal archives and their keys were not used.
+
+Official MCP latest-stable requirements were rechecked. An already installed independent Python SDK exercised the real server without an installation. Praxis source inspection identified a generic stdio route in an earlier client and provider restrictions in the newer lifecycle; actual installed Praxis use remains unverified. A private review proposal for that client is kept outside this public repository.
