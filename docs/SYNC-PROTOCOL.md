@@ -1,5 +1,7 @@
 # Direct personal-peer synchronization
 
+The accepted NAS extension adds a bounded automatic runner, persisted retry deadlines, exclusive local runner lock and capacity-paused behavior. Those additions are planned in [NAS-CONTRACT.md](NAS-CONTRACT.md); existing exchange semantics below remain applicable.
+
 The v1 exchange replicates immutable, signed graph operation groups between two admitted personal peers. Each has a separate database, local offline writes and local knowledge history. The exchange does not copy SQLite files, choose a wall-clock winner or provide a transitive relay mesh.
 
 `refactoredmemory.sync.sync_once(store, url, token)` performs bounded push/pull exchanges. The server calls `exchange(store, payload, peer_id)` only after a dedicated peer bearer credential has resolved to an admitted peer ID. The credential binding is local configuration; a request body cannot select its own authority. The Store verifies operation origins and dependencies and makes received groups durable before acknowledging them.

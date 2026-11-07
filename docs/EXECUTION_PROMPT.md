@@ -13,6 +13,14 @@ Lead RefactoredMemory from an evidence-based architecture review through an agre
 - Linear setup is paused at my request. Use the documentation index in `docs/README.md` and maintain the prepared backlog under `docs/tracking/` meanwhile. Resume external tracking only when I ask; Linear availability is not a documentation or implementation prerequisite. Preserve the recorded implementation authorization and the separate approval boundaries for real data, deployment, installation and permissions.
 - Implementation is authorized for the agreed personal-v1 scope. Complete remaining source analysis and contract details alongside independent implementation work, using bounded synthetic experiments where needed and recording their purpose, setup and limits. Research prototypes never count as delivered functionality. Do not mark incomplete evidence, readiness or qualification checks as passed because I said “Proceed.”
 
+## Latest accepted deployment and build instruction
+
+The owner explicitly requested all documentation be reconciled and the complete NAS-first extension built and tested locally. Use the RS822+ NAS as the normally available Linux MCP peer, with the Mac as a complete independently writable peer. DSM and other NAS services remain on the main LAN. Isolate only the workload with its own network identity/VLAN, preferably a small Linux VM running hardened containers. Do not change either Praxis repository. Keep Cloudflare as optional outbound tunnel transport; its storage/compute peer, selective cloud cache and broader mesh are stretch work, not current implementation.
+
+Support OpenAI and Anthropic apps and APIs with independently revocable whole-personal-store agent grants. Add the maintained-AS OAuth resource profile, separate public MCP/private sync listeners, bounded automatic resumable sync, low-space guards, secure deployment artifacts, and private VPN/SSH maintenance instructions in `docs/NAS-CONTRACT.md`. Existing automatic inferred acceptance and explicit owner-correction preference remain. No custom password or OAuth-code issuer is needed. Pin and test actual protocol/dependency versions, including explicit legacy HTTP compatibility where required.
+
+Finish canonical docs and reconcile Pages before new production code. Then implement coordinated work without repeating the proceed question. Use synthetic local Linux/container tests and available macOS CI. Do not relabel them as tests on the owner's actual Mac/NAS or real hosted apps. The owner will provide NAS access later. No real data, NAS credentials, live tunnel, firewall changes or external deployment is authorized merely by completing local tests. Persistent maintenance access should use a restricted private-VPN SSH identity configured securely; it does not imply an unattended agent.
+
 ## Sources to inspect
 
 Read the accessible primary sources and relevant repository history:

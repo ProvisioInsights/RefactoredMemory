@@ -1,5 +1,7 @@
 # MCP implementation and qualification
 
+The NAS extension in [NAS-CONTRACT.md](NAS-CONTRACT.md) is authorized. OAuth and legacy HTTP qualification will be added after implementation; the existing results below remain evidence for the earlier baseline, not proof of new behavior.
+
 Verified 7 November 2026 against the official specification at commit
 [`cf59bb0d8b43e711420f5f7313aa6cca3f1e1898`](https://github.com/modelcontextprotocol/modelcontextprotocol/tree/cf59bb0d8b43e711420f5f7313aa6cca3f1e1898).
 The official documentation configuration identifies **2026-07-28** as the latest

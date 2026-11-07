@@ -1,5 +1,7 @@
 # Import formats and migration fidelity
 
+NAS deployment keeps live SQLite data on a dedicated local volume, never an SMB/NFS-mounted database. Ingestion remains local and source-set approval remains separate. Capacity refusal must preserve the import checkpoint and originals; see [NAS-CONTRACT.md](NAS-CONTRACT.md).
+
 The importer reads only an explicitly supplied root and never modifies its source files. Planning is read-only; applying a plan requires a consistent destination backup, checks that source hashes still match, and submits bounded operations through the graph contract. Use an isolated destination for a first migration. Development and verification use synthetic inputs only.
 
 ## Evidence inventory

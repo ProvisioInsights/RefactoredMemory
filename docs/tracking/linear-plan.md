@@ -1142,3 +1142,56 @@ Identifiers preserve source-document scope. Mapping and partial local/hosted tes
 | E10 | L02 |
 | E11 | L02, L05 |
 | E12 | L04, L06 |
+
+## NAS-first extension
+
+The owner authorized documentation reconciliation, implementation and local tests. Actual NAS access remains pending. Cloudflare is tunnel-only; cloud storage and partial replication are deferred.
+
+### N00 — NAS-first deployable personal peer
+
+Requirements: C26, C27, C28, C29, C30. Tests: M21, M22, M23, M24, M25. ADRs: A18, A19, A20, A21.
+
+- Reconcile docs before production changes; preserve existing graph and independent writable Mac peer.
+- Deliver isolated NAS profile, maintained-AS OAuth, automatic sync and local evidence. Actual NAS deployment remains pending access.
+
+### N01 — OAuth resource authorization and client protocol compatibility
+
+Requirements: C27, C30. Tests: M22, M25. ADRs: A19.
+
+- Validate pinned issuer/audience/RS256/JWKS and access-token lifetime; map exact subject/client to current local agent grants.
+- Test independent app/API profiles, public discovery/challenges, current revocation and explicit legacy HTTP compatibility; never grant owner or peer authority.
+
+### N02 — Harden NAS containers and separate network listeners
+
+Requirements: C26. Tests: M21. ADRs: A18.
+
+- Build non-root read-only image with dedicated data volume and separate public MCP/private sync TLS listeners.
+- Supply isolated-network and optional tunnel profiles; prove synthetic allowed/denied paths and keep NAS VLAN/IPv6 verification separate.
+
+### N03 — Automatic sync with durable backoff and capacity refusal
+
+Requirements: C28. Tests: M23. ADRs: A20.
+
+- Bound each sync cycle, persist retry deadlines, honor Retry-After and avoid multiple local runners.
+- Pause on capacity/permanent errors without false acknowledgement; verify cancellation, resume and no duplicate semantic writes.
+
+### N04 — Private maintenance access and operator runbook
+
+Requirements: C29. Tests: M24. ADRs: A21.
+
+- Use private VPN and host-key-verified dedicated SSH identity for the workload VM.
+- Exclude DSM admin, Docker group and unrestricted sudo; describe explicit revocation and fixed privileged helper boundaries.
+
+### N05 — Local NAS-profile integration qualification
+
+Requirements: C26, C27, C28, C29, C30. Tests: M21, M22, M23, M24, M25. ADRs: A18, A19, A20, A21.
+
+- Run synthetic JWT/maintained-AS, network separation, container, sync/recovery and capacity tests in available Linux/Docker.
+- Record actual images, commands, results and optional-dependency coverage; distinguish macOS CI from the owner Mac.
+
+### N06 — Qualify actual NAS, Mac and hosted client connections
+
+Requirements: C26, C27, C28, C29, C30. Tests: M21, M22, M23, M24, M25. ADRs: A18, A19, A20, A21.
+
+- When the owner supplies access, inspect real DSM/packages/RAM, VLAN/IPv6/host rules and local storage; test intended blocked destinations.
+- Verify actual Mac/NAS sync and hosted app/API connections using approved synthetic fixtures; live personal data and publication remain separately authorized.

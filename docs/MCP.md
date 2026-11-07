@@ -1,5 +1,7 @@
 # Required MCP integration
 
+The NAS extension adds a maintained-AS OAuth resource profile, independent whole-store agent grants, separate public MCP/private sync listeners and explicit legacy HTTP compatibility. The implementation/evidence below records the prior bearer baseline until new results are published. See [NAS-CONTRACT.md](NAS-CONTRACT.md).
+
 MCP is a v1 release requirement for Praxis2 and other MCP-capable LLM applications. An LLM uses the store through its host/client/runtime; a bare model is not assumed to implement MCP.
 
 ## Specification baseline

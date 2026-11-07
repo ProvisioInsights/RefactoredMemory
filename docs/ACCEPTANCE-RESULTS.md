@@ -1,5 +1,7 @@
 # Personal v1 acceptance evidence
 
+This report is the earlier personal-core baseline. The NAS/OAuth/automatic-sync extension is now authorized in [NAS-CONTRACT.md](NAS-CONTRACT.md); new acceptance results will be recorded separately after execution.
+
 All tests, examples and benchmarks in this record use synthetic data. Executed Linux checks are recorded separately from requirements that still need the owner's Mac, actual application access or original legacy artifacts. Passing a synthetic fixture does not establish those unavailable results.
 
 ## Combined final Linux run

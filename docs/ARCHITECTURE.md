@@ -1,30 +1,26 @@
 # Personal v1 architecture
 
-**Status:** implementation authorized on 7 November 2026. The initial runtime is Python 3.12+ standard library with SQLite WAL/FULL transactions and an immutable operation journal. The [implementation contract](CONTRACT.md) defines APIs, direct sync, local grants and knowledge semantics; synthetic and hosted-OS results are recorded in [acceptance evidence](ACCEPTANCE-RESULTS.md), with owner-device and installed-Praxis2 qualification still open.
+**Accepted deployment direction, 7 November 2026:** a normally available NAS-hosted Linux peer plus an independently writable Mac peer. The existing graph engine is implemented; the NAS/OAuth/automatic-sync extension is authorized and defined in [NAS-CONTRACT.md](NAS-CONTRACT.md). Its new test results must be recorded separately from the earlier baseline.
 
-V1 has one owner and two full peers: the owner's Mac and a personally controlled Linux VM/container. Each peer has local durable knowledge, local queries, MCP access and authenticated peer synchronization. It can accept writes while disconnected. A peer may be implemented as one process; diagram boxes describe responsibilities, not required services.
+DSM and existing NAS services remain on the main LAN. The workload gets a separate identity and isolated VLAN, preferably in a small Linux VM with hardened containers. Public MCP and private synchronization use separate TLS listeners over the same local Store. Cloudflare is an optional outbound tunnel only. It does not hold the knowledge database, and there is no Workers/Durable Objects data port in this release. Primary endpoint does not confer sole-writer or owner authority.
 
 ```mermaid
 flowchart TB
-    C["Praxis2 and another MCP client"] -->|"required MCP"| A
-    F["Markdown / Logseq"] --> IMP["Required source importer and legacy migration"]
-    L["Prior LivingAtlas data"] --> IMP
-    IMP -->|"authorized, source-linked operations"| A
-    subgraph MAC["Personal peer A — owner's Mac"]
-        A["MCP and owner authorization"] --> G["Temporal graph and correction lineage"]
-        G --> D["Durable history, sources and sync journal"]
-        D --> I["Rebuildable query indexes"]
-        A --> Q["Time, graph, source and history queries"]
-        Q --> G
-        Q --> I
-        G <--> S["Personal peer admission and synchronization"]
+    C["Praxis2, ChatGPT, Claude and API clients"] -->|"HTTPS + per-client OAuth grant"| T["Optional Cloudflare Tunnel - transport only"]
+    T --> N
+    subgraph NAS["RS822+ workload VM or hardened container - isolated VLAN"]
+        N["Public MCP-only TLS listener"] --> A["Current local agent-grant authorization"]
+        A --> G["Personal temporal graph, evidence and history"]
+        G --> D["Dedicated local SQLite data volume"]
+        S["Private peer-sync TLS listener"] <--> G
     end
-    S <-->|"authenticated operations and dependencies"| B["Personal peer B — Linux VM/container<br/>same contract; independent local writes and queries"]
-    C -->|"configured MCP connection"| B
-    W["Optional later consolidation"] -.->|"scoped proposals"| A
+    M["Mac full peer - local MCP and offline writes"] <-->|"Bounded automatic authenticated sync"| S
+    F["Approved Markdown / Logseq / LivingAtlas inputs"] -->|"Local planning and import"| M
+    O["Private VPN + dedicated SSH account"] -->|"Scoped maintenance only"| NAS
+    X["Later: Cloudflare storage peer, selective cache, mesh"]
 ```
 
-The [editable diagram](diagrams/personal-v1.mmd) describes the same required topology. Public-safe diagrams do not contain personal endpoints, credentials or source paths.
+The [editable diagram](diagrams/personal-v1.mmd) contains no private endpoint or secret. OAuth uses a maintained authorization server with a strictly validated resource-server adapter and current local agent grants. Full personal-store read access is authorized independently for each app/API connection. A container bridge alone is not proof of LAN isolation; effective VLAN, host and IPv6 rules must be verified on the NAS. See [deployment](NAS-DEPLOYMENT.md) and [maintenance access](REMOTE-ADMIN.md).
 
 ## Knowledge contract
 

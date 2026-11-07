@@ -17,6 +17,9 @@
 | [Research](RESEARCH.md) | Source ledger, supplied measurements, limitations and outstanding research. | Public-safe summary; full historical private evidence remains in its authorized sources. |
 | [Execution prompt](EXECUTION_PROMPT.md) | Instructions for continuing the authorized implementation and qualification. | Matches accepted requirements and the explicit Proceed already received. |
 | [Implementation contract](CONTRACT.md) | Shared operation, temporal, authority and recovery APIs. | Implemented contract; limits remain explicit. |
+| [NAS contract](NAS-CONTRACT.md) | Accepted NAS/OAuth/automatic-sync extension. | Governs the new build; evidence remains separate from its approval. |
+| [NAS deployment](NAS-DEPLOYMENT.md) | Isolated VM/container, tunnel and TLS deployment. | Device configuration requires actual NAS qualification. |
+| [Maintenance access](REMOTE-ADMIN.md) | Private VPN and restricted SSH identity. | No broad DSM or Docker administrator grant. |
 | [Runbook](RUNBOOK.md) | No-install CLI, MCP setup, two peers and recovery. | Executable commands with synthetic-first guidance. |
 | [Acceptance evidence](ACCEPTANCE-RESULTS.md) | Actual test and benchmark results plus remaining qualification. | Distinguishes local Linux/SDK and hosted macOS/Ubuntu checks from unqualified owner-device/Praxis2/original-archive checks. |
 | [MCP conformance](MCP-CONFORMANCE.md) | Latest protocol and actual client evidence. | Modern protocol checks plus independent legacy SDK integration; installed Praxis2 unverified. |

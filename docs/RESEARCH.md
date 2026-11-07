@@ -1,5 +1,7 @@
 # Research, evidence and scope reconciliation
 
+The accepted deployment now uses the RS822+ as the normal Linux endpoint, with the Mac as another full peer. Cloudflare storage is deferred; optional Tunnel transport avoids importing the database into Workers/Durable Objects. Docker isolation is not proof of LAN isolation; NAS-specific VLAN/IPv6/host tests and current package/resource checks remain necessary. OAuth/app account eligibility remains unverified until a live client is exercised. See [NAS-CONTRACT.md](NAS-CONTRACT.md).
+
 Updated 7 November 2026. This is a public-safe research ledger and release-scope reconciliation. Keep confidential evidence and original private documents in their authorized source systems. No private source excerpts, source paths, credentials or personal datasets are published here.
 
 ## Evidence inspected

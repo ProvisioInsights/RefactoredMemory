@@ -39,3 +39,6 @@ Planning keys such as `R03` and `G01` are internal references, not issued Linear
 ## When external tracking is resumed
 
 Recheck the intended workspace and existing team/projects/issues before creating anything. Reuse matching objects, map planning keys to actual IDs/URLs, verify dependencies and coverage, and only then mark external setup complete. Preserve the recorded implementation authorization, deferred scope and evidence limits. Do not begin this process until requested.
+
+
+NAS-first extension N00–N06 is authorized: isolated RS822+ workload as the primary MCP endpoint, full writable Mac peer, maintained-AS OAuth, separate sync authority, bounded automatic sync and private VPN/SSH maintenance. DSM remains on the main LAN. Cloudflare is optional tunnel transport only. New evidence is pending; actual NAS access is not yet available. The backlog now has 51 items (10 research, 35 v1, 6 later).

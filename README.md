@@ -4,6 +4,8 @@ RefactoredMemory v1 is a single owner's personal temporal knowledge store, acces
 
 **Status: personal-v1 implementation, under qualification.** The temporal graph, MCP server, CLI, Markdown/Logseq and legacy adapters, direct offline peer sync, and verified backup/recovery are implemented. Synthetic Linux tests, hosted Ubuntu/macOS CI and an actual independent MCP SDK pass. The owner's Mac and installed Praxis2 application still require end-to-end qualification; legacy archive fidelity limits are explicit. No changes are made to either Praxis repository. HTTP uses preconfigured bearer grants; OAuth-only hosts are not yet supported. See [acceptance evidence](docs/ACCEPTANCE-RESULTS.md) and the [runbook](docs/RUNBOOK.md).
 
+The accepted deployment target is now a normally available NAS-hosted Linux peer plus the Mac peer, with Cloudflare as optional tunnel transport only. The new OAuth, deployment hardening and automatic-sync implementation is governed by [the NAS contract](docs/NAS-CONTRACT.md); new qualification results will be recorded separately.
+
 Multitenancy, corporate-versus-personal ownership domains, multiple organizations, and product-level content encryption are later phases. Basic authentication, scoped client/peer authority, secure remote transport, safe local access and data hygiene remain v1 requirements.
 
 ## Run it

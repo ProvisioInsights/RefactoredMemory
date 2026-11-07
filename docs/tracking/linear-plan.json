@@ -51,7 +51,7 @@
       "key": "v1",
       "name": "RefactoredMemory — Personal knowledge store v1",
       "state": "In Progress",
-      "summary": "One owner; Mac + Linux offline writes/sync; required MCP; Markdown/Logseq and LivingAtlas migration.",
+      "summary": "NAS-primary endpoint plus independently writable Mac; required MCP/OAuth, automatic sync and source-preserving import.",
       "description": "Coordinated personal-v1 implementation is authorized and implemented core/MCP/import/sync/CLI streams are In Progress against their full criteria. The local Linux run passed all 86 synthetic tests, including independent MCP SDK workflows. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2. Full original-archive qualification also remains incomplete. Praxis2 is the confirmed target; neither Praxis repository may be modified. Corporate tenancy, product content encryption, transitive mesh and browser UI are excluded. Live imports, keys, installations, credentials/permissions and external deployments retain separate approval requirements.",
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md",
@@ -2633,11 +2633,291 @@
       "decisionRefs": [
         "Q9"
       ]
+    },
+    {
+      "key": "N00",
+      "project": "v1",
+      "title": "NAS-first deployable personal peer",
+      "description": "Authorized NAS extension; implementation evidence pending at the documentation baseline.",
+      "acceptance": [
+        "Reconcile docs before production changes; preserve existing graph and independent writable Mac peer.",
+        "Deliver isolated NAS profile, maintained-AS OAuth, automatic sync and local evidence. Actual NAS deployment remains pending access."
+      ],
+      "requirements": [
+        "C26",
+        "C27",
+        "C28",
+        "C29",
+        "C30"
+      ],
+      "tests": [
+        "M21",
+        "M22",
+        "M23",
+        "M24",
+        "M25"
+      ],
+      "adrs": [
+        "A18",
+        "A19",
+        "A20",
+        "A21"
+      ],
+      "dependsOn": [
+        "R09"
+      ],
+      "parent": null,
+      "state": "In Progress",
+      "priority": 2,
+      "requiresProceed": false,
+      "sourceLinks": [
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md"
+      ],
+      "milestone": "NAS deployment and local qualification",
+      "labels": [
+        "v1"
+      ],
+      "trackingStatus": "repository_only",
+      "requiresResumeRequest": false
+    },
+    {
+      "key": "N01",
+      "project": "v1",
+      "title": "OAuth resource authorization and client protocol compatibility",
+      "description": "Authorized NAS extension; implementation evidence pending at the documentation baseline.",
+      "acceptance": [
+        "Validate pinned issuer/audience/RS256/JWKS and access-token lifetime; map exact subject/client to current local agent grants.",
+        "Test independent app/API profiles, public discovery/challenges, current revocation and explicit legacy HTTP compatibility; never grant owner or peer authority."
+      ],
+      "requirements": [
+        "C27",
+        "C30"
+      ],
+      "tests": [
+        "M22",
+        "M25"
+      ],
+      "adrs": [
+        "A19"
+      ],
+      "dependsOn": [
+        "N00"
+      ],
+      "parent": "N00",
+      "state": "Backlog",
+      "priority": 2,
+      "requiresProceed": false,
+      "sourceLinks": [
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md"
+      ],
+      "milestone": "NAS deployment and local qualification",
+      "labels": [
+        "v1"
+      ],
+      "trackingStatus": "repository_only",
+      "requiresResumeRequest": false
+    },
+    {
+      "key": "N02",
+      "project": "v1",
+      "title": "Harden NAS containers and separate network listeners",
+      "description": "Authorized NAS extension; implementation evidence pending at the documentation baseline.",
+      "acceptance": [
+        "Build non-root read-only image with dedicated data volume and separate public MCP/private sync TLS listeners.",
+        "Supply isolated-network and optional tunnel profiles; prove synthetic allowed/denied paths and keep NAS VLAN/IPv6 verification separate."
+      ],
+      "requirements": [
+        "C26"
+      ],
+      "tests": [
+        "M21"
+      ],
+      "adrs": [
+        "A18"
+      ],
+      "dependsOn": [
+        "N00"
+      ],
+      "parent": "N00",
+      "state": "Backlog",
+      "priority": 2,
+      "requiresProceed": false,
+      "sourceLinks": [
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md"
+      ],
+      "milestone": "NAS deployment and local qualification",
+      "labels": [
+        "v1"
+      ],
+      "trackingStatus": "repository_only",
+      "requiresResumeRequest": false
+    },
+    {
+      "key": "N03",
+      "project": "v1",
+      "title": "Automatic sync with durable backoff and capacity refusal",
+      "description": "Authorized NAS extension; implementation evidence pending at the documentation baseline.",
+      "acceptance": [
+        "Bound each sync cycle, persist retry deadlines, honor Retry-After and avoid multiple local runners.",
+        "Pause on capacity/permanent errors without false acknowledgement; verify cancellation, resume and no duplicate semantic writes."
+      ],
+      "requirements": [
+        "C28"
+      ],
+      "tests": [
+        "M23"
+      ],
+      "adrs": [
+        "A20"
+      ],
+      "dependsOn": [
+        "N00"
+      ],
+      "parent": "N00",
+      "state": "Backlog",
+      "priority": 2,
+      "requiresProceed": false,
+      "sourceLinks": [
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md"
+      ],
+      "milestone": "NAS deployment and local qualification",
+      "labels": [
+        "v1"
+      ],
+      "trackingStatus": "repository_only",
+      "requiresResumeRequest": false
+    },
+    {
+      "key": "N04",
+      "project": "v1",
+      "title": "Private maintenance access and operator runbook",
+      "description": "Authorized NAS extension; implementation evidence pending at the documentation baseline.",
+      "acceptance": [
+        "Use private VPN and host-key-verified dedicated SSH identity for the workload VM.",
+        "Exclude DSM admin, Docker group and unrestricted sudo; describe explicit revocation and fixed privileged helper boundaries."
+      ],
+      "requirements": [
+        "C29"
+      ],
+      "tests": [
+        "M24"
+      ],
+      "adrs": [
+        "A21"
+      ],
+      "dependsOn": [
+        "N00"
+      ],
+      "parent": "N00",
+      "state": "Backlog",
+      "priority": 2,
+      "requiresProceed": false,
+      "sourceLinks": [
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md"
+      ],
+      "milestone": "NAS deployment and local qualification",
+      "labels": [
+        "v1"
+      ],
+      "trackingStatus": "repository_only",
+      "requiresResumeRequest": false
+    },
+    {
+      "key": "N05",
+      "project": "v1",
+      "title": "Local NAS-profile integration qualification",
+      "description": "Authorized NAS extension; implementation evidence pending at the documentation baseline.",
+      "acceptance": [
+        "Run synthetic JWT/maintained-AS, network separation, container, sync/recovery and capacity tests in available Linux/Docker.",
+        "Record actual images, commands, results and optional-dependency coverage; distinguish macOS CI from the owner Mac."
+      ],
+      "requirements": [
+        "C26",
+        "C27",
+        "C28",
+        "C29",
+        "C30"
+      ],
+      "tests": [
+        "M21",
+        "M22",
+        "M23",
+        "M24",
+        "M25"
+      ],
+      "adrs": [
+        "A18",
+        "A19",
+        "A20",
+        "A21"
+      ],
+      "dependsOn": [
+        "N00"
+      ],
+      "parent": "N00",
+      "state": "Backlog",
+      "priority": 2,
+      "requiresProceed": false,
+      "sourceLinks": [
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md"
+      ],
+      "milestone": "NAS deployment and local qualification",
+      "labels": [
+        "v1"
+      ],
+      "trackingStatus": "repository_only",
+      "requiresResumeRequest": false
+    },
+    {
+      "key": "N06",
+      "project": "v1",
+      "title": "Qualify actual NAS, Mac and hosted client connections",
+      "description": "Authorized NAS extension; implementation evidence pending at the documentation baseline.",
+      "acceptance": [
+        "When the owner supplies access, inspect real DSM/packages/RAM, VLAN/IPv6/host rules and local storage; test intended blocked destinations.",
+        "Verify actual Mac/NAS sync and hosted app/API connections using approved synthetic fixtures; live personal data and publication remain separately authorized."
+      ],
+      "requirements": [
+        "C26",
+        "C27",
+        "C28",
+        "C29",
+        "C30"
+      ],
+      "tests": [
+        "M21",
+        "M22",
+        "M23",
+        "M24",
+        "M25"
+      ],
+      "adrs": [
+        "A18",
+        "A19",
+        "A20",
+        "A21"
+      ],
+      "dependsOn": [
+        "N00"
+      ],
+      "parent": "N00",
+      "state": "Backlog",
+      "priority": 2,
+      "requiresProceed": false,
+      "sourceLinks": [
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md"
+      ],
+      "milestone": "NAS deployment and local qualification",
+      "labels": [
+        "v1"
+      ],
+      "trackingStatus": "repository_only",
+      "requiresResumeRequest": false
     }
   ],
   "counts": {
     "research": 10,
-    "v1": 28,
+    "v1": 35,
     "later": 6
   },
   "coverage": {
@@ -2914,6 +3194,36 @@
         "Q01",
         "Q02",
         "Q05"
+      ],
+      "C26": [
+        "N00",
+        "N02",
+        "N05",
+        "N06"
+      ],
+      "C27": [
+        "N00",
+        "N01",
+        "N05",
+        "N06"
+      ],
+      "C28": [
+        "N00",
+        "N03",
+        "N05",
+        "N06"
+      ],
+      "C29": [
+        "N00",
+        "N04",
+        "N05",
+        "N06"
+      ],
+      "C30": [
+        "N00",
+        "N01",
+        "N05",
+        "N06"
       ]
     },
     "tests": {
@@ -3126,6 +3436,36 @@
         "Q01",
         "Q02",
         "Q05"
+      ],
+      "M21": [
+        "N00",
+        "N02",
+        "N05",
+        "N06"
+      ],
+      "M22": [
+        "N00",
+        "N01",
+        "N05",
+        "N06"
+      ],
+      "M23": [
+        "N00",
+        "N03",
+        "N05",
+        "N06"
+      ],
+      "M24": [
+        "N00",
+        "N04",
+        "N05",
+        "N06"
+      ],
+      "M25": [
+        "N00",
+        "N01",
+        "N05",
+        "N06"
       ]
     },
     "laterEvolution": {
@@ -3257,6 +3597,30 @@
         "M01",
         "Q03",
         "Q04"
+      ],
+      "A18": [
+        "N00",
+        "N02",
+        "N05",
+        "N06"
+      ],
+      "A19": [
+        "N00",
+        "N01",
+        "N05",
+        "N06"
+      ],
+      "A20": [
+        "N00",
+        "N03",
+        "N05",
+        "N06"
+      ],
+      "A21": [
+        "N00",
+        "N04",
+        "N05",
+        "N06"
       ]
     }
   },
@@ -3340,7 +3704,8 @@
     "scope": "Accepted personal v1 including Q6–Q10",
     "readinessVerified": false,
     "qualificationPassed": false,
-    "note": "Authorization is recorded independently of unfinished R06/R08 contracts/readiness and evidence gaps. Live-data use, installations, external deployments/provisioning, credentials/permissions, agreements and private-data exposure retain separate approval boundaries. Linear remains paused."
+    "note": "Authorization is recorded independently of unfinished R06/R08 contracts/readiness and evidence gaps. Live-data use, installations, external deployments/provisioning, credentials/permissions, agreements and private-data exposure retain separate approval boundaries. Linear remains paused.",
+    "nasExtension": "Owner explicitly requested docs reconciliation, full NAS-first build and local testing; NAS access follows later."
   },
   "implementationEvidence": {
     "date": "2026-11-07",
@@ -3386,5 +3751,19 @@
       "Praxis2"
     ],
     "note": "Do not ask the owner to reconfirm the target. Installed Praxis2 integration still needs execution evidence; changes to either client repository are outside this task and are not prerequisites for MCP support."
+  },
+  "deploymentTarget": {
+    "primaryEndpoint": "RS822+ isolated Linux workload",
+    "otherPeer": "Mac; full independent offline writes",
+    "nasManagement": "Remains on main LAN",
+    "cloudflare": "Optional transport tunnel only",
+    "cloudStoragePeer": "deferred",
+    "remoteClients": [
+      "Praxis2",
+      "OpenAI app/API",
+      "Anthropic app/API"
+    ],
+    "dataReadScope": "whole personal store within per-connection grants",
+    "actualNASVerified": false
   }
 }

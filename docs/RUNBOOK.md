@@ -1,5 +1,7 @@
 # Running RefactoredMemory personal v1
 
+For the accepted NAS-first deployment and scoped continuous maintenance access, see [NAS-DEPLOYMENT.md](NAS-DEPLOYMENT.md), [REMOTE-ADMIN.md](REMOTE-ADMIN.md) and [NAS-CONTRACT.md](NAS-CONTRACT.md). New deployment implementation and local evidence are pending at this documentation baseline. Do not treat commands for synthetic peers as authorization to publish a tunnel or change the NAS.
+
 Use an existing Python 3.12+ interpreter on macOS or Linux. The runtime uses only the Python standard library and SQLite; run it directly from the repository checkout. No package installation, external deployment, real-data ingestion, or credentials from another service are required for the synthetic examples below.
 
 The automated CLI qualification runs two independent Linux processes and exercises the production HTTP handler. These commands are portable to the intended Mac/Linux pair, but the owner's actual Mac, original archives and Praxis2 application still require their separate qualification evidence. See [acceptance results](ACCEPTANCE-RESULTS.md) and [MCP conformance](MCP-CONFORMANCE.md).

@@ -1,5 +1,7 @@
 # Personal v1 implementation contract
 
+The accepted NAS deployment extension is defined in [NAS-CONTRACT.md](NAS-CONTRACT.md). Existing graph semantics remain unchanged; new auth, scheduler, capacity and listener behavior is awaiting implementation at this documentation baseline.
+
 Selected for implementation on 7 November 2026 after the owner answered Q7–Q10 and explicitly said “Proceed”. This authorizes the coordinated build; it does not assert completed qualification or authorize live personal-data ingestion, external deployment, software installation, or credential changes. Linear stays paused.
 
 Q7: clients proactively capture useful knowledge within configured grants. Q8: explicit authenticated owner corrections are preferred while contrary claims/evidence remain visible. Q9: MCP and CLI first; no browser UI in v1. Q10: prove project decisions and rationale, person/relationship evidence, and changes since last month. Capture is client-driven; the server does not monitor unrelated files/conversations or call an external model.
