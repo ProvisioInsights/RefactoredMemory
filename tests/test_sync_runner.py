@@ -196,7 +196,9 @@ class RunnerTests(unittest.TestCase):
         path = self.root / "sync.json"
         path.write_text(json.dumps(config))
         runner = SyncRunner(self.store, path, clock=self.clock)
-        self.assertEqual(runner.config["token_file"], str(self.token))
+        # The configuration directory is pinned canonically; macOS exposes
+        # temporary paths through the normal /var -> /private/var alias.
+        self.assertEqual(runner.config["token_file"], str(self.token.resolve()))
         for update in ({"interval_seconds": 0}, {"batch_size": True}, {"unknown": 1},
                        {"expected_peer": "local"}, {"version": 2}):
             with self.subTest(update=update), self.assertRaises(SyncError):

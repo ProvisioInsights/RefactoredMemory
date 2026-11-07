@@ -1,6 +1,6 @@
 # Personal v1 architecture
 
-**Accepted deployment direction, 7 November 2026:** a normally available NAS-hosted Linux peer plus an independently writable Mac peer. The existing graph engine is implemented; the NAS/OAuth/automatic-sync extension is authorized and defined in [NAS-CONTRACT.md](NAS-CONTRACT.md). Its new test results must be recorded separately from the earlier baseline.
+**Accepted deployment direction, 7 November 2026:** a normally available NAS-hosted Linux peer plus an independently writable Mac peer. The graph engine and NAS/OAuth/automatic-sync extension are implemented under [NAS-CONTRACT.md](NAS-CONTRACT.md). [Acceptance evidence](ACCEPTANCE-RESULTS.md) separates executed local checks from earlier baseline results and untested owner-device/provider deployment.
 
 DSM and existing NAS services remain on the main LAN. The workload gets a separate identity and isolated VLAN, preferably in a small Linux VM with hardened containers. Public MCP and private synchronization use separate TLS listeners over the same local Store. Cloudflare is an optional outbound tunnel only. It does not hold the knowledge database, and there is no Workers/Durable Objects data port in this release. Primary endpoint does not confer sole-writer or owner authority.
 
@@ -34,7 +34,7 @@ Correction, retraction, invalidation and reinstatement are distinct semantic ope
 
 An admitted semantic operation group and its required local metadata become durable before acknowledgment and visible atomically. Received operations wait for required dependencies. Use stable operation identities and safe retries. Clock skew, duplicate delivery and delivery order must not silently discard a correction.
 
-Peers authenticate each other and operate within the owner's admitted store. Test offline writes on both, concurrent corrections, interrupted exchange, missing dependencies, stale rejoin, restart and restore. A successful two-peer test does not establish a transitive relay mesh. Fine-grained subscriptions and larger meshes are separate later choices.
+Peers authenticate each other and operate within the owner's admitted store. The `sync-watch` runner exchanges bounded batches using durable frontiers, an exclusive runner lock, persisted retry deadlines, interruptible waits and explicit incomplete/paused status. `serve-nas` separates OAuth MCP from private peer TLS; configured capacity guards refuse graph writes while preserving reads. Tests cover offline writes on both, concurrent corrections, interrupted exchange, missing dependencies, stale rejoin, restart and restore. A successful two-peer test does not establish a transitive relay mesh. Fine-grained subscriptions and larger meshes are separate later choices.
 
 ## Import and migration
 

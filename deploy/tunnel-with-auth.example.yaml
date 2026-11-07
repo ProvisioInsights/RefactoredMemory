@@ -1,0 +1,17 @@
+tunnel: REPLACE_TUNNEL_UUID
+credentials-file: /config/tunnel.json
+ingress:
+  - hostname: memory.example.invalid
+    service: https://memory:8765
+    originRequest:
+      originServerName: memory
+      caPool: /tls/ca.crt
+      httpHostHeader: memory.example.invalid
+  - hostname: auth.example.invalid
+    path: '^/(realms/refactoredmemory/(\.well-known/openid-configuration|protocol/openid-connect/(auth|token|certs|logout|revoke|userinfo)|login-actions/.*)|resources/.*)$'
+    service: https://keycloak:8443
+    originRequest:
+      originServerName: keycloak
+      caPool: /tls/ca.crt
+      httpHostHeader: auth.example.invalid
+  - service: http_status:404

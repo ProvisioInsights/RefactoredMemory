@@ -1,6 +1,6 @@
 # Direct personal-peer synchronization
 
-The accepted NAS extension adds a bounded automatic runner, persisted retry deadlines, exclusive local runner lock and capacity-paused behavior. Those additions are planned in [NAS-CONTRACT.md](NAS-CONTRACT.md); existing exchange semantics below remain applicable.
+The accepted NAS extension adds a bounded automatic runner, persisted retry deadlines, exclusive local runner lock and capacity-paused behavior. These additions are implemented under [NAS-CONTRACT.md](NAS-CONTRACT.md); the exchange semantics below remain applicable. See [current acceptance evidence](ACCEPTANCE-RESULTS.md) for executed results.
 
 The v1 exchange replicates immutable, signed graph operation groups between two admitted personal peers. Each has a separate database, local offline writes and local knowledge history. The exchange does not copy SQLite files, choose a wall-clock winner or provide a transitive relay mesh.
 
@@ -36,6 +36,32 @@ Transport failures and transient HTTP failures permit a small bounded retry coun
 
 Peer enrollment/revocation and client grants are local owner administration, separate from graph writes and consumer MCP tools. A copied live database directory must not run as a second writer under the same origin identity. Use the documented restore/rejoin flow with a new identity or a controlled, exclusive incarnation. Offline peers cannot observe a remote revocation instantaneously. Full plaintext peers remain trusted with the admitted personal store; transport authentication is not content encryption or operator blindness.
 
+## Bounded automatic runner
+
+`SyncRunner(store, config).run()` and CLI `sync-watch --config PRIVATE_JSON` use
+one exclusive per-store lock. Default cycles run every 30 seconds, at most 10
+exchange rounds with 100-operation batches and 10-second request timeouts. The
+configuration bounds all these values; normal backoff defaults to a 900-second
+ceiling and honors bounded server retry hints above that ceiling. Each cycle reads the
+credential from its private file and verifies the expected remote peer.
+
+The runner writes a private, atomically replaced status/deadline file before
+network work. Restart cannot bypass that persisted deadline. The status file's
+frontier is observational; progress always resumes from the Store's durable
+frontier. Transient transport, rate-limit and capacity errors back off without a
+tight loop. Wrong identity, invalid credentials/data and semantic rejection pause
+for operator action. Restart after fixing the cause permits another attempt only
+when the deadline is due. Graceful stop interrupts waits and is checked between
+bounded exchanges. Already committed graph operations remain durable.
+
+The runner and NAS listener configure conservative graph-write capacity guards,
+including a default 512 MiB free-space reserve and optional SQLite page ceiling.
+A capacity refusal is explicit and does not become a successful complete sync.
+Reads remain available; backup/log/WAL headroom and hard filesystem quotas are
+separate operational concerns. The public OAuth MCP listener does not serve
+`/sync`; private peer TLS still requires a local admitted peer grant. Example
+configuration and status interpretation are in [RUNBOOK.md](RUNBOOK.md).
+
 ## Snapshot recovery and rejoin
 
 `Store.restore(snapshot_path, destination, peer_id=...)` restores into a new destination and fresh peer identity. It verifies and replays the signed operation journal into a new schema. It rejects executable SQLite schema objects, missing acknowledged positions, invalid signatures, invalid causal history and mismatched immutable projections. Original or historical origin IDs cannot be reused. Failure removes a destination created by the attempt. Active client grants, peer admissions and recovery-forwarding permissions are not restored.
@@ -55,8 +81,10 @@ Run the synthetic suite with:
 
 ```sh
 python -m unittest discover -s tests -p test_sync.py -v
+python -m unittest discover -s tests -p test_sync_runner.py -v
+python -m unittest discover -s tests -p test_capacity.py -v
 ```
 
-On 7 November 2026, all 18 cases passed on the available Linux runtime with Python 3.12.14. The tests use separate Store databases and an independent Python interpreter server subprocess, exercising paginated offline concurrent corrections, preservation of earlier local knowledge, duplicate-free replay after a lost durable acknowledgment, restart with a missing predecessor, revoked peers, wrong credentials/store/peer identities, malformed JSON and bounds, refusal of plaintext nonloopback destinations and redirects, and explicit incomplete reporting for stalled dependencies or semantic rejections. Regression cases cover causal references omitted from an operation's dependency frontier, explicit historical-origin recovery with the original signature, refusal to reuse old origins, malicious SQLite triggers, missing acknowledged journal positions, and cleanup after a failed signature check, and numeric listener binding without reverse DNS.
+The earlier 7 November 2026 baseline contained 18 passing direct-sync cases on Linux/Python 3.12.14; this is historical evidence, not the current combined suite count. Current automatic-runner, capacity, TLS and CLI results are recorded in [ACCEPTANCE-RESULTS.md](ACCEPTANCE-RESULTS.md). The tests use separate Store databases and an independent Python interpreter server subprocess, exercising paginated offline concurrent corrections, preservation of earlier local knowledge, duplicate-free replay after a lost durable acknowledgment, restart with a missing predecessor, revoked peers, wrong credentials/store/peer identities, malformed JSON and bounds, refusal of plaintext nonloopback destinations and redirects, and explicit incomplete reporting for stalled dependencies or semantic rejections. Regression cases cover causal references omitted from an operation's dependency frontier, explicit historical-origin recovery with the original signature, refusal to reuse old origins, malicious SQLite triggers, missing acknowledged journal positions, and cleanup after a failed signature check, and numeric listener binding without reverse DNS.
 
-Actual Mac/Linux qualification and real client endpoints require the corresponding runtimes and access; these local Linux tests do not establish that the owner's Mac was exercised. The test HTTP adapter invokes production `exchange` and Store authentication but does not qualify deployment certificates or an externally running endpoint. Third-hop forwarding, automatic discovery, NAT traversal and selective partial replicas remain outside v1.
+Actual Mac/Linux qualification and real client endpoints require the corresponding runtimes and access; these local Linux tests do not establish that the owner's Mac was exercised. The original direct-sync adapter tests invoke production `exchange` and Store authentication. Additional synthetic TLS/CLI checks exercise configured listeners, but do not qualify real NAS certificates, VLAN rules or an externally running provider endpoint. Third-hop forwarding, automatic discovery, NAT traversal and selective partial replicas remain outside v1.

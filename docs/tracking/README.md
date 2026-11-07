@@ -4,9 +4,13 @@
 
 The repository keeps the work breakdown available while coordinated implementation proceeds. Linear availability is not a readiness gate. The owner answered Q7–Q10 and explicitly said **“Proceed” on 7 November 2026**. R09 records that authorization; remaining detailed-contract, evidence and qualification work stays open.
 
+## Current implementation
+
+The personal graph, MCP/OAuth, imports, split TLS listeners, guarded writes and resumable automatic synchronization are implemented. Native Linux qualification passed 146 tests. The acceptance report records current container and hosted-OS evidence separately. Actual NAS/Mac networking, hosted provider clients and original archives remain unqualified.
+
 ## Prepared artifacts
 
-- [Readable backlog and coverage map](linear-plan.md): 44 tracked items across research/documentation, personal v1 and the later roadmap, covering C01–C25 and M01–M20.
+- [Readable backlog and coverage map](linear-plan.md): 51 tracked items across research/documentation, personal v1 and the later roadmap, covering C01–C30 and M01–M25.
 - [Structured backlog](linear-plan.json): maintained planning data for the same items, dependencies, milestones and acceptance mappings.
 - [Tracking charter](charter.md): authority, scope, completion rules and how to activate tracking later.
 
@@ -14,7 +18,7 @@ The structured backlog is the maintained source for tracking data; regenerate th
 
 Praxis2 is the confirmed client target. Require true latest-published-stable MCP support in RefactoredMemory. Do not modify either Praxis or Praxis2 repository; client modifications are not prerequisites for MCP support. Installed Praxis2 integration remains unexecuted and is recorded separately from independent SDK evidence.
 
-## Current state
+## Historical core state
 
 | Area | State |
 | --- | --- |
@@ -41,4 +45,4 @@ Planning keys such as `R03` and `G01` are internal references, not issued Linear
 Recheck the intended workspace and existing team/projects/issues before creating anything. Reuse matching objects, map planning keys to actual IDs/URLs, verify dependencies and coverage, and only then mark external setup complete. Preserve the recorded implementation authorization, deferred scope and evidence limits. Do not begin this process until requested.
 
 
-NAS-first extension N00–N06 is authorized: isolated RS822+ workload as the primary MCP endpoint, full writable Mac peer, maintained-AS OAuth, separate sync authority, bounded automatic sync and private VPN/SSH maintenance. DSM remains on the main LAN. Cloudflare is optional tunnel transport only. New evidence is pending; actual NAS access is not yet available. The backlog now has 51 items (10 research, 35 v1, 6 later).
+NAS-first extension N00–N06 is authorized: isolated RS822+ workload as the primary MCP endpoint, full writable Mac peer, maintained-AS OAuth, separate sync authority, bounded automatic sync and private VPN/SSH maintenance. DSM remains on the main LAN. Cloudflare is optional tunnel transport only. Local implementation evidence is recorded in the acceptance report; actual NAS access is not yet available. The backlog now has 51 items (10 research, 35 v1, 6 later).

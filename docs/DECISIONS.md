@@ -25,12 +25,12 @@ Updated 7 November 2026. The owner answered Q7–Q10 and explicitly said **“Pr
 | Linear setup | Paused by owner | Preserve the prepared backlog under `docs/tracking/`; resume external setup only when requested. No team/projects/issues were created. Linear is not a readiness or implementation prerequisite. |
 | Implementation transition | Authorized 7 November 2026 | Explicit “Proceed” received after the Q7–Q10 answers. Reconcile the accepted answers throughout the docs, then continue coordinated implementation without asking for this permission again. R09 records authorization only; remaining design/evidence work and release qualifications remain open. |
 
-## Remaining design and evidence work
+## Implemented choices and remaining evidence
 
-- Apply accepted Q6–Q10 to concrete capture, preferred-claim, MCP/CLI and day-one acceptance contracts. Do not reopen settled choices. Automatic/proactive capture stays inside configured grants and does not authorize a separate extraction service or source-text authority changes.
+- Q6–Q10 are implemented in capture, preferred-claim, MCP/CLI and day-one acceptance paths. Do not reopen settled choices. Automatic/proactive capture stays inside configured grants and does not authorize a separate extraction service or source-text authority changes.
 - Locate and classify prior LivingAtlas stores, logs, snapshots, exports and imported records through authorized read-only discovery. Do not guess that a source generation has been reviewed or that data is available.
-- Retain the selected Python/SQLite operation contract and implement the NAS extension in NAS-CONTRACT.md. Use maintained OAuth components and preserve explicit protocol compatibility evidence.
-- Define the client version/transport matrix and concrete import conversion/accounting plan. Missing client access or legacy artifacts must be explicit evidence gaps.
+- Retain the selected Python/SQLite operation contract and implemented NAS extension in NAS-CONTRACT.md. OAuth resource verification, split TLS listeners, bounded automatic sync, configured capacity guards and bounded audit logs are implemented; actual NAS isolation and provider onboarding remain unverified.
+- Maintain the client version/transport matrix in MCP-CONFORMANCE.md and conversion/accounting contract in IMPORT-FORMATS.md. Missing client access or original legacy artifacts remain explicit evidence gaps.
 - Finish detailed contracts, requirement-to-verification mapping and evidence collection while carrying out authorized work. Keep R06/R08 incomplete until their actual criteria are met. Raise only genuinely new consequential blockers, and continue independent work. The received “Proceed” is not a claim that all readiness or release criteria passed.
 - Use synthetic data for development, tests, demonstrations and benchmarks. Live personal-data ingestion, new installations, external deployments/provisioning, credential or permission changes, agreements and private-data exposure retain their separate approval requirements.
 

@@ -1,6 +1,6 @@
 # Required MCP integration
 
-The NAS extension adds a maintained-AS OAuth resource profile, independent whole-store agent grants, separate public MCP/private sync listeners and explicit legacy HTTP compatibility. The implementation/evidence below records the prior bearer baseline until new results are published. See [NAS-CONTRACT.md](NAS-CONTRACT.md).
+The NAS extension implements a maintained-AS OAuth resource profile, independent whole-store agent grants, separate public MCP/private sync TLS listeners and explicit legacy HTTP compatibility. See [NAS-CONTRACT.md](NAS-CONTRACT.md), the [conformance details](MCP-CONFORMANCE.md) and [current executed evidence](ACCEPTANCE-RESULTS.md).
 
 MCP is a v1 release requirement for Praxis2 and other MCP-capable LLM applications. An LLM uses the store through its host/client/runtime; a bare model is not assumed to implement MCP.
 
@@ -15,12 +15,13 @@ Use a conformance checklist for the selected revision's applicable discovery, re
 | Client | Role | Current qualification |
 | --- | --- | --- |
 | Praxis2 | Confirmed application target | Latest-spec server support is implemented here; actual installed-app connection remains unverified. No changes to either Praxis repository are authorized or required. See MCP-CONFORMANCE.md. |
-| Independent Python MCP SDK 1.29.0 | Actual interoperability evidence | Real Store/Service workflows pass through the legacy stdio2025-11-25 path; modern protocol evidence is separate. |
+| Independent Python MCP SDK 1.29.0 | Actual interoperability evidence | Historical real Store/Service workflows passed through the legacy stdio 2025-11-25 path; current HTTP/AS results are in the acceptance report and modern protocol evidence is separate. |
+| ChatGPT/Claude apps and APIs | Remote consumer clients | OAuth resource support is implemented; actual hosted connections and account-specific registration remain unverified. |
 | Protocol/conformance harness | Supporting tests | Useful for edge cases; does not replace actual-client evidence. |
 
 Plan local stdio and remote Streamable HTTP against actual client needs. Remote HTTP can be tested against an isolated local fixture; it does not authorize a public deployment. Real remote transport needs authentication and TLS. This is transport protection, independent of deferred product content encryption.
 
-HTTP uses an explicitly preconfigured custom authentication strategy: owner-issued opaque bearer grants. The MCP specification permits custom strategies; this implementation does not implement the standard OAuth profile, authorization-server discovery or OAuth-only host onboarding. Stdio receives its local grant through the configured token file. See the exact conformance boundary in [MCP-CONFORMANCE.md](MCP-CONFORMANCE.md).
+Local `serve` HTTP retains owner-issued opaque bearer grants; stdio reads a private local token file. `serve-nas` uses the optional OAuth resource profile with RFC 9728 metadata and a maintained authorization server. It validates pinned issuer/audience/RS256 keys and a maximum 300-second access-token lifetime, binds subject/client ID to a current local agent grant, and intersects OAuth and local scopes. The private TLS `/sync` listener requires a separate peer grant and is absent from public MCP. `--allow-legacy-http` explicitly enables 2025-11-25 clients; default HTTP remains strict 2026-07-28. Provider app/API onboarding is still a separate qualification task. See [MCP-CONFORMANCE.md](MCP-CONFORMANCE.md).
 
 ## Graph authority and behavior
 

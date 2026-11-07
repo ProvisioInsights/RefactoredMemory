@@ -1,0 +1,100 @@
+name: refactoredmemory
+services:
+  memory:
+    image: refactoredmemory:${REFMEM_IMAGE_TAG:-local}
+    build:
+      context: ..
+    user: "${REFMEM_UID:-10001}:${REFMEM_GID:-10001}"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 64
+    mem_limit: 512m
+    cpus: 1.0
+    init: true
+    restart: unless-stopped
+    tmpfs: ["/tmp:size=16m,mode=1777,noexec,nosuid,nodev"]
+    volumes:
+      - ${REFMEM_PRIVATE_DIR:?Set an absolute private directory outside this repository}/data:/data
+      - ${REFMEM_PRIVATE_DIR}/config:/config:ro
+      - ${REFMEM_PRIVATE_DIR}/tls:/tls:ro
+    command:
+      - serve-nas
+      - --mcp-host
+      - 0.0.0.0
+      - --mcp-port
+      - "8765"
+      - --mcp-cert-file
+      - /tls/memory.crt
+      - --mcp-key-file
+      - /tls/memory.key
+      - --oauth-config
+      - /config/oauth.json
+      - --sync-host
+      - 0.0.0.0
+      - --sync-port
+      - "8766"
+      - --sync-cert-file
+      - /tls/memory.crt
+      - --sync-key-file
+      - /tls/memory.key
+      - --allow-host
+      - ${REFMEM_MCP_HOST:?Set the public MCP hostname without scheme}
+      - --allow-host
+      - ${REFMEM_SYNC_HOST:-localhost}
+      - --allow-host
+      - ${REFMEM_SYNC_HOST:-localhost}:${REFMEM_SYNC_PORT:-8766}
+      - --allow-host
+      - memory
+      - --min-free-bytes
+      - "${REFMEM_MIN_FREE_BYTES:-536870912}"
+      - --audit-log
+      - /data/audit.jsonl
+    networks: [backend]
+    logging:
+      driver: json-file
+      options: {max-size: 5m, max-file: "3"}
+  sync-ingress:
+    # TLS passes through untouched; this fixed upstream cannot proxy arbitrary URLs.
+    image: haproxy:3.2.26-alpine@sha256:96ec3c75a9264ba94e733eeacb44051ed6e7b79bb77a73c2c36f236b6423f1f0
+    user: "10001:10001"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 32
+    mem_limit: 64m
+    cpus: 0.25
+    restart: unless-stopped
+    volumes:
+      - ./sync-ingress.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    ports:
+      - "${REFMEM_SYNC_BIND:-127.0.0.1}:${REFMEM_SYNC_PORT:-8766}:8766"
+    networks: [backend, private_ingress]
+    depends_on: [memory]
+    logging:
+      driver: json-file
+      options: {max-size: 5m, max-file: "3"}
+  tunnel:
+    profiles: [tunnel]
+    image: cloudflare/cloudflared:2026.10.7@sha256:4955524aeaa379e154023d5a027c250f7b35041a2e7e950cf13f144bc9b9c5ba
+    user: "${REFMEM_UID:-10001}:${REFMEM_GID:-10001}"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 64
+    mem_limit: 256m
+    cpus: 0.5
+    restart: unless-stopped
+    command: [tunnel, --no-autoupdate, --config, /config/tunnel.yaml, run]
+    volumes:
+      - ${REFMEM_PRIVATE_DIR}/tunnel:/config:ro
+      - ${REFMEM_PRIVATE_DIR}/tls/ca.crt:/tls/ca.crt:ro
+    networks: [backend, tunnel_egress]
+    logging:
+      driver: json-file
+      options: {max-size: 5m, max-file: "3"}
+networks:
+  backend:
+    internal: true
+  tunnel_egress: {}
+  private_ingress: {}

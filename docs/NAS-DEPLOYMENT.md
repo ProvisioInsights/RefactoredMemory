@@ -28,6 +28,8 @@ The NAS process uses `serve-nas`: one `Store` instance and two independent TLS l
 
 The image runs as an unprivileged UID/GID. Its root filesystem is read-only, Linux capabilities are dropped, privilege escalation is disabled, and temporary storage, memory, CPU and process counts are bounded. Mount only the dedicated `/data` directory writable and the required configuration/certificates read-only. Do not mount the Docker socket, host devices, DSM directories, whole NAS volumes or general shared folders.
 
+The concrete Compose files, image pins, private-file ownership, OAuth realm renderer and local smoke command are in [deploy/README.md](../deploy/README.md). Fixed-destination HAProxy ingress containers provide private TCP forwarding to the sync and optional authorization-admin listeners. TLS terminates in the destination service. This keeps the memory process on an internal-only network; tested Docker 29 did not provide working host-published forwarding directly on that network. Ingress and tunnel egress still require the external VM/router policy described here.
+
 The live SQLite database, WAL and SHM files must be on the VM's local persistent filesystem, or a verified local NAS volume for the direct-container alternative. Do not put the live database on an SMB or NFS mount. A network share can receive a completed consistent backup after the backup operation finishes; copying an active database file is not a backup procedure.
 
 Use a fresh peer identity for the NAS and the same nonsecret store ID as the Mac. Never copy the Mac's live writable database directory and start both under one identity. Recovery uses the documented fresh-identity restore/rejoin procedure. The private sync listener is not published through the public tunnel.
@@ -43,6 +45,8 @@ The memory process does not fetch keys from a token's `jku`, `x5u` or other supp
 Cloudflare Tunnel runs only when its optional profile is enabled. The named tunnel has fixed hostname-to-origin routing and a final deny rule. Forward only the MCP listener and the authentication service's explicitly required paths. Do not publish the peer-sync listener, DSM, SSH, general reverse-proxy routing or arbitrary upstream URLs. A tunnel does not replace OAuth or local grant checks. Its runtime credential is distinct from an account administration token.
 
 Use verified TLS from the tunnel connector to the MCP listener, with a trusted origin CA and the expected origin server name. Do not disable TLS verification or make the application trust arbitrary forwarded-protocol headers. Private MCP responses must not be cached by the CDN, and ordinary logs must omit tokens and content.
+
+TLS secures these network links; it is not owner-only end-to-end encryption through the tunnel and model provider. Cloudflare terminates the public HTTPS connection, and the chosen OpenAI/Anthropic client processes the content it retrieves. Whole-store access means a separately revocable grant can query the personal store; it does not automatically bulk-upload every record. Provider data controls and actual connector behavior remain part of connection qualification.
 
 Disabling the tunnel stops remote transport, not local memory operation. The NAS and Mac can continue local operation and private synchronization. Removing a container does not remove its persistent data. Cloudflare Workers/Durable Objects storage, selective cloud caching and additional peers remain deferred.
 

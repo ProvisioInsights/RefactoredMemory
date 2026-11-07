@@ -19,9 +19,9 @@ Use milestones to group each project's deliverables. Use issue dependencies for 
 
 Repository documentation is authoritative, and the repository backlog retains the planning record while Linear is paused. If external tracking is later activated, Linear can record execution/progress. Keep accepted scope and affected requirement/test IDs reconciled without making the tracker a source of new requirements.
 
-External tracking creation is paused until a new owner request. Linear is not a readiness prerequisite. The owner explicitly said **“Proceed” on 7 November 2026** after answering Q7–Q10; personal-v1 implementation is authorized. Every v1 issue retains its direct dependency on R09, which now records that received authorization. R09 is separate from unfinished R06/R08 contract/readiness and source/client evidence work; receiving permission does not mark those criteria or product qualifications passed. Reconcile the accepted answers across the docs before core coding, then continue without requesting the same authorization again.
+External tracking creation is paused until a new owner request. Linear is not a readiness prerequisite. The owner explicitly said **“Proceed” on 7 November 2026** after answering Q7–Q10; personal-v1 implementation is authorized. Every v1 issue retains an authorization dependency on R09, which now records that received authorization. R09 is separate from unfinished R06/R08 contract/readiness and source/client evidence work; receiving permission does not mark those criteria or product qualifications passed. Reconcile the accepted answers across the docs before core coding, then continue without requesting the same authorization again.
 
-R01 records the completed documentation baseline, R03 records the accepted Q6 policy and R09 records explicit implementation authorization; Done means those records only. Q6 permits automatic acceptance of model-inferred additions within configured client/agent grants without per-item human review. Core, MCP, import, direct-sync and CLI implementations have synthetic local Linux evidence: all 86 tests passed, including both independent SDK tests. The 83-test suite passed hosted macOS and Ubuntu CI at `ebb73d2`; hosted macOS skipped two optional SDK tests, both of which passed locally. Delivery items remain In Progress against their full criteria. The owner’s actual Mac/Linux pair, installed Praxis2 and complete original-archive qualification remain incomplete; no complete release acceptance is claimed. Source inspection and supplied benchmark claims are not product qualification. Q7 authorizes proactive capture within grants; Q8 prefers explicit owner corrections while preserving conflicts/evidence/history; Q9 selects MCP plus CLI without browser UI; Q10 requires project decisions/why, relationships/evidence and changes since last month. Keep detailed-contract and readiness criteria open until actually verified. Deferred issues remain in the later-roadmap project.
+R01 records the completed documentation baseline, R03 records the accepted Q6 policy and R09 records explicit implementation authorization; Done means those records only. Q6 permits automatic acceptance of model-inferred additions within configured client/agent grants without per-item human review. The earlier core baseline had synthetic local Linux evidence: all 86 tests passed, including both independent SDK tests. The 83-test suite passed hosted macOS and Ubuntu CI at `ebb73d2`; hosted macOS skipped two optional SDK tests, both of which passed locally. Delivery items remain In Progress against their full criteria. The owner’s actual Mac/Linux pair, installed Praxis2 and complete original-archive qualification remain incomplete; no complete release acceptance is claimed. Source inspection and supplied benchmark claims are not product qualification. Q7 authorizes proactive capture within grants; Q8 prefers explicit owner corrections while preserving conflicts/evidence/history; Q9 selects MCP plus CLI without browser UI; Q10 requires project decisions/why, relationships/evidence and changes since last month. Keep detailed-contract and readiness criteria open until actually verified. Deferred issues remain in the later-roadmap project.
 
 ## Issue content
 
@@ -37,6 +37,10 @@ Corporate tenants, personal-versus-corporate custody, product content encryption
 
 Development/test fixtures are synthetic-only. Live data use, key access, external deployment and installation remain subject to the established authorizations. Do not put private datasets, credentials or private source excerpts in issues, logs or public repository files.
 
+## Current implementation
+
+The personal graph, MCP/OAuth, imports, split TLS listeners, guarded writes and resumable automatic synchronization are implemented. Native Linux qualification passed 146 tests. The acceptance report records current container and hosted-OS evidence separately. Actual NAS/Mac networking, hosted provider clients and original archives remain unqualified.
+
 ## Evidence records
 
 Use [acceptance results](../ACCEPTANCE-RESULTS.md), [MCP conformance](../MCP-CONFORMANCE.md), [import fidelity](../IMPORT-FORMATS.md), [sync protocol](../SYNC-PROTOCOL.md) and the [runbook](../RUNBOOK.md) for exercised behavior and remaining boundaries. A current aggregate test count does not turn an unavailable host, client or archive into a passed requirement.
@@ -44,10 +48,10 @@ Use [acceptance results](../ACCEPTANCE-RESULTS.md), [MCP conformance](../MCP-CON
 ## Completion checks after external tracking is resumed
 
 - Correct workspace and team verified; no duplicate projects/issues.
-- All C01–C25 requirements and M01–M20 acceptance cases have an issue owner in the tracking map; later IDs are explicitly mapped to later work.
+- All C01–C30 requirements and M01–M25 acceptance cases have an issue owner in the tracking map; later IDs are explicitly mapped to later work.
 - Required issue dependencies and the proceed gate exist, with no dependency cycles.
 - Project/milestone/status membership is verified by readback.
 - Canonical documents and tracking links are discoverable from the team/project overview and repository.
 
 
-NAS-first extension N00–N06 is authorized: isolated RS822+ workload as the primary MCP endpoint, full writable Mac peer, maintained-AS OAuth, separate sync authority, bounded automatic sync and private VPN/SSH maintenance. DSM remains on the main LAN. Cloudflare is optional tunnel transport only. New evidence is pending; actual NAS access is not yet available. The backlog now has 51 items (10 research, 35 v1, 6 later).
+NAS-first extension N00–N06 is authorized: isolated RS822+ workload as the primary MCP endpoint, full writable Mac peer, maintained-AS OAuth, separate sync authority, bounded automatic sync and private VPN/SSH maintenance. DSM remains on the main LAN. Cloudflare is optional tunnel transport only. Local implementation evidence is recorded in the acceptance report; actual NAS access is not yet available. The backlog now has 51 items (10 research, 35 v1, 6 later).

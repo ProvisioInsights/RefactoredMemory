@@ -1,0 +1,52 @@
+# Policy worksheet only. Not consumed or applied by the application.
+# Fill with real approved addresses/interfaces after NAS inspection.
+workload_boundary: dedicated-linux-vm-on-isolated-vlan
+nas_management_remains: existing-main-lan
+default_new_connections: deny
+address_families: [ipv4, ipv6]
+allow:
+  - source: approved-private-management-identity
+    destination: workload-vm
+    protocol: tcp
+    ports: [22]
+  - source: approved-mac-private-identity
+    destination: private-sync-ingress
+    protocol: tcp
+    ports: [8766]
+  - source: sync-ingress
+    destination: memory-container
+    protocol: tcp
+    ports: [8766]
+  - source: tunnel-container
+    destination: memory-container
+    protocol: tcp
+    ports: [8765]
+  - source: tunnel-container
+    destination: optional-keycloak-container
+    protocol: tcp
+    ports: [8443]
+  - source: keycloak-container
+    destination: postgres-container
+    protocol: tcp
+    ports: [5432]
+  - source: tunnel-container
+    destination: provider-documented-current-tunnel-endpoints
+    protocol: provider-documented-tcp-and-udp
+    ports: [7844]
+  - source: explicitly-required-infrastructure-clients
+    destination: approved-dns-and-time-servers
+    protocol: explicitly-required-only
+deny_new_connections:
+  - destination: every-nas-management-address-and-nas-share
+  - destination: router-management-and-other-lan-devices
+  - destination: unapproved-public-internet
+  - destination: link-local-and-cloud-instance-metadata
+  - source: memory-container
+    destination: any-outside-the-memory-backend
+preserve:
+  - established-related-response-traffic
+  - approved-emergency-management-recovery-path
+qualification:
+  - test-host-input-output-and-docker-forwarding
+  - test-same-vlan-and-all-nas-interfaces
+  - repeat-after-container-vm-firewall-and-dsm-restarts

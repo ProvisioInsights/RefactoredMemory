@@ -2,15 +2,15 @@
 
 RefactoredMemory v1 is a single owner's personal temporal knowledge store, accessed through MCP by Praxis2 and other compatible clients. It runs on the owner's Mac and a personally controlled Linux VM/container; both peers accept offline writes and synchronize. Initial import covers Markdown/Logseq and data from previous LivingAtlas runs. Model-inferred additions are automatically accepted within configured client/agent grants, with their sources, uncertainty and correction history preserved; acceptance does not mean human verification.
 
-**Status: personal-v1 implementation, under qualification.** The temporal graph, MCP server, CLI, Markdown/Logseq and legacy adapters, direct offline peer sync, and verified backup/recovery are implemented. Synthetic Linux tests, hosted Ubuntu/macOS CI and an actual independent MCP SDK pass. The owner's Mac and installed Praxis2 application still require end-to-end qualification; legacy archive fidelity limits are explicit. No changes are made to either Praxis repository. HTTP uses preconfigured bearer grants; OAuth-only hosts are not yet supported. See [acceptance evidence](docs/ACCEPTANCE-RESULTS.md) and the [runbook](docs/RUNBOOK.md).
+**Status: personal-v1 implementation, under qualification.** Implemented features include the temporal graph, MCP server, CLI, Markdown/Logseq and legacy adapters, offline peer sync, verified recovery, a maintained-AS OAuth resource profile, separate public MCP/private sync listeners, bounded automatic sync, capacity guards and bounded audit logs. The owner's Mac/NAS and installed Praxis2, ChatGPT and Claude apps/API connections still require end-to-end qualification; legacy archive fidelity limits remain explicit. No changes are made to either Praxis repository. See [current executed evidence and remaining qualification](docs/ACCEPTANCE-RESULTS.md) and the [runbook](docs/RUNBOOK.md).
 
-The accepted deployment target is now a normally available NAS-hosted Linux peer plus the Mac peer, with Cloudflare as optional tunnel transport only. The new OAuth, deployment hardening and automatic-sync implementation is governed by [the NAS contract](docs/NAS-CONTRACT.md); new qualification results will be recorded separately.
+The accepted deployment target is now a normally available NAS-hosted Linux peer plus the Mac peer, with Cloudflare as optional tunnel transport only. The OAuth, deployment hardening and automatic-sync implementation follows [the NAS contract](docs/NAS-CONTRACT.md). [Deployment artifacts and isolation instructions](docs/NAS-DEPLOYMENT.md) are available; an actual NAS deployment remains separate from local synthetic tests.
 
 Multitenancy, corporate-versus-personal ownership domains, multiple organizations, and product-level content encryption are later phases. Basic authentication, scoped client/peer authority, secure remote transport, safe local access and data hygiene remain v1 requirements.
 
 ## Run it
 
-Python 3.12+ is required; the runtime uses only the standard library. From this checkout:
+Python 3.12+ is required. The graph, local-grant MCP and sync runtime use the standard library; the optional OAuth profile uses the declared PyJWT/cryptography dependencies. CI installs pinned test dependencies so optional interoperability checks run. From an existing prepared checkout:
 
 ```sh
 python3 -m unittest discover -s tests -v
@@ -19,7 +19,7 @@ python3 -m refactoredmemory --db /tmp/refactoredmemory-demo.sqlite3 init
 python3 -m refactoredmemory --db /tmp/refactoredmemory-demo.sqlite3 status
 ```
 
-The synthetic demo uses a temporary database. The runbook covers private client grants, MCP connection configuration, two-peer pairing, TLS, imports, backups and recovery. Proactive capture is initiated by an authorized MCP client; the server does not watch unrelated conversations or call a model. Explicit owner corrections remain preferred while conflicting claims remain inspectable.
+The synthetic demo uses a temporary database. The runbook covers private client grants, `serve-nas` OAuth/TLS listeners, `sync-watch`, two-peer pairing, imports, backups and recovery. OAuth provisioning and secure continuous maintenance are described in the [NAS deployment](docs/NAS-DEPLOYMENT.md) and [private VPN/SSH access](docs/REMOTE-ADMIN.md) guides. Proactive capture is initiated by an authorized MCP client; the server does not watch unrelated conversations or call a model. Explicit owner corrections remain preferred while conflicting claims remain inspectable.
 
 ## Authoritative documentation
 

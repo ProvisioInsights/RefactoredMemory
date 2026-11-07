@@ -1,10 +1,43 @@
 # Personal v1 acceptance evidence
 
-This report is the earlier personal-core baseline. The NAS/OAuth/automatic-sync extension is now authorized in [NAS-CONTRACT.md](NAS-CONTRACT.md); new acceptance results will be recorded separately after execution.
+This report records the implemented personal core and NAS/OAuth/automatic-sync extension. Current extension evidence appears first; earlier measurements remain historical and are not silently relabelled as new results.
 
 All tests, examples and benchmarks in this record use synthetic data. Executed Linux checks are recorded separately from requirements that still need the owner's Mac, actual application access or original legacy artifacts. Passing a synthetic fixture does not establish those unavailable results.
 
-## Combined final Linux run
+## NAS extension local qualification
+
+On 7 November 2026, **146 tests passed in 28.911 seconds with no skips** in the attached Linux workspace (Python 3.12.14, SQLite 3.53.1). [Raw native output](results/nas-linux-unittest.txt) includes the 86 baseline tests plus 15 OAuth, 9 HTTP-profile, 16 scheduler, 12 NAS/CLI/audit and 8 capacity tests. The three synthetic day-one demonstrations also ran successfully.
+
+The runtime sources are committed at `a0ff34b8a7c64889e6110f878ddd8c8d454e7c84`; their SHA-256 is `2ad9d8ddd1954ae25b426e4d242f7d6e34aab334b8d25ecf78c51e2c4537a169` using sorted package filenames, NUL separators and file bytes. The independently hashed package inside the tested Docker image matches that digest. Documentation and deployment artifacts were still being finalized during the run.
+
+| Extension | Executed evidence | Boundary |
+| --- | --- | --- |
+| OAuth | Real RS256 signatures; pinned issuer/audience; <=300-second lifetime; token type, subject/client and local grant checks; immediate local revocation; key rotation; unsafe files and forged tokens refused. | No live provider account connection. |
+| MCP HTTP | Strict modern protocol plus explicitly enabled 2025-11-25; actual MCP SDK 1.29 HTTP capture/retry/query/evidence; protected-resource metadata and challenges. | SDK interoperability is not actual ChatGPT/Claude/Praxis2 acceptance. |
+| Public/private separation | Real TLS subprocess tests and container tests keep OAuth MCP separate from peer-only sync; public routes do not expose sync or administration. | NAS routing/firewall rules still require device tests. |
+| Automatic sync | Persisted Retry-After/backoff, private token reload, exclusive scheduler lock, safe status paths, cancellation, separate-process exchange and resume without duplicate writes. | Two direct peers; no transitive mesh or selective replication. |
+| Capacity and import | Local/incoming write refusal, full transaction rollback, real SQLite pager-full failure, readable existing data, backup-space admission, import pause reporting and nonzero partial/failed exit. | Conservative guards are not disk quotas or a guarantee against concurrent external disk consumption. |
+| Audit | Bounded private rotating JSONL, field allowlist, credential/content exclusion, collision/hardlink checks and static failure warning. | Operator must monitor runtime storage and maintain retention/backups. |
+
+The full [Docker smoke test](../deploy/smoke_test.py) passed using real Keycloak/Postgres and TLS. It exercised authorization-code login with S256 PKCE, missing-PKCE/replayed-code rejection, access-token acceptance with ID/raw-grant rejection, sourced capture/query, bidirectional offline peer sync, persistence through container restart and current grant revocation. It inspected nonroot/read-only/capability/mount restrictions and verified a forbidden connection from memory into the separate authentication network. All disposable test containers, networks, volumes and private credentials were removed. [Raw container evidence](results/nas-docker-smoke.json) identifies images and commands. Both Cloudflare templates validated offline; no tunnel was published.
+
+The container test is a reproducible local integration test, not a NAS installation or general penetration test. No actual DSM/VLAN/IPv6, hardware failure, owner Mac or hosted client connection has been qualified. No real personal data was ingested.
+
+### Current contract benchmark
+
+[Raw NAS-extension runtime benchmark](../benchmarks/results/nas-linux-1100.json) repeats the 1,100-entity contract workload and passes its correctness checks. It identifies the same runtime digest above. Core Store defaults are measured; this is not an OAuth, TLS, NAS-disk or end-to-end client benchmark. The shared Linux host also ran container qualification, so the timings do not establish a regression or improvement against earlier runs.
+
+| Workload | p50 ms | p95 ms |
+| --- | ---: | ---: |
+| Acknowledged correction | 0.656 | 1.826 |
+| Current subject lookup | 0.742 | 1.263 |
+| Historical subject lookup | 0.711 | 3.064 |
+| Text search | 123.347 | 261.129 |
+| Four-hop traversal | 12.650 | 33.251 |
+
+One signed in-process transfer of 55 operations took 163.900 ms; backup 12.322 ms, restore 148.365 ms, rebuild 67.021 ms and reopen 2.665 ms. These single measurements do not establish larger-store capacity or an engine winner. Text search remains a scan-oriented cost to measure against the owner's eventual corpus.
+
+## Historical personal-core Linux run
 
 The full suite passed **86 tests in 13.858 seconds**, with no skips, using `python -m unittest discover -s tests -v` on 7 November 2026. This includes 23 independent acceptance, 21 MCP, 18 sync, 16 importer, 5 real CLI subprocess and 3 additional storage-hardening tests. See the [raw unittest output](results/linux-unittest.txt). The runtime source digest matches the raw benchmark artifact linked below.
 
@@ -68,7 +101,7 @@ python -m benchmarks.personal_store --entities 1100 --samples 31 --output /tmp/r
 
 The benchmark runs the actual graph contract with 1,100 synthetic entities/assertions, 31 owner corrections, 20 relationship edges, 31 samples per read workload and 50-entity seed transactions. It includes current and historical subject queries, text search, four-hop traversal, acknowledged writes, signed operation transfer, rebuilding, backup, fresh-identity restore and reopen. It verifies answers before reporting timings. Raw output records individual samples, p50/p95, Python/SQLite/platform, source digest, Git state, workload/cache assumptions and observed database/WAL sizes.
 
-The final development run at `2026-11-07T19:28:49.236722+00:00` passed the benchmark's correctness checks. [Raw measurements and source identity](../benchmarks/results/personal-linux-1100.json) include all samples and the working-tree source digest; the Git commit identifies the preceding commit, while the digest identifies the measured working-tree code. The digest `82c9130acd28cfb753393290973657aa37095b2e32979c8f71ec6c62c452f279` was verified against the current Python sources. This shared Linux environment was not a dedicated performance host. The benchmark ran separately from this agent's acceptance tests, but no machine-wide isolation or CPU-frequency control is claimed.
+The final development run at `2026-11-07T19:28:49.236722+00:00` passed the benchmark's correctness checks. [Raw measurements and source identity](../benchmarks/results/personal-linux-1100.json) include all samples and the working-tree source digest; the Git commit identifies the preceding commit, while the digest identifies the measured working-tree code. The digest `82c9130acd28cfb753393290973657aa37095b2e32979c8f71ec6c62c452f279` was verified against the Python sources of that historical run, before the NAS extension. This shared Linux environment was not a dedicated performance host. The benchmark ran separately from this agent's acceptance tests, but no machine-wide isolation or CPU-frequency control is claimed.
 
 | Workload | p50 ms | p95 ms |
 | --- | ---: | ---: |

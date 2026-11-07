@@ -52,7 +52,7 @@
       "name": "RefactoredMemory — Personal knowledge store v1",
       "state": "In Progress",
       "summary": "NAS-primary endpoint plus independently writable Mac; required MCP/OAuth, automatic sync and source-preserving import.",
-      "description": "Coordinated personal-v1 implementation is authorized and implemented core/MCP/import/sync/CLI streams are In Progress against their full criteria. The local Linux run passed all 86 synthetic tests, including independent MCP SDK workflows. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2. Full original-archive qualification also remains incomplete. Praxis2 is the confirmed target; neither Praxis repository may be modified. Corporate tenancy, product content encryption, transitive mesh and browser UI are excluded. Live imports, keys, installations, credentials/permissions and external deployments retain separate approval requirements.",
+      "description": "The personal graph, MCP/OAuth, imports, split TLS listeners, guarded writes and resumable automatic synchronization are implemented. Native Linux qualification passed 146 tests. The acceptance report records current container and hosted-OS evidence separately. Actual NAS/Mac networking, hosted provider clients and original archives remain unqualified. Corporate tenancy, product content encryption, third-peer mesh and a cloud storage peer remain later. No Praxis repository changes or Linear setup.",
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md",
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md",
@@ -385,7 +385,7 @@
         "Q10"
       ],
       "progress": {
-        "summary": "Selected A17 implementation and recorded synthetic Linux evidence are now available. Complete this research/contract/readiness item only against its actual criteria; access and qualification gaps remain explicit. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
+        "summary": "Historical baseline: Selected A17 implementation and recorded synthetic Linux evidence are now available. Complete this research/contract/readiness item only against its actual criteria; access and qualification gaps remain explicit. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
@@ -495,7 +495,7 @@
         "Q10"
       ],
       "progress": {
-        "summary": "Selected A17 implementation and recorded synthetic Linux evidence are now available. Complete this research/contract/readiness item only against its actual criteria; access and qualification gaps remain explicit. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
+        "summary": "Historical baseline: Selected A17 implementation and recorded synthetic Linux evidence are now available. Complete this research/contract/readiness item only against its actual criteria; access and qualification gaps remain explicit. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
@@ -612,7 +612,7 @@
         "graph"
       ],
       "progress": {
-        "summary": "Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
+        "summary": "Historical baseline: Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
@@ -670,7 +670,7 @@
         "Q6"
       ],
       "progress": {
-        "summary": "Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
+        "summary": "Historical baseline: Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
@@ -733,7 +733,7 @@
         "Q8"
       ],
       "progress": {
-        "summary": "Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
+        "summary": "Historical baseline: Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
@@ -793,7 +793,7 @@
         "graph"
       ],
       "progress": {
-        "summary": "Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
+        "summary": "Historical baseline: Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
@@ -853,7 +853,7 @@
         "graph"
       ],
       "progress": {
-        "summary": "Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
+        "summary": "Historical baseline: Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
@@ -921,7 +921,7 @@
         "Q7"
       ],
       "progress": {
-        "summary": "Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
+        "summary": "Historical baseline: Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
@@ -982,7 +982,7 @@
         "graph"
       ],
       "progress": {
-        "summary": "Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
+        "summary": "Historical baseline: Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
@@ -1047,7 +1047,7 @@
         "sync"
       ],
       "progress": {
-        "summary": "Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
+        "summary": "Historical baseline: Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
@@ -1107,7 +1107,7 @@
         "sync"
       ],
       "progress": {
-        "summary": "Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
+        "summary": "Historical baseline: Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
@@ -1168,7 +1168,7 @@
         "sync"
       ],
       "progress": {
-        "summary": "Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
+        "summary": "Historical baseline: Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
@@ -1232,7 +1232,7 @@
         "Q8"
       ],
       "progress": {
-        "summary": "Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
+        "summary": "Historical baseline: Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
@@ -1298,7 +1298,7 @@
         "sync"
       ],
       "progress": {
-        "summary": "Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
+        "summary": "Historical baseline: Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
@@ -1964,7 +1964,7 @@
         "validation"
       ],
       "progress": {
-        "summary": "Local Linux verification passed all 86 synthetic tests, including both optional independent SDK tests. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2. Recorded acceptance, MCP, import, sync, benchmark and CLI evidence remains partial qualification.",
+        "summary": "Historical baseline: Local Linux verification passed all 86 synthetic tests, including both optional independent SDK tests. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2. Recorded acceptance, MCP, import, sync, benchmark and CLI evidence remains partial qualification.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
@@ -2048,7 +2048,7 @@
         "Q8"
       ],
       "progress": {
-        "summary": "Local Linux verification passed all 86 synthetic tests, including both optional independent SDK tests. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2. Recorded acceptance, MCP, import, sync, benchmark and CLI evidence remains partial qualification.",
+        "summary": "Historical baseline: Local Linux verification passed all 86 synthetic tests, including both optional independent SDK tests. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2. Recorded acceptance, MCP, import, sync, benchmark and CLI evidence remains partial qualification.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
@@ -2123,7 +2123,7 @@
         "Q10"
       ],
       "progress": {
-        "summary": "Local Linux verification passed all 86 synthetic tests, including both optional independent SDK tests. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2. Recorded acceptance, MCP, import, sync, benchmark and CLI evidence remains partial qualification.",
+        "summary": "Historical baseline: Local Linux verification passed all 86 synthetic tests, including both optional independent SDK tests. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2. Recorded acceptance, MCP, import, sync, benchmark and CLI evidence remains partial qualification.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
@@ -2263,7 +2263,7 @@
         "Q9"
       ],
       "progress": {
-        "summary": "Local Linux verification passed all 86 synthetic tests, including both optional independent SDK tests. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2. Recorded acceptance, MCP, import, sync, benchmark and CLI evidence remains partial qualification.",
+        "summary": "Historical baseline: Local Linux verification passed all 86 synthetic tests, including both optional independent SDK tests. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2. Recorded acceptance, MCP, import, sync, benchmark and CLI evidence remains partial qualification.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
@@ -2372,7 +2372,7 @@
         "Q10"
       ],
       "progress": {
-        "summary": "Local Linux verification passed all 86 synthetic tests, including both optional independent SDK tests. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2. Recorded acceptance, MCP, import, sync, benchmark and CLI evidence remains partial qualification.",
+        "summary": "Historical baseline: Local Linux verification passed all 86 synthetic tests, including both optional independent SDK tests. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2. Recorded acceptance, MCP, import, sync, benchmark and CLI evidence remains partial qualification.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
@@ -2638,7 +2638,7 @@
       "key": "N00",
       "project": "v1",
       "title": "NAS-first deployable personal peer",
-      "description": "Authorized NAS extension; implementation evidence pending at the documentation baseline.",
+      "description": "NAS-first implementation and local verification are authorized and tracked here. Consult the linked acceptance report for executed evidence; actual NAS, Mac and hosted-client qualification remains separate.",
       "acceptance": [
         "Reconcile docs before production changes; preserve existing graph and independent writable Mac peer.",
         "Deliver isolated NAS profile, maintained-AS OAuth, automatic sync and local evidence. Actual NAS deployment remains pending access."
@@ -2671,20 +2671,22 @@
       "priority": 2,
       "requiresProceed": false,
       "sourceLinks": [
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/ACCEPTANCE-RESULTS.md"
       ],
       "milestone": "NAS deployment and local qualification",
       "labels": [
         "v1"
       ],
       "trackingStatus": "repository_only",
-      "requiresResumeRequest": false
+      "requiresResumeRequest": false,
+      "progress": "Implemented locally; see acceptance evidence and the unexecuted target-device requirements."
     },
     {
       "key": "N01",
       "project": "v1",
       "title": "OAuth resource authorization and client protocol compatibility",
-      "description": "Authorized NAS extension; implementation evidence pending at the documentation baseline.",
+      "description": "NAS-first implementation and local verification are authorized and tracked here. Consult the linked acceptance report for executed evidence; actual NAS, Mac and hosted-client qualification remains separate.",
       "acceptance": [
         "Validate pinned issuer/audience/RS256/JWKS and access-token lifetime; map exact subject/client to current local agent grants.",
         "Test independent app/API profiles, public discovery/challenges, current revocation and explicit legacy HTTP compatibility; never grant owner or peer authority."
@@ -2701,27 +2703,30 @@
         "A19"
       ],
       "dependsOn": [
-        "N00"
+        "N00",
+        "R09"
       ],
       "parent": "N00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 2,
       "requiresProceed": false,
       "sourceLinks": [
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/ACCEPTANCE-RESULTS.md"
       ],
       "milestone": "NAS deployment and local qualification",
       "labels": [
         "v1"
       ],
       "trackingStatus": "repository_only",
-      "requiresResumeRequest": false
+      "requiresResumeRequest": false,
+      "progress": "OAuth validation and independent MCP HTTP workflows passed, including real Keycloak issuance. Actual hosted clients remain under N06."
     },
     {
       "key": "N02",
       "project": "v1",
       "title": "Harden NAS containers and separate network listeners",
-      "description": "Authorized NAS extension; implementation evidence pending at the documentation baseline.",
+      "description": "NAS-first implementation and local verification are authorized and tracked here. Consult the linked acceptance report for executed evidence; actual NAS, Mac and hosted-client qualification remains separate.",
       "acceptance": [
         "Build non-root read-only image with dedicated data volume and separate public MCP/private sync TLS listeners.",
         "Supply isolated-network and optional tunnel profiles; prove synthetic allowed/denied paths and keep NAS VLAN/IPv6 verification separate."
@@ -2736,27 +2741,30 @@
         "A18"
       ],
       "dependsOn": [
-        "N00"
+        "N00",
+        "R09"
       ],
       "parent": "N00",
-      "state": "Backlog",
+      "state": "Done",
       "priority": 2,
       "requiresProceed": false,
       "sourceLinks": [
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/ACCEPTANCE-RESULTS.md"
       ],
       "milestone": "NAS deployment and local qualification",
       "labels": [
         "v1"
       ],
       "trackingStatus": "repository_only",
-      "requiresResumeRequest": false
+      "requiresResumeRequest": false,
+      "progress": "Local hardened-container and real Keycloak/Postgres qualification passed. Actual NAS, Mac and hosted clients remain under N06."
     },
     {
       "key": "N03",
       "project": "v1",
       "title": "Automatic sync with durable backoff and capacity refusal",
-      "description": "Authorized NAS extension; implementation evidence pending at the documentation baseline.",
+      "description": "NAS-first implementation and local verification are authorized and tracked here. Consult the linked acceptance report for executed evidence; actual NAS, Mac and hosted-client qualification remains separate.",
       "acceptance": [
         "Bound each sync cycle, persist retry deadlines, honor Retry-After and avoid multiple local runners.",
         "Pause on capacity/permanent errors without false acknowledgement; verify cancellation, resume and no duplicate semantic writes."
@@ -2771,27 +2779,30 @@
         "A20"
       ],
       "dependsOn": [
-        "N00"
+        "N00",
+        "R09"
       ],
       "parent": "N00",
-      "state": "Backlog",
+      "state": "Done",
       "priority": 2,
       "requiresProceed": false,
       "sourceLinks": [
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/ACCEPTANCE-RESULTS.md"
       ],
       "milestone": "NAS deployment and local qualification",
       "labels": [
         "v1"
       ],
       "trackingStatus": "repository_only",
-      "requiresResumeRequest": false
+      "requiresResumeRequest": false,
+      "progress": "Automatic sync and capacity refusal passed local synthetic tests."
     },
     {
       "key": "N04",
       "project": "v1",
       "title": "Private maintenance access and operator runbook",
-      "description": "Authorized NAS extension; implementation evidence pending at the documentation baseline.",
+      "description": "NAS-first implementation and local verification are authorized and tracked here. Consult the linked acceptance report for executed evidence; actual NAS, Mac and hosted-client qualification remains separate.",
       "acceptance": [
         "Use private VPN and host-key-verified dedicated SSH identity for the workload VM.",
         "Exclude DSM admin, Docker group and unrestricted sudo; describe explicit revocation and fixed privileged helper boundaries."
@@ -2806,27 +2817,30 @@
         "A21"
       ],
       "dependsOn": [
-        "N00"
+        "N00",
+        "R09"
       ],
       "parent": "N00",
-      "state": "Backlog",
+      "state": "In Progress",
       "priority": 2,
       "requiresProceed": false,
       "sourceLinks": [
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/ACCEPTANCE-RESULTS.md"
       ],
       "milestone": "NAS deployment and local qualification",
       "labels": [
         "v1"
       ],
       "trackingStatus": "repository_only",
-      "requiresResumeRequest": false
+      "requiresResumeRequest": false,
+      "progress": "Private VPN/SSH runbook delivered; actual connection awaits access."
     },
     {
       "key": "N05",
       "project": "v1",
       "title": "Local NAS-profile integration qualification",
-      "description": "Authorized NAS extension; implementation evidence pending at the documentation baseline.",
+      "description": "NAS-first implementation and local verification are authorized and tracked here. Consult the linked acceptance report for executed evidence; actual NAS, Mac and hosted-client qualification remains separate.",
       "acceptance": [
         "Run synthetic JWT/maintained-AS, network separation, container, sync/recovery and capacity tests in available Linux/Docker.",
         "Record actual images, commands, results and optional-dependency coverage; distinguish macOS CI from the owner Mac."
@@ -2852,27 +2866,30 @@
         "A21"
       ],
       "dependsOn": [
-        "N00"
+        "N00",
+        "R09"
       ],
       "parent": "N00",
-      "state": "Backlog",
+      "state": "Done",
       "priority": 2,
       "requiresProceed": false,
       "sourceLinks": [
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/ACCEPTANCE-RESULTS.md"
       ],
       "milestone": "NAS deployment and local qualification",
       "labels": [
         "v1"
       ],
       "trackingStatus": "repository_only",
-      "requiresResumeRequest": false
+      "requiresResumeRequest": false,
+      "progress": "Local hardened-container and real Keycloak/Postgres qualification passed. Actual NAS, Mac and hosted clients remain under N06."
     },
     {
       "key": "N06",
       "project": "v1",
       "title": "Qualify actual NAS, Mac and hosted client connections",
-      "description": "Authorized NAS extension; implementation evidence pending at the documentation baseline.",
+      "description": "NAS-first implementation and local verification are authorized and tracked here. Consult the linked acceptance report for executed evidence; actual NAS, Mac and hosted-client qualification remains separate.",
       "acceptance": [
         "When the owner supplies access, inspect real DSM/packages/RAM, VLAN/IPv6/host rules and local storage; test intended blocked destinations.",
         "Verify actual Mac/NAS sync and hosted app/API connections using approved synthetic fixtures; live personal data and publication remain separately authorized."
@@ -2898,21 +2915,24 @@
         "A21"
       ],
       "dependsOn": [
-        "N00"
+        "N00",
+        "R09"
       ],
       "parent": "N00",
       "state": "Backlog",
       "priority": 2,
       "requiresProceed": false,
       "sourceLinks": [
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/ACCEPTANCE-RESULTS.md"
       ],
       "milestone": "NAS deployment and local qualification",
       "labels": [
         "v1"
       ],
       "trackingStatus": "repository_only",
-      "requiresResumeRequest": false
+      "requiresResumeRequest": false,
+      "progress": "Waiting for owner-provided NAS access and separate actual-client qualification."
     }
   ],
   "counts": {
@@ -3709,36 +3729,57 @@
   },
   "implementationEvidence": {
     "date": "2026-11-07",
-    "platform": "Local Linux plus hosted macOS/Ubuntu CI",
-    "syntheticTestsPassed": 86,
-    "summary": "Core, MCP, import, direct synchronization and CLI are implemented. The local Linux run passed all 86 synthetic tests, including both independent SDK tests. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2. Complete personal-v1 acceptance remains open.",
+    "platform": "Local Linux; hosted-OS and Docker results recorded separately",
+    "syntheticTestsPassed": 146,
+    "summary": "The personal graph, MCP/OAuth, imports, split TLS listeners, guarded writes and resumable automatic synchronization are implemented. Native Linux qualification passed 146 tests. The acceptance report records current container and hosted-OS evidence separately. Actual NAS/Mac networking, hosted provider clients and original archives remain unqualified. The real Keycloak/Postgres Docker smoke workflow passed, including OAuth capture/read, private TLS sync, restart and revocation.",
     "evidenceLinks": [
-      "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
-      "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
-      "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
-      "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
-      "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
-      "https://github.com/ProvisioInsights/RefactoredMemory/blob/ebb73d2/.github/workflows/verify.yml"
+      "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/ACCEPTANCE-RESULTS.md",
+      "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/MCP-CONFORMANCE.md",
+      "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-DEPLOYMENT.md",
+      "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/REMOTE-ADMIN.md",
+      "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/IMPORT-FORMATS.md",
+      "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/SYNC-PROTOCOL.md"
     ],
     "remainingGaps": [
-      "Owner’s actual Mac/filesystem and actual Mac/Linux cross-machine peer-pair qualification; hosted macOS/Ubuntu CI is separate evidence.",
-      "Actual installed Praxis2 application integration remains unexecuted. Praxis2 is confirmed; neither Praxis repository may be modified, and client modifications are not a prerequisite for RefactoredMemory’s newest-spec MCP support.",
-      "Complete original legacy-run inventory/archive fidelity and encrypted-input/key qualification."
+      "Actual RS822+ DSM/packages/RAM/filesystem, workload VLAN/IPv6/firewall and private maintenance connection.",
+      "Actual Mac/NAS peer pair and ChatGPT/Claude apps/APIs/Praxis2 connections.",
+      "Original prior-run archive inventory and authorized live-data migration."
     ],
     "releaseAccepted": false,
-    "hostedCI": {
-      "commit": "ebb73d2",
-      "platforms": [
-        "macOS",
-        "Ubuntu"
+    "historicalCoreEvidence": {
+      "date": "2026-11-07",
+      "platform": "Local Linux plus hosted macOS/Ubuntu CI",
+      "syntheticTestsPassed": 86,
+      "summary": "Core, MCP, import, direct synchronization and CLI are implemented. The local Linux run passed all 86 synthetic tests, including both independent SDK tests. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2. Complete personal-v1 acceptance remains open.",
+      "evidenceLinks": [
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/ebb73d2/.github/workflows/verify.yml"
       ],
-      "status": "passed",
-      "suiteTestCount": 83,
-      "macOSOptionalSDKTestsSkipped": 2,
-      "localOptionalSDKTestsPassed": 2,
-      "workflow": "https://github.com/ProvisioInsights/RefactoredMemory/blob/ebb73d2/.github/workflows/verify.yml",
-      "qualificationBoundary": "Hosted runners do not qualify the owner’s actual Mac/Linux peer pair or installed Praxis2 application."
-    }
+      "remainingGaps": [
+        "Owner’s actual Mac/filesystem and actual Mac/Linux cross-machine peer-pair qualification; hosted macOS/Ubuntu CI is separate evidence.",
+        "Actual installed Praxis2 application integration remains unexecuted. Praxis2 is confirmed; neither Praxis repository may be modified, and client modifications are not a prerequisite for RefactoredMemory’s newest-spec MCP support.",
+        "Complete original legacy-run inventory/archive fidelity and encrypted-input/key qualification."
+      ],
+      "releaseAccepted": false,
+      "hostedCI": {
+        "commit": "ebb73d2",
+        "platforms": [
+          "macOS",
+          "Ubuntu"
+        ],
+        "status": "passed",
+        "suiteTestCount": 83,
+        "macOSOptionalSDKTestsSkipped": 2,
+        "localOptionalSDKTestsPassed": 2,
+        "workflow": "https://github.com/ProvisioInsights/RefactoredMemory/blob/ebb73d2/.github/workflows/verify.yml",
+        "qualificationBoundary": "Hosted runners do not qualify the owner’s actual Mac/Linux peer pair or installed Praxis2 application."
+      }
+    },
+    "containerEvidence": "docs/results/nas-docker-smoke.json; passed, package hash matched runtime commit a0ff34b8"
   },
   "clientTarget": {
     "application": "Praxis2",

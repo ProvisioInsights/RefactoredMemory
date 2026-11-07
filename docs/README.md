@@ -1,6 +1,6 @@
 # Documentation index
 
-**Current stage:** implementation authorized on 7 November 2026. Q7–Q10 are accepted and the owner explicitly said **“Proceed.”** The [implementation contract](CONTRACT.md) fixes the initial runtime and shared APIs. Engineering evidence and real-environment qualification remain distinct from this approval.
+**Current stage:** personal-v1 and the NAS/OAuth/automatic-sync extension are implemented and under qualification. The owner's 7 November 2026 **“Proceed”** and subsequent NAS build instruction remain in force. The [implementation contract](CONTRACT.md) and [NAS contract](NAS-CONTRACT.md) define the implemented boundaries; [acceptance evidence](ACCEPTANCE-RESULTS.md) records what actually ran. Actual owner Mac/NAS and hosted-client qualification remain separate.
 
 **Tracking:** Linear setup is paused at the owner's request. Use the [repository tracking plan](tracking/README.md) meanwhile. No action to create a Linear team is currently needed, and Linear availability is not a product or documentation gate.
 
@@ -17,14 +17,14 @@
 | [Research](RESEARCH.md) | Source ledger, supplied measurements, limitations and outstanding research. | Public-safe summary; full historical private evidence remains in its authorized sources. |
 | [Execution prompt](EXECUTION_PROMPT.md) | Instructions for continuing the authorized implementation and qualification. | Matches accepted requirements and the explicit Proceed already received. |
 | [Implementation contract](CONTRACT.md) | Shared operation, temporal, authority and recovery APIs. | Implemented contract; limits remain explicit. |
-| [NAS contract](NAS-CONTRACT.md) | Accepted NAS/OAuth/automatic-sync extension. | Governs the new build; evidence remains separate from its approval. |
+| [NAS contract](NAS-CONTRACT.md) | Accepted NAS/OAuth/automatic-sync extension. | Implemented extension contract; actual deployment and hosted-client evidence remain separate. |
 | [NAS deployment](NAS-DEPLOYMENT.md) | Isolated VM/container, tunnel and TLS deployment. | Device configuration requires actual NAS qualification. |
 | [Maintenance access](REMOTE-ADMIN.md) | Private VPN and restricted SSH identity. | No broad DSM or Docker administrator grant. |
-| [Runbook](RUNBOOK.md) | No-install CLI, MCP setup, two peers and recovery. | Executable commands with synthetic-first guidance. |
+| [Runbook](RUNBOOK.md) | Core CLI, optional OAuth dependencies, two peers and recovery. | Executable commands with synthetic-first guidance. |
 | [Acceptance evidence](ACCEPTANCE-RESULTS.md) | Actual test and benchmark results plus remaining qualification. | Distinguishes local Linux/SDK and hosted macOS/Ubuntu checks from unqualified owner-device/Praxis2/original-archive checks. |
-| [MCP conformance](MCP-CONFORMANCE.md) | Latest protocol and actual client evidence. | Modern protocol checks plus independent legacy SDK integration; installed Praxis2 unverified. |
+| [MCP conformance](MCP-CONFORMANCE.md) | Latest protocol and actual client evidence. | Modern protocol, OAuth and explicit legacy HTTP checks; actual hosted apps and installed Praxis2 unverified. |
 | [Import formats](IMPORT-FORMATS.md) | Inventoried legacy generations and conversion/fidelity limits. | Each input is accounted for; unsupported material is not silently promoted. |
-| [Sync protocol](SYNC-PROTOCOL.md) | Bounded direct exchange and explicit recovery-origin admission. | Synthetic process, retry, conflict and recovery evidence. |
+| [Sync protocol](SYNC-PROTOCOL.md) | Bounded direct exchange and explicit recovery-origin admission. | Bounded automatic runner, persisted backoff, capacity pause, direct exchange and recovery evidence. |
 | [Tracking plan](tracking/README.md) | Prepared backlog, dependencies, requirement coverage and future Linear setup. | Planning aid; does not override requirements or authorize implementation. |
 
 ## Organization and maintenance
