@@ -10,7 +10,11 @@ Updated 7 November 2026. This records accepted scope, not approval to implement.
 | First runtime pair (Q2) | Accepted | Owner's Mac plus a personally controlled Linux VM/container. This does not authorize new external provisioning. |
 | MCP | Required v1 | Latest published stable revision, verified against actual Praxis and another independent MCP client. |
 | Initial import (Q5) | Required v1 | Markdown/Logseq plus data from prior LivingAtlas runs. Inventory concrete legacy generations and available artifacts before defining adapters. |
-| Inferred-write policy (Q6) | Awaiting owner answer | Decide whether inferred additions await review or can be accepted automatically within a configured grant. Explicit owner requests and model inference are separate cases. |
+| Inferred-write policy (Q6) | Accepted | Automatically accept model-inferred additions within configured client/agent grants, without per-item human review. Preserve evidence, actor/model/derivation attribution, uncertainty, conflicts and correction history. Acceptance is not human verification or established truth. |
+| Capture triggers (Q7) | Awaiting owner answer | Proactive capture of useful knowledge versus writes only on explicit requests. Q6 does not settle when capture should occur. |
+| Preferred claims (Q8) | Awaiting owner answer | Prefer an explicit owner correction while retaining contrary evidence, or present competing claims without a preference. |
+| Management surface (Q9) | Awaiting owner answer | MCP clients and command-line tools, or a simple browser UI in v1 as well. |
+| Day-one workflows (Q10) | Awaiting owner examples | Three concrete questions or tasks to turn into observable personal acceptance cases. |
 | Corporate ownership principle (Q3) | Retained for later phases | Organizations retain their data when people leave; people retain personal data. Corporate domain/offboarding implementation does not gate v1. |
 | Product encryption and key recovery (Q4) | Deferred | No new content-encryption/key-custody system in v1. An encrypted legacy input may still need its original approved keys for import. |
 | Documentation authority | Accepted | Repository docs are authoritative; companion Pages are reconciled. |
@@ -19,7 +23,7 @@ Updated 7 November 2026. This records accepted scope, not approval to implement.
 
 ## Remaining design and evidence work
 
-- Record the inferred-write answer consistently in the PRD, ADRs, importer and MCP contracts, fixtures and execution prompt.
+- Resolve Q7–Q10 without reopening accepted Q6. Use the answers to complete capture, preferred-claim, management and day-one acceptance contracts. Automatic acceptance does not authorize a separate extraction service or source-text authority changes.
 - Locate and classify prior LivingAtlas stores, logs, snapshots, exports and imported records through authorized read-only discovery. Do not guess that a source generation has been reviewed or that data is available.
 - Select a persistence engine, peer synchronization protocol and compatible MCP SDK using evidence and the personal-v1 contract. Existing selective-read measurements do not decide these choices.
 - Define the client version/transport matrix and concrete import conversion/accounting plan. Missing client access or legacy artifacts must be explicit evidence gaps.

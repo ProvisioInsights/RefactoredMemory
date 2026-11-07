@@ -6,13 +6,23 @@
 
 **Scope:** personal v1 on Mac + Linux, both offline writable with sync; required MCP; Markdown/Logseq and prior LivingAtlas import. Corporate tenancy and product encryption are later.
 
-**44 planned items across 3 projects.** All C01–C24 and M01–M19 are mapped, with E01–E12, R01–R06 and P01–P06 retained in the later roadmap. All 28 v1 items depend on explicit owner proceed. Q6 remains unanswered. No dates, estimates or assignees are invented.
+**44 planned items across 3 projects.** All C01–C24 and M01–M19 are mapped, with E01–E12, R01–R06 and P01–P06 retained in the later roadmap. All 28 v1 items depend on explicit owner proceed. Q6 is accepted and recorded; Q7–Q10 remain unanswered. No dates, estimates or assignees are invented.
 
-This readable view is generated from `linear-plan.json`. Planning keys are internal references, not Linear IDs or acceptance-test IDs. Statuses describe the plan/evidenced work, not remote Linear objects.
+This readable view is generated from `linear-plan.json`. Planning keys are internal references, not Linear IDs or acceptance-test IDs. Statuses describe the plan/evidenced work, not remote Linear objects. R01 and R03 are completed documentation/decision records only; no product implementation or executed tests are claimed.
+
+## Accepted policy and pending owner choices
+
+| Decision | Status | Meaning | Tracked by |
+| --- | --- | --- | --- |
+| Q6 | Accepted | Automatically accept model-inferred additions within configured client/agent grants, without per-item human review. Preserve source/evidence, actor/model/derivation attribution, uncertainty, conflicts and correction history. Acceptance is neither human verification nor established truth and cannot create or widen authority. | R03, R06, G01, G05, M02, M03, I02, Q01 |
+| Q7 | Awaiting owner answer | Should configured clients proactively capture useful knowledge or write only on explicit requests? Q6 does not select capture triggers or authorize a separate extraction/background service. | R06, R08, G05, M01, I02 |
+| Q8 | Awaiting owner answer | How should an explicit owner correction be preferred when competing claims remain, versus returning a dispute without a preferred claim? Preserve alternatives, provenance and correction history under either choice. | R06, R08, G02, S03, Q01 |
+| Q9 | Awaiting owner answer | Should the v1 owner interface use MCP/CLI only or include a simple browser UI? Rich graphical/cinematic exploration remains separate later work. | R06, R08, Q02, Q04, L06 |
+| Q10 | Awaiting owner answer | Which three day-one user tasks should v1 prove end to end? Use the answer to make usefulness and acceptance scenarios concrete. | R06, R08, Q02, Q05 |
 
 ## RefactoredMemory — Research and documentation gate
 
-Active authorized planning for personal v1. Existing scope baseline is published, but Q6, detailed contracts, source/migration evidence and architecture acceptance remain open. No product implementation starts until R09 is explicitly satisfied.
+Active authorized planning for personal v1. Q6 is accepted and recorded: inferred additions are accepted automatically within configured client/agent grants without per-item review, with provenance and uncertainty retained. Q7–Q10, detailed contracts, source/migration evidence and architecture acceptance remain open. No product implementation starts until R09 is explicitly satisfied.
 
 Milestones: Evidence and owner decisions; Reconciled architecture and readiness; Explicit implementation authorization
 
@@ -27,7 +37,7 @@ Acceptance criteria:
 - After a new owner request to resume, verify the intended Provisio Insights workspace and create/reuse the exact RefactoredMemory team without duplicating existing work.
 - Create/reconcile the three projects, workstream parents and actionable issues, with public-safe repository links and requirement/test mappings.
 - Verify every C01–C24 and M01–M19 is tracked in its correct v1/later scope, all v1 implementation issues are directly blocked by R09, and no dependency cycle or fabricated completion exists.
-- Record actual team/project/issue URLs and tracking conventions in the project documentation. Only the completed documentation baseline and this setup issue may be Done once their real work is complete.
+- Record actual team/project/issue URLs and tracking conventions only after resumed setup and verification. R01 and R03 may be Done for their completed documentation/decision evidence; R00 remains deferred until actual external setup is requested and completed. No implementation or tests are implied.
 
 Sources: [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md) · [DECISIONS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/DECISIONS.md)
 
@@ -41,7 +51,7 @@ Acceptance criteria:
 
 - Accepted scope records one personal owner; Mac plus Linux both write offline and sync; MCP, Markdown/Logseq and prior LivingAtlas import are v1.
 - Repository docs and companion Pages are reconciled; corporate tenancy, content encryption and transitive mesh remain later.
-- Baseline published at commit 7303a93aeed3b15f24dc03b411d043404100b13f. Q6 and the explicit proceed gate remain open; this completion does not imply architecture or product acceptance.
+- Baseline published at commit 7303a93aeed3b15f24dc03b411d043404100b13f. The later accepted Q6 policy is recorded under R03; Q7–Q10 and the explicit proceed gate remain open. Baseline completion does not imply architecture or product acceptance.
 
 Sources: [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md) · [ADRS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ADRS.md) · [DECISIONS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/DECISIONS.md)
 
@@ -58,19 +68,19 @@ Acceptance criteria:
 
 Sources: [RESEARCH.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RESEARCH.md) · [EXECUTION_PROMPT.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/EXECUTION_PROMPT.md)
 
-### R03 — Resolve Q6: acceptance policy for model-inferred knowledge
+### R03 — Record accepted Q6: scoped automatic acceptance of inferred knowledge
 
-Planned status: Backlog.
+Planned status: Done.
 
-Needs owner direction. No answer is assumed. This is a consequential design decision, not authorization to implement.
+The owner has accepted automatic inferred additions within configured client/agent grants, without per-item human review. This issue records the policy in planning documents only. No product implementation, executed tests or permission to proceed is claimed. Q7–Q10 remain unanswered.
 
 Acceptance criteria:
 
-- Obtain and record the owner decision: review inferred additions or accept them automatically within configured grants; distinguish explicit “remember this” requests.
-- Update PRD, ADRs, MCP/import contracts, prompt and validation cases consistently.
-- Preserve source evidence, actor/derivation/review attribution and correction history under the chosen policy; source text cannot grant write authority.
+- Record Q6 as accepted: model-inferred additions are automatically accepted within configured client/agent grants without per-item human review; preserve the distinction from explicit owner instructions and any actual human verification.
+- Propagate the accepted policy through PRD, ADRs, MCP/import contracts, prompt, validation plan and tracking records. Track Q7–Q10 separately without inferring their answers or reopening Q6.
+- Require evidence/source links, actor/model/derivation attribution, uncertainty, conflicting claims and correction history. Acceptance is not human verification or established truth; source text and accepted assertions cannot create or widen grants.
 
-Requirements: C20, C23 · Tests: M18 · ADRs: A03, A15
+Requirements: C20, C23 · Tests: M18 · ADRs: A03, A15 · Decisions: Q6
 
 Sources: [DECISIONS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/DECISIONS.md) · [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md)
 
@@ -111,14 +121,16 @@ Sources: [ADRS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/mai
 
 Planned status: Backlog.
 
+Apply accepted Q6. Q7 capture triggers, Q8 preferred-claim handling, Q9 owner interface and Q10 day-one tasks remain consequential open choices; do not resolve them by implication.
+
 Acceptance criteria:
 
 - Specify identities/types, evidence, world-time uncertainty, replica-scoped knowledge/frontiers, source disputes, correction actions and concurrent lineage resolution.
 - Define atomic operation groups, dependency visibility, durable progress, personal peer/client authority, current permissions across history and delete/rejoin/restore semantics.
 - Define common query coverage/fidelity/error responses and limits; preserve an export/migration path without building corporate tenancy or encryption infrastructure.
-- Reconcile diagrams, PRD and ADRs with Q6, technology and migration decisions.
+- Reconcile diagrams, PRD and ADRs with accepted Q6, technology and migration decisions. Obtain and record Q7–Q10 answers for capture triggers, owner-correction/claim preference, v1 interface and three day-one tasks; do not treat Q6 as answering those questions.
 
-Requirements: C01, C02, C04, C05, C06, C07, C09, C11, C12, C13, C15, C16, C17, C19, C20, C21, C23 · ADRs: A02, A05, A06, A09, A10, A15
+Requirements: C01, C02, C04, C05, C06, C07, C09, C11, C12, C13, C15, C16, C17, C19, C20, C21, C23 · ADRs: A02, A05, A06, A09, A10, A15 · Decisions: Q6, Q7, Q8, Q9, Q10
 
 Prerequisites: R03, R04, R05
 
@@ -147,8 +159,10 @@ Acceptance criteria:
 
 - PRD, ADRs, architecture, MCP, validation, research, decisions, execution prompt and companion Pages agree on scope and accepted decisions.
 - Every required C/M item maps to an observable acceptance check and a delivery issue; deferred C22/M17, M08 and P01–P06 cannot block v1.
-- Resolve implementation-blocking ambiguities or record explicit owner acceptance of any remaining limitation; present document links and readiness summary.
+- Resolve Q7–Q10 and other implementation-blocking ambiguities, or record explicit owner acceptance of any remaining limitation; present document links and readiness summary. Accepted Q6 and its recording are not implementation authorization.
 - Do not start product implementation or mark the separate owner-proceed issue complete automatically.
+
+Decisions: Q7, Q8, Q9, Q10
 
 Prerequisites: R01, R02, R03, R04, R05, R06, R07
 
@@ -194,39 +208,43 @@ Sources: [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main
 
 ### G01 — Implement typed entities, sourced assertions, observations and evidence
 
-Planned status: Backlog. Parent: G00.
+Planned status: Backlog.
 
 Acceptance criteria:
 
 - Implement stable IDs, schema versions, typed values/predicates/endpoints and bounded unresolved observations; unknown actions/predicates cannot silently affirm facts.
-- Preserve supporting/contradicting/context evidence and source versions; distinguish source, actor, derivation and review without manufacturing corroboration.
+- Preserve supporting/contradicting/context evidence and source versions; distinguish source, actor, model/version, derivation, uncertainty and actual human review without manufacturing corroboration. Automatically admitted inferred assertions are not labelled human-verified or established truth.
 - Exercise synthetic scalar/relationship/observation capture and evidence lookup with the same contract used by MCP and import.
 
-Requirements: C01, C20 · Tests: M01, M13, M15 · ADRs: A02, A03
+Requirements: C01, C20 · Tests: M01, M13, M15 · ADRs: A02, A03 · Decisions: Q6
 
 Prerequisites: R09, R06
+
+Workstream parent: G00
 
 Sources: [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md)
 
 ### G02 — Implement bitemporal history, semantic actions and visible conflicts
 
-Planned status: Backlog. Parent: G00.
+Planned status: Backlog.
 
 Acceptance criteria:
 
 - World time and peer-scoped knowledge positions/frontiers are independent; preserve origin, receipt and application metadata, unknown/approximate dates and half-open intervals.
-- Correct/retract/invalidate/reinstate append sourced lineage and reasons; retain past beliefs and concurrent heads without wall-clock winners.
+- Correct/retract/invalidate/reinstate append sourced lineage and reasons; retain past beliefs and concurrent heads without wall-clock winners. Apply the Q8 owner-correction/preferred-claim policy once answered, preserving competing claims and history. An authorized, attributed resolution references the heads considered; automatic acceptance does not impose a human-review gate or silently resolve competing claims.
 - Distinguish conflicting independent sources from revision branches and copied evidence; verify late receipt never backdates local knowledge.
 
-Requirements: C05, C17, C19, C20 · Tests: M04, M13, M14, M15, M16 · ADRs: A02, A09
+Requirements: C05, C17, C19, C20 · Tests: M04, M13, M14, M15, M16 · ADRs: A02, A09 · Decisions: Q8
 
 Prerequisites: R09, G01
+
+Workstream parent: G00
 
 Sources: [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md) · [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md)
 
 ### G03 — Implement durable atomic operation storage and restart recovery
 
-Planned status: Backlog. Parent: G00.
+Planned status: Backlog.
 
 Acceptance criteria:
 
@@ -238,11 +256,13 @@ Requirements: C02, C04, C11 · Tests: M01, M06, M10, M16 · ADRs: A04, A09
 
 Prerequisites: R09, G01, R05
 
+Workstream parent: G00
+
 Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md) · [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md)
 
 ### G04 — Implement consistent temporal queries, traversal, search and index rebuild
 
-Planned status: Backlog. Parent: G00.
+Planned status: Backlog.
 
 Acceptance criteria:
 
@@ -254,27 +274,32 @@ Requirements: C07, C15, C16, C21 · Tests: M01, M12, M13, M14, M16
 
 Prerequisites: R09, G02, G03
 
+Workstream parent: G00
+
 Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md) · [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md)
 
 ### G05 — Enforce personal client grants, current authority and safe boundaries
 
-Planned status: Backlog. Parent: G00.
+Planned status: Backlog.
 
 Acceptance criteria:
 
-- Authenticate personal clients, scope read/write/admin authority and enforce the accepted inferred-write policy independently of source text.
+- Authenticate personal clients and scope read/write/admin authority. Automatically accept inferred additions within configured client/agent grants without per-item review; deny out-of-grant operations and source-text attempts to widen authority. Q7 still determines capture triggers.
 - Current grants govern historical queries and output destinations; local revocation prevents old known-at access from re-enabling authority.
 - Bound input/query sizes, protect credentials and local paths, redact logs and label actual plaintext/processing profile honestly; HTTPS/TLS protects remote transport.
+- Retain source/evidence, actor/model/derivation attribution, uncertainty, conflicts and correction history for automatic acceptance; do not label acceptance as human verification or established truth.
 
-Requirements: C08, C09, C10, C12, C16, C23 · Tests: M02, M09, M12, M18 · ADRs: A05, A06, A15
+Requirements: C08, C09, C10, C12, C16, C23 · Tests: M02, M09, M12, M18 · ADRs: A05, A06, A15 · Decisions: Q6, Q7
 
 Prerequisites: R09, R03, G01
+
+Workstream parent: G00
 
 Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md) · [MCP.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP.md)
 
 ### G06 — Implement personal delete, export, backup and restore lifecycle
 
-Planned status: Backlog. Parent: G00.
+Planned status: Backlog.
 
 Acceptance criteria:
 
@@ -286,6 +311,8 @@ Acceptance criteria:
 Requirements: C06, C11, C13, C21, C23 · Tests: M07, M10, M14, M16, M18
 
 Prerequisites: R09, G02, G03, G05
+
+Workstream parent: G00
 
 Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md) · [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md)
 
@@ -306,7 +333,7 @@ Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/
 
 ### S01 — Implement personal peer admission, identity and protected transport
 
-Planned status: Backlog. Parent: S00.
+Planned status: Backlog.
 
 Acceptance criteria:
 
@@ -318,11 +345,13 @@ Requirements: C04, C09, C10, C12 · Tests: M02, M09 · ADRs: A06, A09
 
 Prerequisites: R09, G03, G05
 
+Workstream parent: S00
+
 Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md)
 
 ### S02 — Implement bounded graph-operation exchange and durable causal progress
 
-Planned status: Backlog. Parent: S00.
+Planned status: Backlog.
 
 Acceptance criteria:
 
@@ -334,27 +363,31 @@ Requirements: C03, C04, C15 · Tests: M03, M05, M06 · ADRs: A09
 
 Prerequisites: R09, S01, G02, G03
 
+Workstream parent: S00
+
 Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md) · [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md)
 
 ### S03 — Converge offline corrections and expose peer knowledge, conflicts and sync state
 
-Planned status: Backlog. Parent: S00.
+Planned status: Backlog.
 
 Acceptance criteria:
 
-- Preserve concurrent offline lineage changes including retract versus invalidate and append an authorized resolution naming reviewed heads.
+- Preserve concurrent offline lineage changes including retract versus invalidate and append an authorized resolution naming considered heads with actor/evidence attribution. Apply Q8 preferred-claim behavior once answered; an automatic acceptance is not a human review event.
 - Compare semantic answers at common frontiers; retain differing earlier local-known histories and distinguish source disputes from revision branches.
 - Expose sync progress, dependency gaps, peer errors, unresolved branches, frontier and coverage to clients/inspection.
 
-Requirements: C05, C15, C17, C20 · Tests: M04, M05, M12, M15
+Requirements: C05, C15, C17, C20 · Tests: M04, M05, M12, M15 · Decisions: Q6, Q8
 
 Prerequisites: R09, S02, G02, G04
+
+Workstream parent: S00
 
 Sources: [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md) · [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md)
 
 ### S04 — Qualify the Mac/Linux disconnect, reconnect, crash and stale-rejoin journey
 
-Planned status: Backlog. Parent: S00.
+Planned status: Backlog.
 
 Acceptance criteria:
 
@@ -365,6 +398,8 @@ Acceptance criteria:
 Requirements: C03, C04, C05, C06, C13, C18 · Tests: M03, M04, M05, M06, M07, M09, M10, M15, M16, M18
 
 Prerequisites: R09, S03, G06
+
+Workstream parent: S00
 
 Sources: [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md)
 
@@ -385,49 +420,55 @@ Sources: [MCP.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main
 
 ### M01 — Implement the current-standard MCP server and bounded graph tool surface
 
-Planned status: Backlog. Parent: M00.
+Planned status: Backlog.
 
 Acceptance criteria:
 
 - Implement selected revision discovery, metadata/capabilities, schemas and supported stdio/Streamable HTTP behavior using verified SDK support.
-- Expose bounded capture, query, search/traversal, history/evidence and correction tools with consistent graph/provenance/coverage results.
+- Expose bounded capture, query, search/traversal, history/evidence and correction tools with consistent graph/provenance/coverage results. Accept inferred additions automatically within configured grants under Q6; apply the Q7 capture-trigger policy once answered.
 - Implement only deliberate tested compatibility for actual client needs; keep consumer, peer and owner-administration authority separate.
 
-Requirements: C07, C08, C15, C16, C24 · Tests: M01, M12, M19 · ADRs: A16
+Requirements: C07, C08, C15, C16, C24 · Tests: M01, M12, M19 · ADRs: A16 · Decisions: Q6, Q7
 
 Prerequisites: R09, R07, G04, G05
+
+Workstream parent: M00
 
 Sources: [MCP.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP.md)
 
 ### M02 — Qualify MCP authorization, protocol errors, retries and interruption
 
-Planned status: Backlog. Parent: M00.
+Planned status: Backlog.
 
 Acceptance criteria:
 
 - Exercise unauthorized/overscoped requests, invalid schemas, unsupported versions, selected auth/transport requirements and bounded outputs.
-- Mutations obey accepted authority/inference policy and safe retry semantics; interruption/cancellation cannot invent completed writes.
+- Automatically accept in-grant inferred additions without per-item human review, preserving source/evidence, actor/model/derivation, uncertainty, conflicts and correction history. Reject out-of-grant writes and grant-elevation attempts; retries and interruption/cancellation cannot invent completed writes or human verification.
 - Compare MCP time/provenance/coverage answers to direct graph API results and verify sensitive content/credentials do not leak into ordinary logs.
 
-Requirements: C08, C09, C10, C16, C23, C24 · Tests: M02, M12, M18, M19
+Requirements: C08, C09, C10, C16, C23, C24 · Tests: M02, M12, M18, M19 · Decisions: Q6
 
 Prerequisites: R09, M01, G05
+
+Workstream parent: M00
 
 Sources: [MCP.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP.md) · [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md)
 
 ### M03 — Demonstrate real Praxis and independent-client memory workflows
 
-Planned status: Backlog. Parent: M00.
+Planned status: Backlog.
 
 Acceptance criteria:
 
 - Record actual client/SDK/protocol versions and connection configuration without secrets.
-- From Praxis and an independent client, discover capabilities, submit a sourced authorized change, query temporal evidence, inspect/correct it and verify denied unauthorized use.
+- From Praxis and an independent client, discover capabilities, submit an automatically accepted sourced inference within a configured grant without per-item review, query temporal evidence, inspect/correct it and verify denied unauthorized use. Acceptance retains provenance/uncertainty and is not human verification.
 - Provide repeatable setup/run instructions and distinguish unavailable-client gaps from passed harness checks.
 
-Requirements: C08, C24 · Tests: M19
+Requirements: C08, C24 · Tests: M19 · Decisions: Q6
 
 Prerequisites: R09, M02
+
+Workstream parent: M00
 
 Sources: [MCP.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP.md) · [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md)
 
@@ -449,39 +490,43 @@ Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/
 
 ### I01 — Implement import manifests, source boundaries and complete record accounting
 
-Planned status: Backlog. Parent: I00.
+Planned status: Backlog.
 
 Acceptance criteria:
 
-- Route authorized imported changes through the common graph contract; preserve source identities/versions and distinguish original times from new-peer import knowledge.
+- Route authorized imported changes through the common graph contract; preserve source identities/versions and distinguish original times from new-peer import knowledge. Model-derived additions may be accepted automatically within configured grants under Q6, without inventing source fidelity, human verification or permission to read additional sources.
 - Bound approved roots/formats/sizes, prevent arbitrary file access and make unchanged, imported, unsupported, quarantined and failed outcomes inspectable.
 - Persist ID mappings and import progress for safe retry; do not silently drop records, fabricate fidelity or overwrite originals.
 
-Requirements: C14, C16, C17, C20 · Tests: M02, M11, M13, M15
+Requirements: C14, C16, C17, C20 · Tests: M02, M11, M13, M15 · Decisions: Q6
 
 Prerequisites: R09, R04, G02, G03, G05
+
+Workstream parent: I00
 
 Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md)
 
 ### I02 — Implement Markdown and Logseq capture with repeat/change semantics
 
-Planned status: Backlog. Parent: I00.
+Planned status: Backlog.
 
 Acceptance criteria:
 
 - Convert the inventoried supported Markdown/Logseq layouts with source references, supported structured facts and bounded unresolved observations.
-- Apply the accepted inferred-write policy; uncertain extraction is visible rather than invented certainty.
+- Automatically accept inferred additions within configured client/agent grants without per-item human review; retain evidence, actor/model/derivation, uncertainty, conflicts and correction history rather than presenting inference as source-stated or human-verified. Follow the eventual Q7 capture-trigger decision without assuming proactive capture.
 - Test unchanged reimport, changed content/source versions, duplicate references, removals, malformed/unsupported inputs and source-level accounting with synthetic files.
 
-Requirements: C01, C14, C19, C20 · Tests: M01, M11, M14, M15
+Requirements: C01, C14, C19, C20 · Tests: M01, M11, M14, M15 · Decisions: Q6, Q7
 
 Prerequisites: R09, I01, R03
+
+Workstream parent: I00
 
 Sources: [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md) · [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md)
 
 ### I03 — Implement adapters for inventoried historical LivingAtlas generations
 
-Planned status: Backlog. Parent: I00.
+Planned status: Backlog.
 
 Acceptance criteria:
 
@@ -493,11 +538,13 @@ Requirements: C11, C14, C17, C19, C20 · Tests: M11, M13, M14, M15, M16
 
 Prerequisites: R09, I01, R04
 
+Workstream parent: I00
+
 Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md) · [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md)
 
 ### I04 — Qualify encrypted legacy-input compatibility when inventory requires it
 
-Planned status: Backlog. Parent: I00.
+Planned status: Backlog.
 
 Conditional compatibility work determined by inventoried legacy sources; it is not a mandate to build a new encryption system.
 
@@ -511,11 +558,13 @@ Requirements: C10, C14, C16 · Tests: M02, M11
 
 Prerequisites: R09, R04, I03
 
+Workstream parent: I00
+
 Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md) · [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md)
 
 ### I05 — Rehearse migration, verify rollback and prepare the live-import approval plan
 
-Planned status: Backlog. Parent: I00.
+Planned status: Backlog.
 
 Acceptance criteria:
 
@@ -526,6 +575,8 @@ Acceptance criteria:
 Requirements: C13, C14, C17, C19 · Tests: M10, M11, M13, M14, M16
 
 Prerequisites: R09, I02, I03, I04, G06
+
+Workstream parent: I00
 
 Sources: [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md)
 
@@ -546,39 +597,43 @@ Sources: [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/bl
 
 ### Q01 — Run integrated temporal, durability and failure-injection qualification
 
-Planned status: Backlog. Parent: Q00.
+Planned status: Backlog.
 
 Acceptance criteria:
 
-- Exercise the Rae/Northstar two-time fixture, correction/retract/invalidate/reinstate, uncertainty, source disputes and fixed-frontier cross-view equivalence.
+- Exercise the Rae/Northstar two-time fixture, correction/retract/invalidate/reinstate, uncertainty, source disputes and fixed-frontier cross-view equivalence. Include an automatically accepted but wrong in-grant inference, denied out-of-grant writes and a later owner correction; acceptance must not be marked human verification. Add Q8 preferred-claim assertions once answered.
 - Inject local/sync commit/checkpoint failures, disorder/gaps/duplicate-ID conflicts, restore corruption and stale rejoin; verify acknowledged data, atomic visibility, source lineage and current authority.
 - Publish reproducible synthetic fixtures/commands and failures, distinguishing process-kill coverage from physical-power-loss proof.
 
-Requirements: C01, C02, C04, C05, C06, C11, C13, C17, C19, C20, C21, C23 · Tests: M01, M04, M05, M06, M07, M10, M13, M14, M15, M16, M18
+Requirements: C01, C02, C04, C05, C06, C11, C13, C17, C19, C20, C21, C23 · Tests: M01, M04, M05, M06, M07, M10, M13, M14, M15, M16, M18 · Decisions: Q6, Q8
 
 Prerequisites: R09, G06, S03
+
+Workstream parent: Q00
 
 Sources: [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md)
 
 ### Q02 — Verify usable inspection, bounds, coverage and safe operational reporting
 
-Planned status: Backlog. Parent: Q00.
+Planned status: Backlog.
 
 Acceptance criteria:
 
-- Owner/client can inspect source, derivation/review, time/history, conflicts, peer progress and effective personal grants through agreed MCP/API surfaces.
+- Owner/client can inspect source, actor/model/derivation, actual human review, time/history, conflicts, peer progress and effective personal grants through the v1 interface selected under Q9. Automatic acceptance is visibly distinct from human verification and truth.
 - Exercise empty/error/offline and partial-history responses, high-degree/bounded traversal, request/payload limits and redacted logs.
-- No rich/cinematic GUI is required; reported coverage and actual storage/processing profile are honest and actionable.
+- Q9 remains open between MCP/CLI only and a simple browser UI; no rich/cinematic GUI is required. Use the three Q10 day-one tasks once supplied, with honest coverage and actual storage/processing profile.
 
-Requirements: C08, C10, C15, C16, C21, C23 · Tests: M02, M12, M16, M18, M19
+Requirements: C08, C10, C15, C16, C21, C23 · Tests: M02, M12, M16, M18, M19 · Decisions: Q6, Q9, Q10
 
 Prerequisites: R09, G04, G05, S03, M01
+
+Workstream parent: Q00
 
 Sources: [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md) · [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md)
 
 ### Q03 — Benchmark representative personal reads, writes, sync and recovery
 
-Planned status: Backlog. Parent: Q00.
+Planned status: Backlog.
 
 Acceptance criteria:
 
@@ -590,45 +645,49 @@ Requirements: C02, C07, C10, C15, C18 · Tests: M03, M06, M12, M16
 
 Prerequisites: R09, G04, S04, Q01
 
+Workstream parent: Q00
+
 Sources: [RESEARCH.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RESEARCH.md) · [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md)
 
 ### Q04 — Package Mac/Linux peers and publish reproducible operating instructions
 
-Planned status: Backlog. Parent: Q00.
+Planned status: Backlog.
 
 Acceptance criteria:
 
 - Provide reproducible installation/run/configuration instructions for the agreed runtimes, with dependencies and any approval requirements explicit.
-- Document MCP connections, personal peer admission, offline/reconnect flows, import dry-run/rehearsal, backup/restore, troubleshooting and rollback.
+- Document MCP connections, the v1 owner interface selected under Q9, personal peer admission, offline/reconnect flows, import dry-run/rehearsal, backup/restore, troubleshooting and rollback.
 - Keep examples synthetic, credentials external and real-data/deployment approvals separate; do not provision external infrastructure automatically.
 
-Requirements: C08, C10, C11, C13, C14, C18, C24 · Tests: M03, M10, M11, M12, M19
+Requirements: C08, C10, C11, C13, C14, C18, C24 · Tests: M03, M10, M11, M12, M19 · Decisions: Q9
 
 Prerequisites: R09, S04, M03, I05
+
+Workstream parent: Q00
 
 Sources: [DECISIONS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/DECISIONS.md) · [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md)
 
 ### Q05 — Close the personal-v1 acceptance matrix with evidence and limitations
 
-Planned status: Backlog. Parent: Q00.
+Planned status: Backlog.
 
 Acceptance criteria:
 
 - Link each in-scope C/M requirement to actual passing evidence or a named unresolved gap; deferred M08/M17/P01–P06 remain deferred, not passed.
-- Verify real Praxis/independent-client workflows, actual Mac/Linux offline sync, importer compatibility and rollback, personal authority and representative performance.
+- Verify real Praxis/independent-client workflows, actual Mac/Linux offline sync, importer compatibility and rollback, scoped automatic inferred-addition acceptance without per-item review, personal authority and representative performance. Prove the three Q10 day-one tasks and the resolved Q7–Q9 behavior with evidence.
 - Reconcile final PRD/ADRs/run instructions and report what was built, passed, remains, and how to use it. Do not declare release acceptance with missing required evidence or infer permission for a live cutover.
 
-Requirements: C01, C02, C03, C04, C05, C06, C07, C08, C09, C10, C11, C12, C13, C14, C15, C16, C17, C18, C19, C20, C21, C23, C24 · Tests: M01, M02, M03, M04, M05, M06, M07, M09, M10, M11, M12, M13, M14, M15, M16, M18, M19
+Requirements: C01, C02, C03, C04, C05, C06, C07, C08, C09, C10, C11, C12, C13, C14, C15, C16, C17, C18, C19, C20, C21, C23, C24 · Tests: M01, M02, M03, M04, M05, M06, M07, M09, M10, M11, M12, M13, M14, M15, M16, M18, M19 · Decisions: Q6, Q7, Q8, Q9, Q10
 
 Prerequisites: R09, Q01, Q02, Q03, Q04, M03, I05, S04
+
+Workstream parent: Q00
 
 Sources: [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md) · [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md)
 
 ## RefactoredMemory — Later roadmap
 
 Future options retained for visibility. These issues do not block personal v1 and are not authorized for implementation by the current scope or its eventual proceed gate. No invented dates or estimates.
-
-Milestones: Deferred backlog; no schedule.
 
 ### L01 — Later: multi-tenant and corporate ownership lifecycle
 
@@ -680,9 +739,9 @@ Acceptance criteria:
 
 - Evaluate optional vectors/associative retrieval, linked summaries, consolidation, maintained decisions and procedural memory only against useful measured tasks.
 - Preserve graph/source authority, derivation/review, scoped jobs, budgets, retry semantics and original evidence; use R01–R06 as appropriate.
-- Adopt only with measured quality/cost/operating benefit; automatic extraction/consolidation is not required for v1.
+- Adopt advanced modules only with measured quality/cost/operating benefit. Accepting authorized client-generated inferences is already v1 under Q6; separate extraction engines and consolidation remain later unless explicitly added. Proactive capture versus explicit requests remains Q7, and Q6 alone does not authorize continuous monitoring.
 
-ADRs: A07, A08, A15 · Later evolution: E06, E12 · Later qualification: R01, R02, R03, R04, R05, R06
+ADRs: A07, A08, A15 · Later evolution: E06, E12 · Later qualification: R01, R02, R03, R04, R05, R06 · Decisions: Q6, Q7
 
 Sources: [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md) · [RESEARCH.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RESEARCH.md)
 
@@ -706,11 +765,11 @@ Planned status: Backlog.
 
 Acceptance criteria:
 
-- Identify useful owner workflows beyond required MCP/API inspection before selecting a GUI scope.
+- Identify advanced owner workflows beyond the v1 interface selected under Q9. Whether v1 includes a simple browser UI remains an open Q9 choice; this later item must not decide it.
 - Expose evidence/history/conflicts/authority accessibly without implying a visual graph is needed for v1 acceptance.
 - Keep advanced visual/cinematic or automatic identity features separate from current source-linked inspection requirements.
 
-Requirements: C08 · ADRs: A15 · Later evolution: E12
+Requirements: C08 · ADRs: A15 · Later evolution: E12 · Decisions: Q9
 
 Sources: [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md)
 

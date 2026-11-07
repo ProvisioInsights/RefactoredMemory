@@ -1,6 +1,6 @@
 # RefactoredMemory
 
-RefactoredMemory v1 is a single owner's personal temporal knowledge store, accessed through MCP by Praxis and other compatible clients. It runs on the owner's Mac and a personally controlled Linux VM/container; both peers accept offline writes and synchronize. Initial import covers Markdown/Logseq and data from previous LivingAtlas runs.
+RefactoredMemory v1 is a single owner's personal temporal knowledge store, accessed through MCP by Praxis and other compatible clients. It runs on the owner's Mac and a personally controlled Linux VM/container; both peers accept offline writes and synchronize. Initial import covers Markdown/Logseq and data from previous LivingAtlas runs. Model-inferred additions are automatically accepted within configured client/agent grants, with their sources, uncertainty and correction history preserved; acceptance does not mean human verification.
 
 **Status: research and documentation only. No product implementation is approved or present.** After consequential questions are resolved and the documents reconciled, implementation still requires the owner's explicit **“proceed.”**
 

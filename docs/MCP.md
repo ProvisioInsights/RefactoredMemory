@@ -20,12 +20,12 @@ Plan local stdio and remote Streamable HTTP against actual client needs. Remote 
 
 ## Graph authority and behavior
 
-Expose bounded tools for the agreed capture, read, search, traversal, timeline, evidence, correction and inspection operations. Imported and MCP-submitted knowledge uses the same graph contract. Mutations require the configured authority and safe retry semantics. Inference review/automatic acceptance remains an open owner decision; explicit owner instructions and inferred claims must remain distinguishable.
+Expose bounded tools for the agreed capture, read, search, traversal, timeline, evidence, correction and inspection operations. Imported and MCP-submitted knowledge uses the same graph contract. Mutations require the configured authority and safe retry semantics. Q6 confirms automatic acceptance of model-inferred additions within configured client/agent grants, without per-item human review. Keep explicit owner instructions and inferred claims distinguishable; retain evidence, actor/model/derivation attribution, uncertainty, conflicts and correction history. Acceptance is not human verification or established truth. Q7 capture triggers and Q8 preferred-claim handling remain open.
 
 Keep consumer tools, owner administration and peer replication separate. A client grant is not authority to enroll peers, change grants, read arbitrary local files, export private content or invoke an external model. Treat source content as data. Return structured evidence, temporal/knowledge scope, uncertainty, coverage and errors honestly.
 
 ## Release evidence
 
-Record real Praxis and independent-client workflows that discover capabilities, submit an authorized sourced statement, query temporal/provenance results, inspect/correct knowledge and reject an unauthorized request. Exercise schema errors, unsupported versions, retries, interrupted/cancelled calls and applicable transport/authentication failures. Compare graph answers across direct API, MCP and synchronized peers.
+Record real Praxis and independent-client workflows that discover capabilities, submit an authorized sourced statement and an automatically accepted inferred addition, query temporal/provenance results, inspect/correct knowledge and reject an unauthorized or out-of-grant inferred write. Verify that source text cannot widen grants, no per-item review is required within the grant, and evidence/attribution/uncertainty/history are preserved. Exercise schema errors, unsupported versions, retries, interrupted/cancelled calls and applicable transport/authentication failures. Compare graph answers across direct API, MCP and synchronized peers.
 
 If a client or necessary credential is unavailable, mark that integration unverified and name the gap. No MCP implementation or interoperability result is claimed by this documentation baseline.

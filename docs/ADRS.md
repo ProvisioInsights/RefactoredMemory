@@ -1,6 +1,6 @@
 # RefactoredMemory Architecture Decisions
 
-**Status:** Draft — personal v1 scope update. **Revised:** 7 November 2026. The owner has confirmed that **RefactoredMemory v1 is his personal knowledge store**, with two offline-writable personal peers, synchronization, mandatory MCP integration, Markdown/Logseq import and migration of data from previous LivingAtlas runs. Multi-tenancy, personal-versus-corporate and multi-corporate ownership, product content encryption, and their custody/recovery machinery are later phases. Temporal graph semantics, provenance and usable personal capture/retrieval remain core. Detailed implementation choices remain proposed.
+**Status:** Draft — personal v1 scope update. **Revised:** 7 November 2026. The owner has confirmed that **RefactoredMemory v1 is his personal knowledge store**, with two offline-writable personal peers, synchronization, mandatory MCP integration, Markdown/Logseq import, migration of data from previous LivingAtlas runs, and automatic acceptance of inferred additions within configured client/agent grants. Per-item human review is not required for those authorized additions; acceptance does not mean human-verified truth. Multi-tenancy, corporate ownership, product content encryption and custody/recovery machinery are later phases. Temporal semantics, evidence, attribution, uncertainty and correction lineage remain core; detailed implementation choices remain proposed.
 
 The temporal graph stays central and technology choices remain open. The [PRD](PRD.md) distinguishes personal-v1 requirements and acceptance from later enterprise/protection qualification. The owner has selected **two personal peers with offline writes and synchronization** for v1; the selected pair is the owner's Mac plus a Linux VM/container under the owner's control. Earlier C01–C23/M01–M18 references are an inventory, not a blanket gate: M17's multi-organization cases are later; M18 retains personal current-authority/history/restore checks. C24/M19 add mandatory MCP. E01–E12, R01–R06 and P01–P06 remain staged evolution, memory and protection work.
 
@@ -12,7 +12,7 @@ Versioned repository documentation is authoritative; the companion historical pl
 | --- | --- | --- |
 | A01 | Personal temporal knowledge store and open implementation | V1 direction confirmed; implementation proposed |
 | A02 | Bitemporal assertions, evidence and per-peer knowledge lineage | V1 semantics; detailed contract proposed |
-| A03 | MCP capture, Markdown/Logseq import and prior LivingAtlas migration | Required v1; prior artifact inventory and inferred-write policy remain to resolve |
+| A03 | MCP capture, Markdown/Logseq import and prior LivingAtlas migration | Required v1; scoped automatic inferred additions accepted; artifact inventory remains research |
 | A04 | Compare eligible storage/projections under complete semantics | V1 selection pending evidence; later scale/protection separately qualified |
 | A05 | Basic personal access controls now; content encryption later | V1 boundary confirmed; mechanisms proposed |
 | A06 | One personal owner, scoped clients and personal peer trust | V1; corporate domains deferred |
@@ -24,7 +24,7 @@ Versioned repository documentation is authoritative; the companion historical pl
 | A12 | Personal/organization ownership and employer lifecycle | Future principle confirmed; implementation deferred |
 | A13 | Protected processing, key custody and recovery | Deferred protection architecture |
 | A14 | Cross-domain information flow and advanced revocation/erasure | Later qualification; personal provenance/current authority retained in v1 |
-| A15 | Inspectable knowledge and personal memory controls | V1 inspection; inference review policy pending; advanced lifecycle later |
+| A15 | Inspectable knowledge and personal memory controls | V1 scoped automatic acceptance confirmed; claim preference and owner surface pending; advanced lifecycle later |
 | A16 | Current-standard MCP integration | Mandatory v1; real Praxis and independent-client qualification required |
 
 V1 is one person's useful knowledge store. It may contain knowledge about organizations and other people without implementing corporate ownership domains or multiple tenants. Retain stable IDs, provenance, clear local authority and versioned exports where useful; do not build enterprise abstractions solely to reserve a future feature. Later protection/deployment profiles need their own evidence and are not prerequisites for personal-v1 completion.
@@ -39,7 +39,7 @@ RefactoredMemory v1 is the owner's personal temporal knowledge store. The owner 
 
 The initial deployment packages a useful personal graph, persistence, query projections, scoped API and mandatory MCP server on **two personally controlled peers**, each able to write offline and synchronize later. The owner has selected that topology; the selected pair is the owner's Mac plus a Linux VM/container under the owner's control. One small process per full peer is a candidate operational shape, with runtime and engine choices following the agreed workload and maintenance evidence.
 
-Entities provide identity; immutable assertions and relationships preserve sources, world/knowledge time and correction lineage. Working context, associative retrieval and consolidation use those semantics through versioned contracts. Automatic interpretation is optional for the graph to function and can be developed as a staged module.
+Entities provide identity; immutable assertions and relationships preserve sources, world/knowledge time and correction lineage. Working context, associative retrieval and consolidation use those semantics through versioned contracts. Configured clients/agents may submit inferred additions for automatic acceptance in v1. This does not require an embedded model runtime or decide whether capture is proactive or only explicitly requested; Q7 remains open.
 
 Praxis and other clients own external execution. RefactoredMemory owns graph meaning, provenance and declared knowledge state; retrieving memory does not grant a client new execution or administrative authority.
 
@@ -69,7 +69,7 @@ Each immutable assertion has an opaque identity, subject, registered predicate, 
 
 Semantic actions append assertions with predecessor links: correct repairs an erroneous recording; retract withdraws a mistaken belief without inventing a world ending; invalidate preserves the interval when a relationship held and records its end; reinstate affirms previously retracted knowledge. Retraction is not an active edge after the relevant knowledge action, while invalidation can remain a historical edge for its valid interval. The [inspected assertion actions](https://github.com/ProvisioInsights/LivingAtlas/blob/e36ebe821eafb3fc00093b6afcc2c4c6e0c4c30d/packages/atlas-core/src/assertion.ts) are the compatibility reference.
 
-Concurrent descendants of one lineage remain branches. Derive supersession and active heads from admitted actions at the selected frontier; do not replicate one mutable superseded-at value as a global winner. A reviewed resolution references the heads considered, retains reasons/evidence and can leave uncertainty. Independently sourced competing assertions coexist separately from that technical branch conflict.
+Concurrent descendants of one lineage remain branches. Derive supersession and active heads from admitted actions at the selected frontier; do not replicate one mutable superseded-at value as a global winner. An authorized, attributed resolution references the heads considered, retains reasons/evidence and can leave uncertainty. Independently sourced competing assertions coexist separately from that technical branch conflict. Automatic acceptance of an inferred addition is not a human review event or proof of truth. Q8 remains open on preferring an owner's correction versus returning a dispute without a preferred claim; preserve alternatives and lineage under either choice.
 
 Keep logical assertion/operation identity separate from payload encoding and transport digests. Re-encoding or forwarding an assertion is neither new corroboration nor a new learning event at its origin. Receipt at another peer is a new local knowledge event there.
 
@@ -87,11 +87,11 @@ M13–M16's personal cases prove independent world/knowledge selection, semantic
 
 # A03 MCP capture, Markdown/Logseq import and LivingAtlas migration
 
-**Status:** MCP capture, Markdown/Logseq import and migration of data from previous LivingAtlas runs are confirmed v1 requirements. **Discovery:** Locate and inventory prior artifacts/store generations and exact source boundaries using authorized read-only access. **Open policy:** Review versus scoped automatic acceptance of inferred additions. Explicit owner instructions, source-stated assertions and model-inferred proposals remain distinct.
+**Status:** MCP capture, Markdown/Logseq import and prior LivingAtlas migration are confirmed v1 requirements. Q6 confirms automatic acceptance of inferred additions within configured client/agent grants, without per-item review. **Discovery:** Inventory prior artifacts/store generations and source boundaries read-only. **Still open:** Q7 capture initiative, Q8 preferred-claim behavior, Q9 owner interface and Q10 day-one tasks. Explicit owner instructions, source-stated assertions, automatically accepted inferences and any later human verification remain distinct.
 
 ## Context and decision
 
-The personal graph accepts deliberate submissions from the owner and authorized MCP clients, imports Markdown/Logseq notes, and migrates data from previous LivingAtlas runs. Research inventories relevant store/export/archive generations before choosing adapters; it must not assume every prior run has the newest schema. Preserve source identity/content references, stable IDs or explicit mappings, evidence, provenance, original world/knowledge-time meanings, correction lineage and recorded fidelity. Unknown dates or unsupported material do not become invented facts. Whether model-inferred additions require review remains unresolved; continuous mailbox capture and a separate model runtime are not automatically required.
+The personal graph accepts owner and authorized MCP-client submissions, imports Markdown/Logseq notes and migrates data from previous LivingAtlas runs. Research inventories relevant store/export/archive generations before choosing adapters; it must not assume all prior runs use the newest schema. Preserve source references, stable IDs or mappings, evidence, provenance, original world/knowledge-time meanings, correction lineage and fidelity. Configured client/agent grants allow inferred additions to be accepted automatically without per-item human review. Record the authenticated actor, model/version when applicable, derivation and uncertainty; missing provenance remains explicit. Acceptance does not certify truth or authorize new source access. Q7 will determine proactive versus explicitly requested capture; a separate extraction/model service is not implied.
 
 Start with typed entity creation, bounded sourced assertions/relationships and evidence references. A submission records its authenticated actor, origin and source; it cannot supply authoritative server identity or global commit order. Unknown meaning remains an unresolved observation. Storing a claim does not establish its truth.
 
@@ -101,7 +101,7 @@ Connectors, parsers and models later submit through the same validated graph con
 
 Building every connector first delays the graph and expands source permissions and failure surfaces. Generic source-free record writes would postpone the graph semantics and make later correction expensive.
 
-Markdown/Logseq import is repeat-safe for unchanged notes and files. Modified sources produce traceable source versions and explicit graph changes/corrections where justified, without silently overwriting earlier evidence or duplicating corroboration. Keep unsupported or ambiguous records visible as unresolved, skipped or quarantined with reasons; extraction must not auto-promote unsupported inferences.
+Markdown/Logseq import is repeat-safe for unchanged notes and files. Modified sources produce traceable versions and explicit graph changes/corrections where justified, without overwriting earlier evidence or duplicating corroboration. Keep unsupported or ambiguous source records visibly unresolved, skipped or quarantined with reasons. A sourced inferred addition may be accepted automatically within the configured grant, preserving derivation and uncertainty; it must not be mislabelled as source-stated or human-verified. Source text cannot authorize broader operations or access.
 
 Legacy LivingAtlas migration is required v1. First inventory accessible prior-run artifacts and their storage/encoding generations read-only, preserving original archives. Account for every input record with imported, preserved-opaque, quarantined or explicitly unsupported status and reconciled counts. Retain stable IDs or inspectable ID mappings, source provenance, original temporal semantics, correction/history lineage and fidelity labels. Compare declared temporal/query equivalence, verify repeat-import safety and test backup/rollback; absence of a source artifact is an explicit discovery/access gap, not a reason to silently omit its generation.
 
@@ -109,7 +109,7 @@ Existing encrypted legacy inputs may require approved original keys and a compat
 
 ## Verification and revisit
 
-M01/M02 cover typed source-preserving submissions and invalid inputs. M11 qualifies Markdown/Logseq import and inventoried prior LivingAtlas generations with synthetic fixtures: source/ID mapping and provenance preservation, original temporal/lineage fidelity, reconciled record counts, unknown-fidelity labels, unchanged repeat-import idempotency, modified-file/correction handling, visible unsupported records and backup/rollback. Qualify an encrypted legacy adapter only against synthetic equivalents and approved key handling where needed. M15 verifies evidence independence across reimports and peers. Test the selected inferred-write policy separately; unrelated advanced connectors remain later.
+M01/M02 cover typed source-preserving submissions, invalid inputs and automatic acceptance of inferred additions within configured grants without per-item review; deny additions outside those grants. Preserve actor/model/derivation/evidence/uncertainty and distinguish acceptance from human verification. M11 qualifies Markdown/Logseq and inventoried LivingAtlas generations using synthetic fixtures for IDs/mappings, provenance, temporal/lineage fidelity, count reconciliation, unknown-fidelity labels, unchanged reimport idempotency, modified-file/correction handling, visible unsupported records and backup/rollback. Qualify any encrypted legacy adapter only with synthetic equivalents and approved key handling. M15 verifies evidence independence across reimports and peers. Q7/Q8/Q9/Q10 acceptance details remain open; unrelated advanced connectors remain later.
 
 # A04 Graph storage and projection evaluation
 
@@ -209,7 +209,7 @@ Add this later module through a complete useful personal scenario. It does not g
 
 # A08 Research guided retrieval and consolidation
 
-**Status:** Proposed staged experiments. **V1:** Useful source-linked search/retrieval and bounded context. **Later or separately selected:** Automatic extraction, background consolidation, vectors, linked summaries and distributed workers. Corporate/protected-processing requirements in A11–A14 apply to those later profiles, not as v1 dependencies.
+**Status:** Proposed staged experiments. **V1:** Useful source-linked retrieval, bounded context and automatic acceptance of inferred additions within configured client/agent grants. Q7 has not yet selected proactive versus explicitly requested capture; automatic acceptance alone does not decide that scope. An embedded extraction runtime, background consolidation, vectors, linked summaries and distributed workers are separately scoped modules. Corporate/protected-processing requirements in A11–A14 remain later.
 
 ## Context and proposed mechanisms
 
@@ -239,7 +239,7 @@ These mechanisms add model cost, extraction risk, index state and maintenance wo
 
 Use the PRD's R01–R06 with tasks informed by [LongMemEval](https://arxiv.org/abs/2410.10813) and [LongMemEval-V2](https://arxiv.org/abs/2605.12493). Separate factual/time-update/abstention behavior from workflow experience. Compare search alone, graph-aware retrieval and linked summaries plus search under declared budgets. Include wrong inferences, late corrections, concurrent workers, revoked inputs and partial replicas. Measure source attribution, stale/conflicting answers, coverage, latency, storage and total capture/consolidation/answer cost.
 
-No Atlas memory-quality experiment has been run by this design update. Promotion requires semantic fit and a measured end-to-end gain without critical temporal, provenance or ownership regressions. The proposed first task is a manually triggered synthetic project/timeline consolidation experiment; fixture, cost ceiling and promotion threshold remain to be agreed.
+No Atlas memory-quality experiment has been run by this design update. Promotion requires semantic fit and measured end-to-end gain without critical temporal/provenance regressions. A manually triggered synthetic project/timeline consolidation experiment remains a research candidate, with fixture, cost ceiling and promotion threshold to agree. It does not select Q10's three day-one personal tasks or authorize product implementation.
 
 # A09 Scoped causal replication and semantic conflicts
 
@@ -279,11 +279,11 @@ Qualify two-peer personal sync using applicable M03–M10 and M13–M16 cases fo
 
 The first release delivers the owner's useful personal temporal knowledge store through mandatory MCP, Markdown/Logseq import and migration from prior LivingAtlas runs, on two offline-writable personal peers. Demonstrate sourced capture/import, preserved legacy meanings, recall, temporal history, corrections, offline concurrent changes, reconnect and convergence without adding corporate tenancy or product encryption to v1.
 
-Provide entity create/read; sourced fact/relationship/observation submission; evidence lookup; correct/retract/invalidate/reinstate; lineage/branch inspection and reviewed resolution; valid-at plus scoped known-at queries; temporal neighbors and bounded traversal; timeline/history; text search; and a graph change feed. Exact public names follow the contract review, reusing existing APIs when compatible. Version changed mesh knowledge-time semantics.
+Provide entity create/read; sourced fact/relationship/observation submission; evidence lookup; correct/retract/invalidate/reinstate; lineage/branch inspection and authorized attributed resolution; valid-at plus scoped known-at queries; temporal neighbors and bounded traversal; timeline/history; text search; and a graph change feed. Authorized inferred additions are accepted automatically within configured grants, with their provenance and uncertainty. Human-verification events remain separately attributed. Exact public names follow contract review; version changed mesh knowledge-time semantics. Q8's preferred-claim behavior remains unresolved.
 
 The MCP server is a mandatory v1 client surface, using the same graph and authorization contract. A16 requires current-standard conformance and actual Praxis plus independent-client workflows. Keep any peer admission/sync exchange separate from ordinary consumer authority; no general tool gateway or second scheduler is implied.
 
-Provide an inspectable personal owner journey for entities, assertions, sources, temporal history, sync health and conflicts. A cinematic graph UI, corporate workspace selector or model selector is not required. Query responses identify the answering peer/frontier, temporal quality, disputes/branches and coverage; unavailable history is explicit. Show the actual personal client/processing boundary without implying encrypted or enterprise protection.
+Provide an inspectable personal owner journey for entities, assertions, sources, temporal history, sync health and conflicts. Q9 remains open on whether MCP/CLI access suffices or a simple browser interface is required; do not select either implicitly. A cinematic graph UI, corporate workspace selector or model selector is not required. Responses identify the answering peer/frontier, temporal quality, disputes/branches and coverage, distinguish accepted inferences from human-verified claims, and show the actual personal client/processing boundary.
 
 Prove local semantics, durable recovery, mandatory MCP, Markdown/Logseq import and prior LivingAtlas migration using synthetic fixtures. Qualify the owner's Mac and a personally controlled Linux VM/container as two offline-writable peers, including offline assertions/corrections, reconnect and temporal-query equivalence. Selecting this pair does not authorize external provisioning/deployment. Third-hop relay/mesh is later. Source artifact locations/store generations remain a discovery task; actual personal-data ingestion and legacy cutover still require separate authorization.
 
@@ -291,7 +291,7 @@ Record each build's runtime/profile, fixture, test results and limitations. Meas
 
 ## Alternatives and consequences
 
-A CLI-only spike can establish engineering facts but does not demonstrate the owner journey. A dedicated graph database console, full agent UI or connector suite adds scope before the core temporal behavior is proven.
+A usable owner journey is required, but its surface is pending Q9: MCP/CLI workflows or an additional simple browser interface. An engineering spike alone is not evidence of a usable workflow. A dedicated graph-database console, full agent UI or broad connector suite is not implied by this choice.
 
 The minimum graph operations and the PRD's scoped personal-v1 acceptance set make delivery reviewable without imposing a service fleet. M17's multi-organization cases and corporate/cryptographic checks are later. Typed neighbor/path queries can initially use ordinary indexed storage.
 
@@ -407,13 +407,13 @@ The personal subset of M18 checks current client authority across history, autho
 
 # A15 Inspectable knowledge and memory controls
 
-**Status:** Proposed personal inspection and control behavior. **V1:** Evidence/history/derivation inspection and personal corrections. **Pending:** Owner-review versus scoped automatic acceptance of inferred additions. **Later:** Enterprise ownership controls, full forgetting/consolidation systems and protected lifecycle qualification.
+**Status:** Q6's scoped automatic acceptance is confirmed; detailed personal inspection/control design remains proposed. **V1:** Evidence/history/derivation inspection, personal corrections and automatic acceptance of inferred additions within configured grants without per-item review. **Pending:** Q7 capture initiative, Q8 preferred-claim behavior, Q9 interface and Q10 day-one tasks. **Later:** Enterprise ownership controls, full forgetting/consolidation systems and protected lifecycle qualification.
 
 ## Context and proposed behavior
 
 A useful personal knowledge store needs an explanation and control surface for what it retains and infers. Model-generated knowledge is not trusted merely because it is organized, summarized or placed in context. The temporal graph and personal-v1 scope govern the initial product; enterprise ownership is a later direction. Research mechanisms remain assessed in the overview (historical planning Page; authorized access required).
 
-Keep derivation method separate from review. Record source-stated observations, extraction and inference with evidence/method provenance; an attributed confirmation or rejection refers to a particular claim and review event. Preserve the underlying source assertion and any competing claims. Confirmation is not an access grant, independent corroboration or a licence to merge people or ownership domains.
+Keep derivation, automatic acceptance and human verification separate. Record source-stated observations, extraction and inference with evidence, authenticated actor, model/version when applicable, method and uncertainty. Acceptance within a configured grant records admission; it does not invent a human reviewer or certify truth. Any later owner confirmation/rejection names its claim and actual review event. Preserve underlying sources, correction lineage, competing claims and disputes. Neither acceptance nor verification grants new access, creates independent corroboration or authorizes identity/ownership merging.
 
 Provide “Why do you believe this?” for evidence, method, review, alternatives, time and coverage. Explain which configured personal clients/agents can access it and where approved processing occurs, including the offline personal peers' stated limits. Do not require corporate domain selectors or claim encrypted/protected execution that v1 does not implement.
 
@@ -421,15 +421,15 @@ Keep personal correction/retraction, suppression of future personalization and a
 
 ## Alternatives and consequences
 
-A single confidence score or mutable user profile obscures how a claim arose and who reviewed it. A universal “forget” switch conflates suppression, correction and purge. Retaining attribution and dependencies adds storage/interface work but makes errors and lifecycle actions traceable. High-sensitivity inference categories, review defaults and mixed-source ownership rules remain policy choices; automatic identity merging is not implied.
+A single confidence score or mutable profile obscures how a claim arose, was accepted or was later verified. A universal “forget” switch conflates suppression, correction and purge. Attribution/dependencies make errors and lifecycle actions traceable. Q6's automatic acceptance within grants is settled. Q7 capture initiative and Q8 claim preference remain unanswered; future corporate mixed-source ownership and sensitive-inference controls remain separately scoped. Automatic identity merging is not implied.
 
-C08/C20 establish personal inspection and supplied provenance first. The pending inferred-write answer determines whether v1 needs a review queue or configured automatic acceptance with attribution/history. Advanced consolidation and lifecycle automation remain staged. No worker can elevate source instructions, grant authority or silently replace an owner correction.
+C08/C20 establish personal inspection and provenance. V1 accepts inferred additions automatically within the owner's configured client/agent grants without per-item review, while retaining evidence, actor/model/derivation, uncertainty and history. A mandatory review queue is not a v1 prerequisite; optional later review records actual human verification separately. No worker can elevate source text into instructions/authority or silently erase earlier claims/corrections. Q8 will determine preferred-claim behavior while preserving disagreements and lineage. Advanced consolidation/lifecycle automation remain staged.
 
 ## Verification and revisit
 
-M01/M12 verify personal provenance and inspection on synthetic data. Include a wrong inference, copied evidence, a revoked client grant and stale summary/restore as applicable to the selected feature set. Qualify the chosen inferred-write policy. Two-employer fixtures, corporate mixed-source controls and P02–P05 protected-deployment tests are deferred.
+M01/M12 verify personal provenance and inspection on synthetic data. Test an automatically accepted but wrong inference, a later owner correction, copied evidence, a revoked client grant and stale summary/restore; assert that automatic acceptance was not marked human-verified and that no per-item review blocked an in-grant addition. Deny out-of-grant operations and preserve disputed alternatives/history. Add the selected Q8 preference assertions once answered. Two-employer fixtures, corporate mixed-source controls and protected-deployment tests remain deferred.
 
-The detailed record remains proposed. No inference model, unresolved review policy, graph engine or cryptographic mechanism is selected. The personal-v1 scope and mandatory MCP requirement are confirmed owner direction.
+The detailed implementation remains proposed. No inference model, graph engine or cryptographic mechanism is selected. Personal-v1 scope, mandatory MCP and automatic inferred-addition acceptance within configured grants without per-item review are confirmed owner direction. Q7–Q10 remain open.
 
 # A16 Mandatory current-standard MCP integration
 
@@ -439,13 +439,13 @@ Verify and record the latest published stable MCP revision from official sources
 
 Qualify local stdio and the agreed remote Streamable HTTP path with their applicable authentication/authorization rules. A locally tested remote transport does not authorize external deployment. Bound tools/results, preserve evidence/time/coverage, enforce configured personal grants and safe mutation retries, and keep peer replication/administration separate from consumer MCP authority. Source text and arguments cannot grant permissions.
 
-M19 requires actual end-to-end workflows from the relevant Praxis client and at least one independent MCP client: discovery, authorized sourced writes/corrections, temporal retrieval with provenance, denied access and applicable version/schema/error/retry/interruption checks. Record client versions and reproducible connection instructions. Mocks and protocol harnesses do not prove an unavailable client's integration; report access gaps explicitly. No paid processing, new credentials or live personal-data ingestion follows from this ADR.
+M19 requires actual end-to-end workflows from the relevant Praxis client and at least one independent MCP client: discovery, authorized sourced writes/corrections, automatic inferred additions within configured grants without per-item review, temporal retrieval with provenance, denied access and applicable version/schema/error/retry/interruption checks. Verify actor/model/derivation and uncertainty preservation and distinguish automatic acceptance from human verification. Record client versions and reproducible connection instructions. Mocks do not prove an unavailable client's integration; report access gaps explicitly. No paid processing, new credentials or live personal-data ingestion follows from this ADR.
 
 The documentation and explicit-proceed gate applies to MCP implementation as well as the graph. This record establishes the required outcome; it does not claim an implemented or passing integration.
 
 # Next work
 
-Reconcile the personal-v1 documentation for the confirmed Mac plus Linux VM/container, mandatory MCP, Markdown/Logseq import and required prior LivingAtlas migration. Inventory legacy artifact locations, source boundaries, store generations and any encrypted-input/key requirements through authorized read-only research; preserve originals and make discovery gaps explicit. The remaining owner policy question is inferred-write review versus scoped automatic acceptance. Selecting these capabilities does not authorize external provisioning, personal-data ingestion or cutover. Do not implement corporate tenancy, third-hop mesh or new product content encryption for v1. Research experiments need their agreed fixture, budget and authorization.
+Reconcile the personal-v1 documentation for the confirmed Mac plus Linux VM/container, mandatory MCP, Markdown/Logseq import, prior LivingAtlas migration and automatic inferred-addition acceptance within configured client/agent grants without per-item review. Inventory legacy artifact locations, source boundaries, store generations and encrypted-input/key requirements through authorized read-only research; preserve originals and state access gaps. Await Q7 proactive versus explicit-request capture, Q8 owner-correction preference versus no preferred disputed claim, Q9 MCP/CLI versus a simple browser interface, and Q10 the three day-one tasks. Do not choose those answers by implication. Product implementation and live personal-data ingestion remain unauthorized, the explicit “proceed” gate remains in force, and Linear work remains paused.
 
 Retain the confirmed organization/personal ownership principle as a later roadmap item. Corporate custody, multi-employer offboarding, protected executors, keys/recovery and mixed-domain policy do not block personal v1. A personal store may contain facts about organizations without managing their data ownership.
 

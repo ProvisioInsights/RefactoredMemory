@@ -23,7 +23,7 @@ Inventory prior source artifacts read-only before selecting adapters. Test every
 
 Maintain original backups, stable source identities, repeat-safe import manifests and explicit ID mappings. Compare meaningful temporal/provenance answers before accepting a migration. Never overwrite the original archive as part of qualification. When original input is encrypted, test the adapter with synthetic keys and require approved original key access for any later live run. Do not request secrets in chat or commit them.
 
-The requested v1 importer does not authorize using real personal data now. Prepare a concrete live-import plan and reviewable source inventory before requesting the separate data authorization. Initial model-inference acceptance policy remains pending and must become explicit acceptance cases before implementation.
+The requested v1 importer does not authorize using real personal data now. Prepare a concrete live-import plan and reviewable source inventory before requesting the separate data authorization. Q6 confirms automatic acceptance within configured client/agent grants, with no per-item human review. Test permitted automatic additions, rejection outside the grant, source-text attempts to expand authority, preserved evidence/actor/model/derivation attribution and uncertainty, and retained correction/conflict history. Acceptance must not be labelled human verification or established truth. Capture triggers and preferred-claim expectations await Q7/Q8; the management surface and concrete day-one tasks await Q9/Q10.
 
 ## Performance evidence
 
