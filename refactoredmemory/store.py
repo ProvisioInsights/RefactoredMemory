@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import contextlib
 import datetime as dt
+import errno
 import hashlib
 import hmac
 import json
@@ -16,6 +17,7 @@ import secrets
 import shutil
 import sqlite3
 import threading
+import tempfile
 import uuid
 
 MAX_OPERATION = 1024 * 1024
@@ -668,7 +670,10 @@ class Store:
         return {entity for id, entity in deletes.items() if id not in restored}
 
     def _rows(self, subject=None, predicate=None, object=None):
-        sql = "SELECT r.body,e.operation_id,o.origin,o.seq,o.position,o.body AS operation FROM records r JOIN record_events e ON e.kind=r.kind AND e.id=r.id JOIN operations o ON o.id=e.operation_id WHERE r.kind='assertion'"
+        # Select only attribution from the journal. Repeating a nearly 1 MiB
+        # operation (including evidence) for each of its hundreds of assertions
+        # would exhaust a small peer before the result limit could be applied.
+        sql = "SELECT r.body,e.operation_id,o.origin,o.seq,o.position,json_extract(o.body,'$.actor') AS actor FROM records r JOIN record_events e ON e.kind=r.kind AND e.id=r.id JOIN operations o ON o.id=e.operation_id WHERE r.kind='assertion'"
         args = []
         for key, value in (("subject", subject), ("predicate", predicate), ("object", object)):
             if value is not None:
@@ -695,9 +700,9 @@ class Store:
                 if row["seq"] > view.get(row["origin"], 0):
                     continue
                 a = json.loads(row["body"])
-                op = json.loads(row["operation"])
-                occurrences.setdefault(a["id"], []).append({"actor": op["actor"], "operation_id": row["operation_id"]})
-                a.update(actor=op["actor"], operation_id=row["operation_id"], known_position=row["position"])
+                actor = json.loads(row["actor"])
+                occurrences.setdefault(a["id"], []).append({"actor": actor, "operation_id": row["operation_id"]})
+                a.update(actor=actor, operation_id=row["operation_id"], known_position=row["position"])
                 # All views deterministically choose the same origin among visible occurrences.
                 # Preserve other submissions as attribution, never independent corroboration.
                 visible.setdefault(a["id"], a)
@@ -853,9 +858,17 @@ class Store:
         if not deleted:
             return {"items": [], "truncated": False}
         removals, edits, restored = [], [], set()
-        for row in self.db.execute("SELECT r.kind,r.body,o.body AS operation FROM records r JOIN record_events e ON e.kind=r.kind AND e.id=r.id JOIN operations o ON o.id=e.operation_id WHERE r.kind IN ('delete','restore','assertion')"):
+        operation_metadata = {}
+        for row in self.db.execute("SELECT r.kind,r.body,o.id AS operation_id,o.origin,o.seq,json_extract(o.body,'$.dependencies') AS dependencies FROM records r JOIN record_events e ON e.kind=r.kind AND e.id=r.id JOIN operations o ON o.id=e.operation_id WHERE r.kind IN ('delete','restore','assertion')"):
             action = json.loads(row["body"])
-            operation = json.loads(row["operation"])
+            # Causal comparison needs identity and dependencies, never source
+            # content or every other action in the signed operation. Share even
+            # this small metadata across all occurrences in the same operation.
+            operation = operation_metadata.get(row["operation_id"])
+            if operation is None:
+                operation = {"id": row["operation_id"], "origin": row["origin"],
+                             "seq": row["seq"], "dependencies": json.loads(row["dependencies"])}
+                operation_metadata[row["operation_id"]] = operation
             if action["type"] == "restore":
                 restored.update(action["predecessors"])
             elif action["type"] == "delete":
@@ -900,8 +913,13 @@ class Store:
             return {"rebuilt_operations": len(rows), "known_position": int(self._meta("position"))}
 
     def backup(self, path):
+        """Publish a verified standalone snapshot without replacing a destination.
+
+        Work stays in a private sibling file until the copy has been validated
+        and flushed. The receipt describes that snapshot, not a later live state.
+        """
         destination = Path(path)
-        if destination.exists() or str(destination.resolve()) == str(Path(self.path).resolve()):
+        if destination.exists() or destination.is_symlink() or str(destination.resolve()) == str(Path(self.path).resolve()):
             raise ConflictError("Backup destination must be new")
         destination.parent.mkdir(parents=True, exist_ok=True)
         if self._min_free_bytes:
@@ -909,17 +927,44 @@ class Store:
                 allocated = self.db.execute("PRAGMA page_count").fetchone()[0] * self.db.execute("PRAGMA page_size").fetchone()[0]
             if shutil.disk_usage(destination.parent).free < self._min_free_bytes + allocated + 65536:
                 raise CapacityError("low_disk")
-        fd = os.open(destination, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+        fd, temporary_name = tempfile.mkstemp(prefix="." + destination.name + ".", dir=destination.parent)
         os.close(fd)
-        with self._lock:
-            target = sqlite3.connect(destination)
+        temporary = Path(temporary_name)
+        try:
+            with self._lock:
+                target = sqlite3.connect(temporary)
+                try:
+                    self.db.backup(target)
+                    if target.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
+                        raise ValidationError("Backup integrity check failed")
+                    position = int(target.execute("SELECT value FROM metadata WHERE key='position'").fetchone()[0])
+                    # A completed backup is one portable file, not a live WAL set.
+                    target.execute("PRAGMA journal_mode=DELETE")
+                finally:
+                    target.close()
+            with temporary.open("rb") as stream:
+                os.fsync(stream.fileno())
+            # Hard-link publication is atomic and fails if another writer created
+            # the destination meanwhile. rename/replace would overwrite it.
+            os.link(temporary, destination)
+            directory = os.open(destination.parent, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
             try:
-                self.db.backup(target)
-                if target.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
-                    raise ValidationError("Backup integrity check failed")
+                try:
+                    os.fsync(directory)
+                except OSError as exc:
+                    if exc.errno not in {errno.EINVAL, errno.ENOTSUP}:
+                        raise
             finally:
-                target.close()
-        return {"path": str(destination), "known_position": int(self._meta("position"))}
+                os.close(directory)
+            return {"path": str(destination), "known_position": position}
+        except sqlite3.Error as exc:
+            if getattr(exc, "sqlite_errorcode", None) == sqlite3.SQLITE_FULL:
+                raise CapacityError("low_disk") from exc
+            raise ValidationError("Backup copy or validation failed") from exc
+        finally:
+            temporary.unlink(missing_ok=True)
+            for suffix in ("-wal", "-shm", "-journal"):
+                Path(str(temporary) + suffix).unlink(missing_ok=True)
 
     @classmethod
     def restore(cls, snapshot_path, destination, *, peer_id=None):

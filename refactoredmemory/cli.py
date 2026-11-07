@@ -5,12 +5,15 @@ import argparse
 import contextlib
 import ipaddress
 import json
+import math
 import os
 from pathlib import Path
 import ssl
 import signal
+import socket
 import sys
 import threading
+import time
 from http.server import ThreadingHTTPServer
 from socketserver import TCPServer
 from urllib.parse import urlsplit
@@ -108,12 +111,75 @@ def server_handler(service, *, allowed_origins=(), allowed_hosts=(), sync_only=F
 
 class PeerHTTPServer(ThreadingHTTPServer):
     """Bound accepted connections before TLS/header parsing, not just tool calls."""
-    daemon_threads = True
+    daemon_threads = False
 
-    def __init__(self, address, handler, tls_context=None):
+    def __init__(self, address, handler, tls_context=None, *, request_deadline_seconds=20,
+                 max_connections=32):
+        if (isinstance(request_deadline_seconds, bool) or not isinstance(request_deadline_seconds, (int, float))
+                or not math.isfinite(request_deadline_seconds) or not 0.05 <= request_deadline_seconds <= 300):
+            raise ValidationError("Connection I/O deadline must be between 0.05 and 300 seconds")
+        if type(max_connections) is not int or not 1 <= max_connections <= 64:
+            raise ValidationError("Connection limit must be between 1 and 64")
         self.tls_context = tls_context
-        self.connection_slots = threading.BoundedSemaphore(32)
+        self.max_connections = max_connections
+        self.connection_slots = threading.BoundedSemaphore(max_connections)
+        self.request_deadline_seconds = float(request_deadline_seconds)
+        self._deadline_condition = threading.Condition()
+        self._request_deadlines = {}
+        self._deadline_stopping = False
+        self._deadline_thread = None
         super().__init__(address, handler)
+        self._deadline_thread = threading.Thread(target=self._watch_deadlines,
+                                                 name="refactoredmemory-io-deadline", daemon=True)
+        self._deadline_thread.start()
+
+    @staticmethod
+    def _expire_connection(connection):
+        # shutdown wakes an existing buffered read or TLS handshake; close alone
+        # can leave a makefile() reference waiting for more bytes indefinitely.
+        try:
+            # Bypass SSLSocket.shutdown(), which clears _sslobj while another
+            # thread may still be inside its handshake or read operation.
+            socket.socket.shutdown(connection, socket.SHUT_RDWR)
+        except (OSError, ValueError):
+            pass
+        # The request worker owns close(), including SSLSocket._real_close.
+        # ThreadingMixIn.shutdown_request closes it after the blocked I/O wakes.
+
+    def _watch_deadlines(self):
+        """One watchdog per listener, rather than a timer per accepted socket."""
+        while True:
+            with self._deadline_condition:
+                if self._deadline_stopping:
+                    return
+                now = time.monotonic()
+                expired = [connection for connection, deadline in self._request_deadlines.items()
+                           if deadline <= now]
+                if not expired:
+                    deadline = min(self._request_deadlines.values(), default=None)
+                    self._deadline_condition.wait(None if deadline is None else max(0, deadline - now))
+                    continue
+                for connection in expired:
+                    self._request_deadlines.pop(connection, None)
+            for connection in expired:
+                self._expire_connection(connection)
+
+    def _finish_request_deadline(self, request):
+        with self._deadline_condition:
+            self._request_deadlines.pop(request, None)
+            self._deadline_condition.notify()
+
+    def server_close(self):
+        try:
+            # ThreadingMixIn waits for workers while the watchdog can still wake
+            # stalled reads. Closing transport never aborts a Store transaction.
+            super().server_close()
+        finally:
+            with self._deadline_condition:
+                self._deadline_stopping = True
+                self._deadline_condition.notify()
+            if self._deadline_thread is not None:
+                self._deadline_thread.join()
 
     def server_bind(self):
         # HTTPServer's default reverse DNS lookup can stall startup on a host
@@ -137,9 +203,13 @@ class PeerHTTPServer(ThreadingHTTPServer):
         if not self.connection_slots.acquire(blocking=False):
             self.shutdown_request(request)
             return
+        with self._deadline_condition:
+            self._request_deadlines[request] = time.monotonic() + self.request_deadline_seconds
+            self._deadline_condition.notify()
         try:
             super().process_request(request, client_address)
         except BaseException:
+            self._finish_request_deadline(request)
             self.connection_slots.release()
             raise
 
@@ -147,6 +217,7 @@ class PeerHTTPServer(ThreadingHTTPServer):
         try:
             super().process_request_thread(request, client_address)
         finally:
+            self._finish_request_deadline(request)
             self.connection_slots.release()
 
     def handle_error(self, request, client_address):
@@ -225,7 +296,9 @@ def serve_nas(store, args, *, stop_event=None):
         ]
         for address, handler, context in zip(
                 [(args.mcp_host, args.mcp_port), (args.sync_host, args.sync_port)], handlers, contexts):
-            server = PeerHTTPServer(address, handler, context)
+            # Separate pools keep public slow clients from occupying private
+            # sync slots, with total workers below the container PID budget.
+            server = PeerHTTPServer(address, handler, context, max_connections=16)
             # server_close must join accepted requests before the Store closes.
             server.daemon_threads = False
             servers.append(server)

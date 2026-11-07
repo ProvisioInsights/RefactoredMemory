@@ -205,6 +205,13 @@ files. Runtime audit-storage failures produce a sanitized warning and counter;
 they do not erase an already completed graph operation. Back up and monitor the
 underlying storage separately.
 
+The NAS listener has independent 16-connection pools for MCP and peer sync. A
+20-second absolute connection I/O deadline complements the 15-second idle timeout;
+trickled bytes cannot keep a connection indefinitely. Service shutdown allows
+workers to finish before closing the Store. The deployment's stop grace is 30
+seconds; this is an orderly shutdown allowance, not a guarantee against hung
+filesystem I/O or physical host failure.
+
 ## Automatic bounded synchronization and capacity
 
 After pairing the peers, put this configuration in a private file on the Mac
@@ -288,6 +295,8 @@ python3 -m refactoredmemory --db "$REFMEM_DATA/restored.sqlite3" status
 ```
 
 A destination must be new. Restore verifies retained journal history and signatures, rebuilds projections, generates a fresh peer identity, and activates no old client grants or peer admissions. Keep the recovered store isolated until it has reconciled current deletions and local policy with a current peer. An offline backup cannot know deletions or revocations made after the snapshot.
+
+Backup first writes a private sibling file, checks SQLite integrity, closes its journal and flushes the standalone snapshot. Only then does it atomically publish the requested destination without replacing an existing file. The returned knowledge position belongs to that snapshot, not to a later live write. A failure before publication leaves no final backup name and can be retried. The destination filesystem must support same-directory hard links; create the backup on local storage, then transfer the completed file to approved off-device storage. An error flushing the directory after publication can leave a valid final file without a success receipt: inspect that file before choosing a new backup name; never automatically overwrite it.
 
 Pair a recovered peer explicitly using newly exported identity files and new peer-scoped credentials. If it must forward signed operations from an older origin no longer directly admitted, the receiving owner uses `recovery-admit --sender NEW_PEER_ID --identity-file ORIGINAL_ORIGIN_IDENTITY_FILE` with independently retained, approved original pairing material. This is an explicit recovery delegation, not automatic admission from a snapshot; inspect [sync protocol](SYNC-PROTOCOL.md) first.
 

@@ -4,14 +4,16 @@ from __future__ import annotations
 import io
 import json
 import os
+import shutil
 from pathlib import Path
 import tempfile
 import threading
+import time
 import unittest
 import urllib.error
 from unittest.mock import patch
 
-from refactoredmemory.sync import SyncError, SyncRunner, _post, _retry_after, sync_once
+from refactoredmemory.sync import SyncError, SyncRunner, _AttemptDeadline, _post, _retry_after, sync_once
 
 
 class Clock:
@@ -251,6 +253,185 @@ class RunnerTests(unittest.TestCase):
         with patch("refactoredmemory.sync.time.time", return_value=0):
             self.assertEqual(_retry_after("Thu, 01 Jan 1970 00:02:00 GMT"), 120)
         self.assertIsNone(_retry_after("invalid"))
+
+    def test_slow_header_body_and_cancellation_have_wall_clock_bounds(self):
+        from http.server import BaseHTTPRequestHandler
+        from refactoredmemory.cli import PeerHTTPServer
+        for stage in ("headers", "body", "cancel", "rate_limit"):
+            with self.subTest(stage=stage):
+                requests = []
+                class SlowHandler(BaseHTTPRequestHandler):
+                    def do_POST(self):
+                        requests.append(self.path)
+                        self.rfile.read(int(self.headers["Content-Length"]))
+                        body = b'{"synthetic":"' + b"a" * 100 + b'"}'
+                        try:
+                            if stage == "headers":
+                                data = b"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: 2\r\n\r\n{}"
+                            else:
+                                self.send_response(429 if stage == "rate_limit" else 200)
+                                if stage == "rate_limit":
+                                    self.send_header("Retry-After", "120")
+                                self.send_header("Content-Type", "application/json")
+                                self.send_header("Content-Length", str(len(body)))
+                                self.end_headers()
+                                data = body
+                            for byte in data:
+                                self.wfile.write(bytes([byte]))
+                                self.wfile.flush()
+                                time.sleep(0.02)
+                        except (OSError, ValueError):
+                            pass
+
+                    def log_message(self, *args):
+                        pass
+
+                server = PeerHTTPServer(("127.0.0.1", 0), SlowHandler)
+                thread = threading.Thread(target=server.serve_forever, daemon=True)
+                thread.start()
+                stopping = threading.Event()
+                timer = threading.Timer(0.15, stopping.set) if stage == "cancel" else None
+                if timer:
+                    timer.start()
+                try:
+                    start = time.monotonic()
+                    with self.assertRaises(SyncError) as caught:
+                        _post(f"http://127.0.0.1:{server.server_port}/sync", "synthetic", {},
+                              5 if stage == "cancel" else 0.15, 0, stop_event=stopping)
+                    self.assertLess(time.monotonic() - start, 0.75)
+                    self.assertEqual(caught.exception.code, "cancelled" if stage == "cancel" else
+                                     "rate_limited" if stage == "rate_limit" else "transport_timeout")
+                    if stage == "rate_limit":
+                        self.assertEqual(caught.exception.retry_after_seconds, 120)
+                    self.assertEqual(requests, ["/sync"])
+                    self.assertFalse(any(t.name == "refactoredmemory-sync-deadline" for t in threading.enumerate()))
+                finally:
+                    if timer:
+                        timer.cancel()
+                        timer.join()
+                    server.shutdown()
+                    server.server_close()
+                    thread.join(2)
+
+    def test_stalled_dns_worker_is_terminated_and_reaped(self):
+        import subprocess
+        real_popen = subprocess.Popen
+        children = []
+        def capture(*args, **kwargs):
+            child = real_popen(*args, **kwargs)
+            children.append(child)
+            return child
+        start = time.monotonic()
+        with patch("refactoredmemory.sync._RESOLVER_CODE", "import time; time.sleep(30)"), \
+                patch("subprocess.Popen", side_effect=capture):
+            with self.assertRaises(SyncError) as caught:
+                with _AttemptDeadline(0.15) as deadline:
+                    deadline.resolve("synthetic.invalid", 443)
+        self.assertEqual(caught.exception.code, "transport_timeout")
+        self.assertLess(time.monotonic() - start, 0.75)
+        self.assertEqual(len(children), 1)
+        self.assertIsNotNone(children[0].poll())
+        self.assertFalse(any(t.name == "refactoredmemory-sync-deadline" for t in threading.enumerate()))
+
+    def test_resolver_validates_addresses_and_literal_ip_needs_no_worker(self):
+        with patch("subprocess.Popen") as child:
+            with _AttemptDeadline(1) as deadline:
+                self.assertEqual(deadline.resolve("127.0.0.1", 443)[0][-1], ("127.0.0.1", 443))
+            child.assert_not_called()
+        rows = [[2, 1, 6, ["127.0.0.1", 443]], [10, 1, 6, ["::1", 443, 0, 0]]]
+        import socket
+        rows[1][0] = int(socket.AF_INET6)
+        code = "print(" + repr(json.dumps(rows)) + ")"
+        with patch("refactoredmemory.sync._RESOLVER_CODE", code):
+            with _AttemptDeadline(1) as deadline:
+                resolved = deadline.resolve("synthetic.invalid", 443)
+            self.assertEqual(len(resolved), 2)
+        bad = "print('[ [2,1,6,[\\\"127.0.0.1\\\",444]] ]')"
+        with patch("refactoredmemory.sync._RESOLVER_CODE", bad):
+            with self.assertRaises(SyncError):
+                with _AttemptDeadline(1) as deadline:
+                    deadline.resolve("synthetic.invalid", 443)
+
+    def test_stalled_tls_handshake_is_interrupted_and_cleanup_is_joined(self):
+        import socket
+        for cancel in (False, True):
+            with self.subTest(cancel=cancel):
+                listener = socket.socket()
+                listener.bind(("127.0.0.1", 0))
+                listener.listen(1)
+                listener.settimeout(2)
+                server_done = threading.Event()
+                def accept_without_handshake():
+                    try:
+                        connection, _ = listener.accept()
+                        with connection:
+                            server_done.wait(2)
+                    except OSError:
+                        pass
+                server = threading.Thread(target=accept_without_handshake, daemon=True)
+                server.start()
+                stopping = threading.Event()
+                timer = threading.Timer(0.15, stopping.set) if cancel else None
+                if timer:
+                    timer.start()
+                try:
+                    start = time.monotonic()
+                    with patch("urllib.request.getproxies", return_value={}), self.assertRaises(SyncError) as caught:
+                        _post(f"https://127.0.0.1:{listener.getsockname()[1]}/sync", "synthetic", {},
+                              5 if cancel else 0.15, 0, stop_event=stopping)
+                    self.assertEqual(caught.exception.code, "cancelled" if cancel else "transport_timeout")
+                    self.assertLess(time.monotonic() - start, 0.75)
+                    self.assertFalse(any(t.name == "refactoredmemory-sync-deadline" for t in threading.enumerate()))
+                finally:
+                    if timer:
+                        timer.cancel()
+                        timer.join()
+                    server_done.set()
+                    listener.close()
+                    server.join(2)
+
+    @unittest.skipUnless(shutil.which("openssl"), "OpenSSL generates a synthetic TLS certificate")
+    def test_deadline_https_keeps_original_hostname_and_certificate_verification(self):
+        import ssl
+        import subprocess
+        from http.server import BaseHTTPRequestHandler
+        from refactoredmemory.cli import PeerHTTPServer
+        cert, key = self.root / "synthetic.crt", self.root / "synthetic.key"
+        subprocess.run(["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes",
+                        "-keyout", str(key), "-out", str(cert), "-days", "1", "-subj", "/CN=localhost",
+                        "-addext", "subjectAltName=DNS:localhost"],
+                       check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=10)
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.load_cert_chain(cert, key)
+        received = []
+        class Handler(BaseHTTPRequestHandler):
+            def do_POST(self):
+                self.rfile.read(int(self.headers["Content-Length"]))
+                received.append(self.headers["Authorization"])
+                data = b'{"synthetic":"tls"}'
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(data)))
+                self.end_headers()
+                self.wfile.write(data)
+            def log_message(self, *args):
+                pass
+        server = PeerHTTPServer(("127.0.0.1", 0), Handler, context)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            with patch.dict(os.environ, {"SSL_CERT_FILE": str(cert)}), patch("urllib.request.getproxies", return_value={}):
+                response = _post(f"https://localhost:{server.server_port}/sync", "synthetic", {}, 2, 0)
+                self.assertEqual(response, {"synthetic": "tls"})
+                # Same trusted certificate has no IP SAN: using the numeric host
+                # must fail, proving hostname verification was not weakened.
+                with self.assertRaises(SyncError):
+                    _post(f"https://127.0.0.1:{server.server_port}/sync", "synthetic", {}, 2, 0)
+            self.assertEqual(received, ["Bearer synthetic"])
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(2)
 
     def test_real_store_reserve_failure_does_not_ack_and_resume_uses_durable_frontier(self):
         from types import SimpleNamespace

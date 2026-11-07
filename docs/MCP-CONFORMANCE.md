@@ -103,13 +103,17 @@ those clients complete their own synthetic onboarding and tool workflow.
 
 The implementation bounds incoming messages at 2 MiB, outgoing messages at 4 MiB,
 stdio outstanding requests at 32 with four workers, and HTTP concurrent calls at
-16. The production HTTP host also limits accepted connection workers to 32,
-including clients still performing TLS or sending headers. A 15-second socket
-timeout is set before TLS handshakes and header parsing; handshakes run in the
-worker rather than blocking the accept loop. Expected TLS/connection failures
-close without raw tracebacks. Synthetic tests verify a stalled TLS client does
-not block another verified TLS request, malformed TLS closes cleanly, and partial
-HTTP headers expire. The graph imposes tighter action/query limits. HTTP uses
+16. The single-listener host permits 32 accepted connection workers; the NAS
+profile uses independent pools of 16 for MCP and 16 for private sync, including
+clients still performing TLS or sending headers. A 15-second idle socket timeout
+and a 20-second absolute connection I/O deadline cover handshakes, headers and
+bodies. Handshakes run in workers rather than blocking the accept loop. One
+watchdog per listener shuts down expired I/O; the worker owns final socket closure,
+and shutdown joins the workers before the watchdog exits. Slow-drip traffic cannot
+extend its connection budget. This closes transport, not an in-flight Store
+transaction. Expected TLS/connection failures close without raw tracebacks.
+Synthetic tests cover slow TLS fragments, headers and bodies, independent pool
+availability, expiry and watchdog cleanup. The graph imposes tighter action/query limits. HTTP uses
 bounded reads and connection close responses. Those are personal-service limits,
 not evidence of enterprise capacity or complete denial-of-service qualification.
 

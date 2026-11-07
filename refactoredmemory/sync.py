@@ -9,6 +9,9 @@ the Store. This module never copies a database or treats wall clocks as order.
 from __future__ import annotations
 
 import ipaddress
+import http.client
+import socket
+import threading
 import json
 import math
 import time
@@ -177,67 +180,306 @@ def _endpoint(url: str) -> str:
     return urllib.parse.urlunsplit((parsed.scheme, parsed.netloc, path, "", ""))
 
 
-def _post(url: str, token: str, payload: dict[str, Any], timeout: float,
-          retries: int) -> dict[str, Any]:
-    data = _encode(payload)
-    handlers: list[Any] = [_NoRedirect()]
-    if urllib.parse.urlsplit(url).scheme == "http":
-        # Validated numeric loopback traffic must stay local even if a machine's
-        # proxy settings omit its NO_PROXY entry.
-        handlers.append(urllib.request.ProxyHandler({}))
-    opener = urllib.request.build_opener(*handlers)
-    for attempt in range(retries + 1):
-        request = urllib.request.Request(url, data=data, method="POST", headers={
-            "Authorization": "Bearer " + token,
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Connection": "close",
-        })
+# Resolver code is fixed: only a host and numeric port enter the child. The
+# isolated child receives no peer credential, operation body, or proxy secret.
+_RESOLVER_CODE = """import json,socket,sys
+try:
+    rows=socket.getaddrinfo(sys.argv[1],int(sys.argv[2]),socket.AF_UNSPEC,socket.SOCK_STREAM,socket.IPPROTO_TCP)
+    print(json.dumps([[int(a),int(t),int(p),list(s)] for a,t,p,c,s in rows[:64]]))
+except OSError:
+    print('[]')
+    sys.exit(2)
+"""
+
+
+class _AttemptDeadline:
+    """Abort active sockets on a wall deadline; no background request worker."""
+
+    def __init__(self, timeout, stop_event=None):
+        self.end = time.monotonic() + timeout
+        self.stop_event = stop_event
+        self.done = threading.Event()
+        self.lock = threading.Lock()
+        self.sockets = set()
+        self.thread = threading.Thread(target=self._watch, name="refactoredmemory-sync-deadline", daemon=True)
+
+    def __enter__(self):
+        self.thread.start()
+        return self
+
+    def check(self):
+        if self.stop_event is not None and self.stop_event.is_set():
+            raise SyncError("cancelled", "Synchronization cancelled")
+        remaining = self.end - time.monotonic()
+        if remaining <= 0:
+            raise SyncError("transport_timeout", "Peer exchange exceeded its time budget")
+        return remaining
+
+    @staticmethod
+    def _shutdown(sock):
         try:
-            with opener.open(request, timeout=timeout) as response:
-                if response.headers.get_content_type() != "application/json":
-                    raise SyncError("invalid_response", "Peer response must be JSON")
-                if response.headers.get("Content-Encoding", "identity") != "identity":
-                    raise SyncError("invalid_response", "Compressed peer responses are unsupported")
-                raw_length = response.headers.get("Content-Length")
-                if raw_length is not None:
-                    try:
-                        size = int(raw_length)
-                    except ValueError as exc:
-                        raise SyncError("invalid_response", "Invalid response length") from exc
-                    if size < 0 or size > MAX_BODY_BYTES:
-                        raise SyncError("too_large", "Peer response exceeds the bounded body size")
-                raw = response.read(MAX_BODY_BYTES + 1)
-                return decode_body(raw)
-        except urllib.error.HTTPError as exc:
-            code = exc.code
-            retry_after = _retry_after(exc.headers.get("Retry-After"))
-            error_code = None
-            reason = None
+            # Bypass SSLSocket.shutdown's SSL state mutation while another
+            # thread may be inside a handshake/read. OS shutdown wakes the I/O.
+            socket.socket.shutdown(sock, socket.SHUT_RDWR)
+        except OSError:
+            pass
+
+    @classmethod
+    def _close(cls, sock):
+        cls._shutdown(sock)
+        try:
+            sock.close()
+        except OSError:
+            pass
+
+    def _shutdown_all(self):
+        with self.lock:
+            sockets = list(self.sockets)
+        for sock in sockets:
+            self._shutdown(sock)
+
+    def add(self, sock):
+        with self.lock:
+            self.sockets.add(sock)
+        try:
+            sock.settimeout(self.check())
+        except BaseException:
+            self._close(sock)
+            raise
+
+    def _close_all(self):
+        with self.lock:
+            sockets = list(self.sockets)
+            self.sockets.clear()
+        for sock in sockets:
+            self._close(sock)
+
+    def _watch(self):
+        while not self.done.is_set():
             try:
-                error = decode_body(exc.read(4097))
-                if code in {429, 503} and error.get("error") in {"capacity_paused", "budget_pause"}:
-                    error_code = error["error"]
-                if error.get("reason") in {"low_disk", "store_limit", "budget_exhausted"}:
-                    reason = error["reason"]
-            except (SyncError, OSError):
-                pass
-            exc.close()
-            if error_code or code == 429 or retry_after is not None:
-                raise SyncError(error_code or ("rate_limited" if code == 429 else "http_error"),
-                                f"Peer exchange returned HTTP {code}",
-                                retry_after_seconds=retry_after, reason=reason,
-                                http_status=code) from None
-            if code in {429, 500, 502, 503, 504} and attempt < retries:
-                time.sleep(0.05 * 2**attempt)
-                continue
-            # Never echo response bodies, URLs or bearer values into logs/errors.
-            raise SyncError("http_error", f"Peer exchange returned HTTP {code}", http_status=code) from None
-        except (urllib.error.URLError, TimeoutError, OSError) as exc:
-            if attempt < retries:
-                time.sleep(0.05 * 2**attempt)
-                continue
-            raise SyncError("transport_error", "Peer exchange could not complete") from None
+                remaining = self.check()
+            except SyncError:
+                # Only interrupt OS I/O here. Closing an SSLSocket would clear
+                # SSL state concurrently with the caller's handshake or read.
+                self._shutdown_all()
+                return
+            self.done.wait(min(remaining, 0.025))
+
+    def __exit__(self, *exc):
+        self.done.set()
+        self._shutdown_all()
+        self.thread.join()
+        # The request has unwound and the watchdog has exited; the caller owns
+        # all final close operations, including SSLSocket's SSL-object cleanup.
+        self._close_all()
+
+    def resolve(self, host, port):
+        """Bound libc name resolution in a terminated-and-reaped subprocess."""
+        import os
+        import subprocess
+        import sys
+        self.check()
+        try:
+            address = ipaddress.ip_address(host)
+        except ValueError:
+            address = None
+        if address is not None:
+            family = socket.AF_INET6 if address.version == 6 else socket.AF_INET
+            sockaddr = (str(address), port, 0, 0) if address.version == 6 else (str(address), port)
+            return [(family, socket.SOCK_STREAM, socket.IPPROTO_TCP, sockaddr)]
+        if not isinstance(host, str) or not host or len(host) > 1024 or type(port) is not int or not 1 <= port <= 65535:
+            raise SyncError("invalid_url", "Invalid connection address")
+        process = subprocess.Popen(
+            [sys.executable, "-I", "-S", "-c", _RESOLVER_CODE, host, str(port)],
+            stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+            env={"PATH": os.defpath},
+        )
+        try:
+            while True:
+                try:
+                    raw, _ = process.communicate(timeout=min(self.check(), 0.025))
+                    break
+                except subprocess.TimeoutExpired:
+                    continue
+            self.check()
+            if process.returncode != 0 or len(raw) > 65536:
+                raise SyncError("transport_error", "Peer address resolution failed")
+            try:
+                rows = json.loads(raw)
+            except (UnicodeError, ValueError) as exc:
+                raise SyncError("transport_error", "Peer address resolution failed") from exc
+            if not isinstance(rows, list) or not 1 <= len(rows) <= 64:
+                raise SyncError("transport_error", "Peer address resolution failed")
+            result = []
+            for row in rows:
+                if not isinstance(row, list) or len(row) != 4:
+                    raise SyncError("transport_error", "Invalid resolved address")
+                family, socktype, protocol, sockaddr = row
+                if family not in {socket.AF_INET, socket.AF_INET6} or socktype != socket.SOCK_STREAM or protocol != socket.IPPROTO_TCP:
+                    raise SyncError("transport_error", "Invalid resolved address")
+                if (not isinstance(sockaddr, list) or len(sockaddr) != (4 if family == socket.AF_INET6 else 2)
+                        or sockaddr[1] != port):
+                    raise SyncError("transport_error", "Invalid resolved address")
+                try:
+                    ip = ipaddress.ip_address(sockaddr[0])
+                except ValueError as exc:
+                    raise SyncError("transport_error", "Invalid resolved address") from exc
+                if ip.version != (6 if family == socket.AF_INET6 else 4):
+                    raise SyncError("transport_error", "Invalid resolved address")
+                if family == socket.AF_INET6 and any(type(x) is not int or not 0 <= x <= 2**32 - 1 for x in sockaddr[2:]):
+                    raise SyncError("transport_error", "Invalid resolved address")
+                result.append((family, socktype, protocol, tuple(sockaddr)))
+            return result
+        finally:
+            if process.poll() is None:
+                process.terminate()
+                try:
+                    process.wait(timeout=0.25)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.wait()
+            if process.stdout is not None:
+                process.stdout.close()
+
+    def connect(self, address, timeout=None, source_address=None):
+        host, port = address
+        for family, socktype, protocol, sockaddr in self.resolve(host, port):
+            self.check()
+            sock = socket.socket(family, socktype, protocol)
+            self.add(sock)
+            try:
+                if source_address:
+                    sock.bind(source_address)
+                sock.connect(sockaddr)
+                self.check()
+                return sock
+            except OSError:
+                self._close(sock)
+                self.check()
+        raise OSError("Peer connection failed")
+
+
+class _DeadlineConnection:
+    def __init__(self, *args, deadline, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.deadline = deadline
+        self._create_connection = deadline.connect
+
+
+class _DeadlineHTTPConnection(_DeadlineConnection, http.client.HTTPConnection):
+    pass
+
+
+class _DeadlineHTTPSConnection(_DeadlineConnection, http.client.HTTPSConnection):
+    def connect(self):
+        # Keep stdlib CONNECT handling and the original hostname for SNI and
+        # certificate verification. Register TLS before starting its handshake.
+        http.client.HTTPConnection.connect(self)
+        server_hostname = self._tunnel_host or self.host
+        self.sock = self._context.wrap_socket(self.sock, server_hostname=server_hostname,
+                                               do_handshake_on_connect=False)
+        self.deadline.add(self.sock)
+        self.sock.do_handshake()
+        self.deadline.check()
+
+
+class _DeadlineHTTPHandler(urllib.request.HTTPHandler):
+    def __init__(self, deadline):
+        super().__init__()
+        self.deadline = deadline
+
+    def http_open(self, req):
+        return self.do_open(lambda *args, **kwargs: _DeadlineHTTPConnection(*args, deadline=self.deadline, **kwargs), req)
+
+
+class _DeadlineHTTPSHandler(urllib.request.HTTPSHandler):
+    def __init__(self, deadline):
+        super().__init__()
+        self.deadline = deadline
+
+    def https_open(self, req):
+        return self.do_open(lambda *args, **kwargs: _DeadlineHTTPSConnection(*args, deadline=self.deadline, **kwargs),
+                            req, context=self._context)
+
+
+def _post(url: str, token: str, payload: dict[str, Any], timeout: float,
+          retries: int, stop_event=None) -> dict[str, Any]:
+    data = _encode(payload)
+    for attempt in range(retries + 1):
+        retry = False
+        with _AttemptDeadline(timeout, stop_event) as deadline:
+            handlers: list[Any] = [_NoRedirect(), _DeadlineHTTPHandler(deadline), _DeadlineHTTPSHandler(deadline)]
+            if urllib.parse.urlsplit(url).scheme == "http":
+                handlers.append(urllib.request.ProxyHandler({}))
+            opener = urllib.request.build_opener(*handlers)
+            request = urllib.request.Request(url, data=data, method="POST", headers={
+                "Authorization": "Bearer " + token, "Content-Type": "application/json",
+                "Accept": "application/json", "Connection": "close",
+            })
+            try:
+                with opener.open(request, timeout=deadline.check()) as response:
+                    deadline.check()
+                    if response.headers.get_content_type() != "application/json":
+                        raise SyncError("invalid_response", "Peer response must be JSON")
+                    if response.headers.get("Content-Encoding", "identity") != "identity":
+                        raise SyncError("invalid_response", "Compressed peer responses are unsupported")
+                    raw_length = response.headers.get("Content-Length")
+                    if raw_length is not None:
+                        try:
+                            size = int(raw_length)
+                        except ValueError as exc:
+                            raise SyncError("invalid_response", "Invalid response length") from exc
+                        if size < 0 or size > MAX_BODY_BYTES:
+                            raise SyncError("too_large", "Peer response exceeds the bounded body size")
+                    raw = response.read(MAX_BODY_BYTES + 1)
+                    deadline.check()
+                    return decode_body(raw)
+            except urllib.error.HTTPError as exc:
+                deadline.check()
+                code = exc.code
+                retry_after = _retry_after(exc.headers.get("Retry-After"))
+                error_code = reason = None
+                try:
+                    error = decode_body(exc.read(4097))
+                    deadline.check()
+                    if code in {429, 503} and error.get("error") in {"capacity_paused", "budget_pause"}:
+                        error_code = error["error"]
+                    if error.get("reason") in {"low_disk", "store_limit", "budget_exhausted"}:
+                        reason = error["reason"]
+                except (SyncError, OSError, http.client.HTTPException):
+                    try:
+                        deadline.check()
+                    except SyncError as interrupted:
+                        if interrupted.code != "cancelled" and (code == 429 or retry_after is not None):
+                            raise SyncError("rate_limited" if code == 429 else "http_error",
+                                            f"Peer exchange returned HTTP {code}",
+                                            retry_after_seconds=retry_after, http_status=code) from None
+                        raise
+                finally:
+                    exc.close()
+                if error_code or code == 429 or retry_after is not None:
+                    raise SyncError(error_code or ("rate_limited" if code == 429 else "http_error"),
+                                    f"Peer exchange returned HTTP {code}", retry_after_seconds=retry_after,
+                                    reason=reason, http_status=code) from None
+                if code in {500, 502, 503, 504} and attempt < retries:
+                    retry = True
+                else:
+                    raise SyncError("http_error", f"Peer exchange returned HTTP {code}", http_status=code) from None
+            except (urllib.error.URLError, TimeoutError, OSError, http.client.HTTPException):
+                deadline.check()
+                if attempt < retries:
+                    retry = True
+                else:
+                    raise SyncError("transport_error", "Peer exchange could not complete") from None
+        # Socket watchdog and DNS subprocess are joined/reaped before another
+        # attempt can begin. No sleeping sender can overlap a retry.
+        if retry:
+            delay = 0.05 * 2**attempt
+            if stop_event is not None:
+                if stop_event.wait(delay):
+                    raise SyncError("cancelled", "Synchronization cancelled")
+            else:
+                time.sleep(delay)
     raise AssertionError("unreachable")
 
 
@@ -306,7 +548,7 @@ def sync_once(store: Any, url: str, token: str, batch_size: int = 100, *,
             "frontier": _frontier(status["frontier"]),
             "operations": _operations(operations, batch_size), "limit": batch_size,
         })
-        response = _post(endpoint, token, payload, timeout, retries)
+        response = _post(endpoint, token, payload, timeout, retries, stop_event=stop_event)
         if response.get("protocol") != PROTOCOL or response.get("store_id") != store_id:
             raise SyncError("wrong_store", "Peer protocol or knowledge-store identity mismatch")
         response_peer = response.get("peer_id")
@@ -615,11 +857,11 @@ class SyncRunner:
                 if code == "cancelled":
                     self.status.update(state="stopped", last_error=None)
                 else:
-                    transient = (code in {"transport_error", "rate_limited", "capacity_paused", "budget_pause"}
+                    transient = (code in {"transport_error", "transport_timeout", "rate_limited", "capacity_paused", "budget_pause"}
                                  or code == "http_error" and getattr(exc, "http_status", None) in {429, 500, 502, 503, 504})
                     self._paused = not transient
                     self.status["failures"] = min(self.status["failures"] + 1, 1000000)
-                    safe_code = code if code in {"transport_error", "rate_limited", "capacity_paused", "budget_pause",
+                    safe_code = code if code in {"transport_error", "transport_timeout", "rate_limited", "capacity_paused", "budget_pause",
                                                 "http_error", "private_file_error", "invalid_token", "wrong_store",
                                                 "wrong_peer", "unsupported_protocol", "invalid_response", "too_large"} else "internal_error"
                     self.status.update(state="backoff" if transient else "paused", last_error=safe_code,

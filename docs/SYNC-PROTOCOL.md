@@ -45,6 +45,15 @@ configuration bounds all these values; normal backoff defaults to a 900-second
 ceiling and honors bounded server retry hints above that ceiling. Each cycle reads the
 credential from its private file and verifies the expected remote peer.
 
+Each HTTP attempt has an absolute monotonic time budget covering name resolution,
+connect, proxy negotiation, TLS, headers and response body. Continuous slow bytes
+cannot reset it. A watchdog shuts down blocked socket I/O on expiry or cancellation;
+the calling thread owns final closure and joins the watchdog before any retry.
+Hostname resolution uses an isolated fixed-code child with host/port only, no
+credentials or request content, and bounded output. A stalled resolver is
+terminated and reaped. Numeric IP endpoints avoid that child process. Timeout
+becomes a transient backoff result, not acknowledged sync progress.
+
 The runner writes a private, atomically replaced status/deadline file before
 network work. Restart cannot bypass that persisted deadline. The status file's
 frontier is observational; progress always resumes from the Store's durable
