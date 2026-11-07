@@ -42,6 +42,8 @@ test_quarantine_does_not_leak_through_source_content (test_importers.ImportTests
 test_snapshot_envelopes_and_unknown_encrypted_records_are_accounted (test_importers.ImportTests.test_snapshot_envelopes_and_unknown_encrypted_records_are_accounted) ... ok
 test_stale_plan_and_source_root_destination_are_refused (test_importers.ImportTests.test_stale_plan_and_source_root_destination_are_refused) ... ok
 test_symlinks_traversal_malformed_json_and_size_limits (test_importers.ImportTests.test_symlinks_traversal_malformed_json_and_size_limits) ... ok
+test_capture_contract_is_enforced_before_store_submission (test_mcp.CaptureSchemaTests.test_capture_contract_is_enforced_before_store_submission) ... ok
+test_schema_equality_distinguishes_boolean_from_number_recursively (test_mcp.CaptureSchemaTests.test_schema_equality_distinguishes_boolean_from_number_recursively) ... ok
 test_incomplete_headers_expire_before_do_post (test_mcp.ConnectionTimeoutTests.test_incomplete_headers_expire_before_do_post) ... ok
 test_headers_origin_auth_and_obsolete_verbs (test_mcp.HTTPTests.test_headers_origin_auth_and_obsolete_verbs) ... ok
 test_http_statuses_version_method_notification (test_mcp.HTTPTests.test_http_statuses_version_method_notification) ... ok
@@ -63,6 +65,7 @@ test_idle_tls_client_does_not_block_second_verified_tls_request (test_mcp.TLSCon
 test_malformed_tls_is_closed_without_handler_traceback (test_mcp.TLSConnectionTests.test_malformed_tls_is_closed_without_handler_traceback) ... ok
 test_concurrent_delete_edit_is_visible_without_content_and_restore_resolves (test_store_hardening.TombstoneLineageTests.test_concurrent_delete_edit_is_visible_without_content_and_restore_resolves) ... ok
 test_deleted_corrected_endpoint_does_not_resurrect_superseded_edge (test_store_hardening.TombstoneLineageTests.test_deleted_corrected_endpoint_does_not_resurrect_superseded_edge) ... ok
+test_invalid_correction_reason_cannot_enter_owner_journal (test_store_hardening.TombstoneLineageTests.test_invalid_correction_reason_cannot_enter_owner_journal) ... ok
 test_lost_response_retries_durable_group_without_duplicate (test_sync.DirectPeerTests.test_lost_response_retries_durable_group_without_duplicate) ... ok
 test_missing_predecessor_waits_durably_and_replay_is_idempotent (test_sync.DirectPeerTests.test_missing_predecessor_waits_durably_and_replay_is_idempotent) ... ok
 test_nonloopback_cleartext_and_redirects_are_not_allowed (test_sync.DirectPeerTests.test_nonloopback_cleartext_and_redirects_are_not_allowed) ... ok
@@ -83,6 +86,6 @@ test_wrong_credential_does_not_apply_operations (test_sync.DirectPeerTests.test_
 test_wrong_store_is_rejected_before_receipt (test_sync.DirectPeerTests.test_wrong_store_is_rejected_before_receipt) ... ok
 
 ----------------------------------------------------------------------
-Ran 83 tests in 13.422s
+Ran 86 tests in 13.858s
 
 OK

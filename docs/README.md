@@ -11,15 +11,15 @@
 | [Decisions](DECISIONS.md) | Accepted scope, open owner questions and deferred work. | Start here to avoid reopening settled choices. |
 | [Product requirements](PRD.md) | Personal-v1 behavior, requirements and acceptance cases. | Canonical requirements; preserved C/M identifiers distinguish v1 and later scope. |
 | [Architecture decisions](ADRS.md) | Evidence, alternatives, rationale and decision status. | Each ADR carries its own accepted/proposed/deferred status. |
-| [Architecture](ARCHITECTURE.md) | Personal Mac/Linux topology, temporal model, import and recovery boundaries. | Proposed implementation of accepted scope. [Editable diagram](diagrams/personal-v1.mmd). |
-| [MCP integration](MCP.md) | Required protocol/client contract and interoperability evidence. | Requirement accepted; implementation and qualification pending. |
-| [Validation](VALIDATION.md) | Synthetic fixtures, failure cases, import/migration and release evidence. | Planned checks, not passing results. |
+| [Architecture](ARCHITECTURE.md) | Personal Mac/Linux topology, temporal model, import and recovery boundaries. | Implemented personal-v1 topology, under qualification. [Editable diagram](diagrams/personal-v1.mmd). |
+| [MCP integration](MCP.md) | Required protocol/client contract and interoperability evidence. | Latest-stable server implemented; actual installed Praxis2 connection unverified. No changes to either Praxis repository. |
+| [Validation](VALIDATION.md) | Synthetic fixtures, failure cases, import/migration and release evidence. | Requirement-to-test plan; executed results are in the acceptance report. |
 | [Research](RESEARCH.md) | Source ledger, supplied measurements, limitations and outstanding research. | Public-safe summary; full historical private evidence remains in its authorized sources. |
-| [Execution prompt](EXECUTION_PROMPT.md) | Instructions for continuing research, reconciliation and eventual authorized implementation. | Must agree with the requirements and explicit proceed gate. |
+| [Execution prompt](EXECUTION_PROMPT.md) | Instructions for continuing the authorized implementation and qualification. | Matches accepted requirements and the explicit Proceed already received. |
 | [Implementation contract](CONTRACT.md) | Shared operation, temporal, authority and recovery APIs. | Implemented contract; limits remain explicit. |
 | [Runbook](RUNBOOK.md) | No-install CLI, MCP setup, two peers and recovery. | Executable commands with synthetic-first guidance. |
-| [Acceptance evidence](ACCEPTANCE-RESULTS.md) | Actual test and benchmark results plus remaining qualification. | Distinguishes executed Linux/SDK checks from unavailable Mac/Praxis/archive checks. |
-| [MCP conformance](MCP-CONFORMANCE.md) | Latest protocol and actual client evidence. | Modern protocol checks plus independent legacy SDK integration; Praxis unverified. |
+| [Acceptance evidence](ACCEPTANCE-RESULTS.md) | Actual test and benchmark results plus remaining qualification. | Distinguishes local Linux/SDK and hosted macOS/Ubuntu checks from unqualified owner-device/Praxis2/original-archive checks. |
+| [MCP conformance](MCP-CONFORMANCE.md) | Latest protocol and actual client evidence. | Modern protocol checks plus independent legacy SDK integration; installed Praxis2 unverified. |
 | [Import formats](IMPORT-FORMATS.md) | Inventoried legacy generations and conversion/fidelity limits. | Each input is accounted for; unsupported material is not silently promoted. |
 | [Sync protocol](SYNC-PROTOCOL.md) | Bounded direct exchange and explicit recovery-origin admission. | Synthetic process, retry, conflict and recovery evidence. |
 | [Tracking plan](tracking/README.md) | Prepared backlog, dependencies, requirement coverage and future Linear setup. | Planning aid; does not override requirements or authorize implementation. |

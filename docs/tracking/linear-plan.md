@@ -6,17 +6,19 @@ Proposed team: **RefactoredMemory (RFM)** in **Provisio Insights**. Planning key
 
 44 items: 10 research/documentation, 28 personal-v1 implementation/qualification, and 6 later-roadmap items. Coverage includes **C01–C25/M01–M20**, with C25/M20 day-one workflows and selected implementation ADR A17 mapped to existing items. All 28 v1 items retain their satisfied R09 authorization reference. The owner explicitly said **Proceed on 7 November 2026**. R06/R08 and full release qualification remain open.
 
+Praxis2 is the confirmed target. Implement true latest-published-stable MCP support in RefactoredMemory; do not change either Praxis or Praxis2 repository or make client changes prerequisites. Installed Praxis2 integration remains unexecuted.
+
 ## Current implementation evidence
 
-Core, MCP, import, direct synchronization and CLI implemented; current coordinated Linux run reports 83 passing tests including an independent real MCP SDK client. This aggregate count is not a claim that all personal-v1 acceptance requirements passed.
+Core, MCP, import, direct synchronization and CLI are implemented. The local Linux run passed all 86 synthetic tests, including both independent SDK tests. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2. Complete personal-v1 acceptance remains open.
 
 Remaining qualification:
 
-- Actual owner Mac runtime/filesystem and Mac/Linux cross-machine qualification.
-- Actual Praxis application integration and compatible configuration path.
+- Owner’s actual Mac/filesystem and actual Mac/Linux cross-machine peer-pair qualification; hosted macOS/Ubuntu CI is separate evidence.
+- Actual installed Praxis2 application integration remains unexecuted. Praxis2 is confirmed; neither Praxis repository may be modified, and client modifications are not a prerequisite for RefactoredMemory’s newest-spec MCP support.
 - Complete original legacy-run inventory/archive fidelity and encrypted-input/key qualification.
 
-Evidence: [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [MCP-CONFORMANCE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md), [IMPORT-FORMATS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md), [SYNC-PROTOCOL.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md).
+Evidence: [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [MCP-CONFORMANCE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md), [IMPORT-FORMATS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md), [SYNC-PROTOCOL.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [verify.yml](https://github.com/ProvisioInsights/RefactoredMemory/blob/ebb73d2/.github/workflows/verify.yml).
 
 ## Accepted decisions and authorization
 
@@ -36,12 +38,13 @@ Authorization does not grant live-data use, new installations, external deployme
 - Reuse an existing matching team/project/issue if discovered; avoid duplicates.
 - Use actual workspace workflow statuses; suggested states are semantic names, not assumed IDs.
 - Do not invent assignees, estimates, cycles or due dates.
-- R01/R03 record completed documentation/policy evidence and R09 records explicit implementation authorization received 2026-11-07. Implemented streams remain In Progress with partial Linux evidence; no complete personal-v1 release qualification is claimed. R00 stays deferred while Linear is paused; R06/R08 and remaining evidence/qualification criteria remain open.
+- R01/R03 record completed documentation/policy evidence and R09 records explicit implementation authorization received 2026-11-07. Implemented streams remain In Progress with partial local Linux and hosted macOS/Ubuntu evidence; no complete personal-v1 release qualification is claimed. R00 stays deferred while Linear is paused; R06/R08 and remaining evidence/qualification criteria remain open.
 - All v1 issues retain a direct R09 authorization dependency. R09 is satisfied by the explicit owner Proceed on 2026-11-07; mark implementation progress only when work actually starts, without fabricating completion.
 - R09 records the actual owner instruction, never inferred consent or automatic closure from prerequisites. Its completion does not pass readiness or release qualification.
 - Later-roadmap issues never block v1 and require separately agreed future scope.
 - Use public repository links and non-sensitive synthetic acceptance criteria; no private source excerpts or credentials.
 - Source documents remain authoritative; track delivery/evidence in Linear without silently accepting design choices.
+- Praxis2 is the confirmed target client. Implement true latest-published-stable MCP support in RefactoredMemory; do not modify either Praxis or Praxis2 repository or make client modifications a prerequisite. Actual installed Praxis2 integration remains unexecuted until verified.
 
 ## RefactoredMemory — Research and documentation gate
 
@@ -117,7 +120,7 @@ Selected A17 implementation and recorded synthetic Linux evidence are now availa
 
 Remaining evidence:
 
-- Actual Mac/Praxis and original legacy-run evidence remain incomplete where applicable.
+- Owner’s actual Mac/Praxis2 and original legacy-run evidence remain incomplete where applicable.
 
 Acceptance criteria:
 
@@ -142,7 +145,7 @@ Selected A17 implementation and recorded synthetic Linux evidence are now availa
 
 Remaining evidence:
 
-- Actual Mac/Praxis and original legacy-run evidence remain incomplete where applicable.
+- Owner’s actual Mac/Praxis2 and original legacy-run evidence remain incomplete where applicable.
 
 Acceptance criteria:
 
@@ -162,11 +165,11 @@ Repository-work status: **In Progress**.
 
 Accepted Q6–Q10 and selected ADR A17 are reflected in implementation contracts. Detailed conformance and source/client evidence gaps remain open; the received Proceed and partial Linux results do not complete this contract/readiness record.
 
-Selected A17 implementation and recorded synthetic Linux evidence are now available. Complete this research/contract/readiness item only against its actual criteria; access and qualification gaps remain explicit.
+Selected A17 implementation and recorded synthetic Linux evidence are now available. Complete this research/contract/readiness item only against its actual criteria; access and qualification gaps remain explicit. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.
 
 Remaining evidence:
 
-- Actual Mac/Praxis and original legacy-run evidence remain incomplete where applicable.
+- Owner’s actual Mac/Praxis2 and original legacy-run evidence remain incomplete where applicable.
 
 Acceptance criteria:
 
@@ -185,16 +188,18 @@ Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/
 
 Repository-work status: **In Progress**.
 
+Praxis2 is the confirmed target. Verify the latest stable MCP contract in RefactoredMemory and record installed-client execution separately; no changes in Praxis or Praxis2 are authorized or required as prerequisites.
+
 Selected A17 implementation and recorded synthetic Linux evidence are now available. Complete this research/contract/readiness item only against its actual criteria; access and qualification gaps remain explicit.
 
 Remaining evidence:
 
-- Actual Mac/Praxis and original legacy-run evidence remain incomplete where applicable.
+- Owner’s actual Mac/Praxis2 and original legacy-run evidence remain incomplete where applicable.
 
 Acceptance criteria:
 
 - Check official latest published stable MCP; record verification date, protocol revision, SDK support and actual target client versions.
-- Inspect relevant Praxis client behavior and select an accessible independent MCP client. Record transports, discovery/metadata, version compatibility and auth requirements.
+- Use the confirmed Praxis2 target and the existing independent MCP client to record transports, discovery/metadata, version compatibility and authentication requirements. Do not request target confirmation or modify either client repository.
 - Create applicable conformance and real-client evidence plans for stdio/Streamable HTTP. Do not assume an older initialize lifecycle or count mocks as client integration.
 - Name client/credential/access blockers precisely; no external deployment or permission change is implied.
 
@@ -208,11 +213,11 @@ Repository-work status: **In Progress**.
 
 Repository contracts, run instructions and evidence reports are being reconciled against the implemented scope and accepted decisions. Keep remaining source/client/platform qualification criteria open; R09 authorization does not auto-pass readiness.
 
-Selected A17 implementation and recorded synthetic Linux evidence are now available. Complete this research/contract/readiness item only against its actual criteria; access and qualification gaps remain explicit.
+Selected A17 implementation and recorded synthetic Linux evidence are now available. Complete this research/contract/readiness item only against its actual criteria; access and qualification gaps remain explicit. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.
 
 Remaining evidence:
 
-- Actual Mac/Praxis and original legacy-run evidence remain incomplete where applicable.
+- Owner’s actual Mac/Praxis2 and original legacy-run evidence remain incomplete where applicable.
 
 Acceptance criteria:
 
@@ -250,7 +255,7 @@ Sources: [EXECUTION_PROMPT.md](https://github.com/ProvisioInsights/RefactoredMem
 
 Project state: **In Progress**. One owner; Mac + Linux offline writes/sync; required MCP; Markdown/Logseq and LivingAtlas migration.
 
-Coordinated personal-v1 implementation is authorized and implemented core/MCP/import/sync/CLI streams are In Progress against their full criteria. The current Linux run reports 83 passing synthetic tests, including independent MCP SDK workflows; evidence reports distinguish that result from unexecuted actual Mac/Praxis and full original-archive qualification. Corporate tenancy, product content encryption, transitive mesh and browser UI are excluded. Live imports, keys, installations, credentials/permissions and external deployments retain separate approval requirements.
+Coordinated personal-v1 implementation is authorized and implemented core/MCP/import/sync/CLI streams are In Progress against their full criteria. The local Linux run passed all 86 synthetic tests, including independent MCP SDK workflows. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2. Full original-archive qualification also remains incomplete. Praxis2 is the confirmed target; neither Praxis repository may be modified. Corporate tenancy, product content encryption, transitive mesh and browser UI are excluded. Live imports, keys, installations, credentials/permissions and external deployments retain separate approval requirements.
 
 Milestones: Temporal core and personal authority; MCP and import compatibility; Mac/Linux offline synchronization; Qualification and usable delivery.
 
@@ -258,9 +263,9 @@ Milestones: Temporal core and personal authority; MCP and import compatibility; 
 
 Repository-work status: **In Progress**.
 
-Temporal graph, storage, grants and lifecycle code are implemented with synthetic Linux acceptance evidence. This workstream remains In Progress while the complete cross-runtime/client/import qualification matrix is unfinished; passing Linux tests does not certify the owner’s Mac, Praxis or original archives.
+Temporal graph, storage, grants and lifecycle code are implemented with synthetic Linux acceptance evidence. This workstream remains In Progress while the complete cross-runtime/client/import qualification matrix is unfinished; passing Linux tests does not certify the owner’s Mac, Praxis2 or original archives.
 
-Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open.
+Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.
 
 Remaining evidence:
 
@@ -276,13 +281,13 @@ Requirements: C01, C02, C05, C06, C07, C08, C09, C10, C11, C13, C16, C17, C19, C
 
 Prerequisites: R09.
 
-Sources: [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md), [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md).
+Sources: [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md), [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [verify.yml](https://github.com/ProvisioInsights/RefactoredMemory/blob/ebb73d2/.github/workflows/verify.yml).
 
 ### G01 — Implement typed entities, sourced assertions, observations and evidence
 
 Repository-work status: **In Progress**.
 
-Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open.
+Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.
 
 Remaining evidence:
 
@@ -301,13 +306,13 @@ Prerequisites: R09, R06.
 
 Workstream parent: G00.
 
-Sources: [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md).
+Sources: [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [verify.yml](https://github.com/ProvisioInsights/RefactoredMemory/blob/ebb73d2/.github/workflows/verify.yml).
 
 ### G02 — Implement bitemporal history, semantic actions and visible conflicts
 
 Repository-work status: **In Progress**.
 
-Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open.
+Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.
 
 Remaining evidence:
 
@@ -326,13 +331,13 @@ Prerequisites: R09, G01.
 
 Workstream parent: G00.
 
-Sources: [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md), [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md).
+Sources: [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md), [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [verify.yml](https://github.com/ProvisioInsights/RefactoredMemory/blob/ebb73d2/.github/workflows/verify.yml).
 
 ### G03 — Implement durable atomic operation storage and restart recovery
 
 Repository-work status: **In Progress**.
 
-Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open.
+Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.
 
 Remaining evidence:
 
@@ -351,13 +356,13 @@ Prerequisites: R09, G01, R05.
 
 Workstream parent: G00.
 
-Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md), [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md).
+Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md), [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [verify.yml](https://github.com/ProvisioInsights/RefactoredMemory/blob/ebb73d2/.github/workflows/verify.yml).
 
 ### G04 — Implement consistent temporal queries, traversal, search and index rebuild
 
 Repository-work status: **In Progress**.
 
-Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open.
+Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.
 
 Remaining evidence:
 
@@ -376,13 +381,13 @@ Prerequisites: R09, G02, G03.
 
 Workstream parent: G00.
 
-Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md), [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md).
+Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md), [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [verify.yml](https://github.com/ProvisioInsights/RefactoredMemory/blob/ebb73d2/.github/workflows/verify.yml).
 
 ### G05 — Enforce personal client grants, current authority and safe boundaries
 
 Repository-work status: **In Progress**.
 
-Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open.
+Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.
 
 Remaining evidence:
 
@@ -402,13 +407,13 @@ Prerequisites: R09, R03, G01.
 
 Workstream parent: G00.
 
-Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md), [MCP.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md).
+Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md), [MCP.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [verify.yml](https://github.com/ProvisioInsights/RefactoredMemory/blob/ebb73d2/.github/workflows/verify.yml).
 
 ### G06 — Implement personal delete, export, backup and restore lifecycle
 
 Repository-work status: **In Progress**.
 
-Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open.
+Graph/SQLite service and CLI are implemented. Synthetic Linux evidence covers sourced assertions, temporal history, owner-correction preference, scoped grants, atomic retry, restart, rebuild and restore; full issue acceptance remains open. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.
 
 Remaining evidence:
 
@@ -428,13 +433,13 @@ Prerequisites: R09, G02, G03, G05.
 
 Workstream parent: G00.
 
-Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md), [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md).
+Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md), [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [verify.yml](https://github.com/ProvisioInsights/RefactoredMemory/blob/ebb73d2/.github/workflows/verify.yml).
 
 ### S00 — Two personal offline-writable peers and direct synchronization
 
 Repository-work status: **In Progress**.
 
-Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers.
+Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.
 
 Remaining evidence:
 
@@ -450,13 +455,13 @@ Requirements: C03, C04, C05, C06, C09, C12, C15, C17, C18 · Tests: M03, M04, M0
 
 Prerequisites: R09.
 
-Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md), [SYNC-PROTOCOL.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md).
+Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md), [SYNC-PROTOCOL.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [verify.yml](https://github.com/ProvisioInsights/RefactoredMemory/blob/ebb73d2/.github/workflows/verify.yml).
 
 ### S01 — Implement personal peer admission, identity and protected transport
 
 Repository-work status: **In Progress**.
 
-Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers.
+Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.
 
 Remaining evidence:
 
@@ -475,13 +480,13 @@ Prerequisites: R09, G03, G05.
 
 Workstream parent: S00.
 
-Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md), [SYNC-PROTOCOL.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md).
+Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md), [SYNC-PROTOCOL.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [verify.yml](https://github.com/ProvisioInsights/RefactoredMemory/blob/ebb73d2/.github/workflows/verify.yml).
 
 ### S02 — Implement bounded graph-operation exchange and durable causal progress
 
 Repository-work status: **In Progress**.
 
-Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers.
+Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.
 
 Remaining evidence:
 
@@ -500,13 +505,13 @@ Prerequisites: R09, S01, G02, G03.
 
 Workstream parent: S00.
 
-Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md), [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md), [SYNC-PROTOCOL.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md).
+Sources: [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md), [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md), [SYNC-PROTOCOL.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [verify.yml](https://github.com/ProvisioInsights/RefactoredMemory/blob/ebb73d2/.github/workflows/verify.yml).
 
 ### S03 — Converge offline corrections and expose peer knowledge, conflicts and sync state
 
 Repository-work status: **In Progress**.
 
-Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers.
+Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.
 
 Remaining evidence:
 
@@ -525,13 +530,13 @@ Prerequisites: R09, S02, G02, G04.
 
 Workstream parent: S00.
 
-Sources: [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md), [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md), [SYNC-PROTOCOL.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md).
+Sources: [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md), [ARCHITECTURE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md), [SYNC-PROTOCOL.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [verify.yml](https://github.com/ProvisioInsights/RefactoredMemory/blob/ebb73d2/.github/workflows/verify.yml).
 
 ### S04 — Qualify the Mac/Linux disconnect, reconnect, crash and stale-rejoin journey
 
 Repository-work status: **In Progress**.
 
-Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers.
+Direct authenticated synchronization is implemented. Recorded Linux tests exercise separate stores/processes, offline corrections, dependency gaps, retries/replay, restart and stale/revoked peers. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2.
 
 Remaining evidence:
 
@@ -550,23 +555,23 @@ Prerequisites: R09, S03, G06.
 
 Workstream parent: S00.
 
-Sources: [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md), [SYNC-PROTOCOL.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md).
+Sources: [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md), [SYNC-PROTOCOL.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [verify.yml](https://github.com/ProvisioInsights/RefactoredMemory/blob/ebb73d2/.github/workflows/verify.yml).
 
 ### M00 — Required MCP server and real-client interoperability
 
 Repository-work status: **In Progress**.
 
-Current-standard MCP stdio/HTTP and explicit legacy stdio compatibility are implemented. The installed independent Python MCP SDK 1.29.0 passed real Store/Service workflows over the 2025-11-25 compatibility path; modern 2026-07-28 checks are protocol/schema evidence.
+Current-standard MCP stdio/HTTP and explicit legacy stdio compatibility are implemented. The installed independent Python MCP SDK 1.29.0 passed real Store/Service workflows over the 2025-11-25 compatibility path; modern 2026-07-28 checks are protocol/schema evidence. Praxis2 is the confirmed target, with actual installed integration still unexecuted. Both independent SDK tests passed locally; hosted macOS skips them. Do not change either Praxis repository.
 
 Remaining evidence:
 
-- Actual Praxis application integration is unexecuted; a compatible application/configuration path and runtime are still needed.
+- Actual installed Praxis2 integration remains unexecuted. Verify against the installed client when accessible; no change to either Praxis repository is authorized or a prerequisite for RefactoredMemory MCP support.
 - Independent SDK evidence does not certify that SDK for the modern protocol or every LLM host.
 
 Acceptance criteria:
 
-- Expose the same personal graph/authority contract through the latest verified stable MCP revision and agreed transports.
-- Qualify actual Praxis and at least one independent MCP client; protocol mocks cannot substitute for client evidence.
+- Expose the same personal graph/authority contract through true latest-published-stable MCP support and the agreed transports. Keep implementation changes in RefactoredMemory; client repository changes are outside this task and are not prerequisites.
+- Qualify actual Praxis2 and at least one independent MCP client; protocol mocks cannot substitute for client evidence.
 
 Requirements: C08, C09, C16, C23, C24 · Tests: M02, M12, M18, M19 · ADRs: A16, A17.
 
@@ -578,16 +583,16 @@ Sources: [MCP.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main
 
 Repository-work status: **In Progress**.
 
-Current-standard MCP stdio/HTTP and explicit legacy stdio compatibility are implemented. The installed independent Python MCP SDK 1.29.0 passed real Store/Service workflows over the 2025-11-25 compatibility path; modern 2026-07-28 checks are protocol/schema evidence.
+Current-standard MCP stdio/HTTP and explicit legacy stdio compatibility are implemented. The installed independent Python MCP SDK 1.29.0 passed real Store/Service workflows over the 2025-11-25 compatibility path; modern 2026-07-28 checks are protocol/schema evidence. Praxis2 is the confirmed target, with actual installed integration still unexecuted. Both independent SDK tests passed locally; hosted macOS skips them. Do not change either Praxis repository.
 
 Remaining evidence:
 
-- Actual Praxis application integration is unexecuted; a compatible application/configuration path and runtime are still needed.
+- Actual installed Praxis2 integration remains unexecuted. Verify against the installed client when accessible; no change to either Praxis repository is authorized or a prerequisite for RefactoredMemory MCP support.
 - Independent SDK evidence does not certify that SDK for the modern protocol or every LLM host.
 
 Acceptance criteria:
 
-- Implement selected revision discovery, metadata/capabilities, schemas and supported stdio/Streamable HTTP behavior using verified SDK support.
+- Implement the latest published stable MCP discovery, metadata/capabilities, schemas and stdio/Streamable HTTP behavior against official conformance requirements. Verify the standard-library implementation directly; optional SDK evidence cannot substitute for newest-spec support.
 - Expose bounded capture, query, search/traversal, history/evidence and correction tools with consistent graph/provenance/coverage results. Accept inferred additions automatically within configured grants under Q6; support proactive capture within configured grants under accepted Q7 without widening authority or source access.
 - Implement only deliberate tested compatibility for actual client needs; keep consumer, peer and owner-administration authority separate.
 
@@ -603,11 +608,11 @@ Sources: [MCP.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main
 
 Repository-work status: **In Progress**.
 
-Current-standard MCP stdio/HTTP and explicit legacy stdio compatibility are implemented. The installed independent Python MCP SDK 1.29.0 passed real Store/Service workflows over the 2025-11-25 compatibility path; modern 2026-07-28 checks are protocol/schema evidence.
+Current-standard MCP stdio/HTTP and explicit legacy stdio compatibility are implemented. The installed independent Python MCP SDK 1.29.0 passed real Store/Service workflows over the 2025-11-25 compatibility path; modern 2026-07-28 checks are protocol/schema evidence. Praxis2 is the confirmed target, with actual installed integration still unexecuted. Both independent SDK tests passed locally; hosted macOS skips them. Do not change either Praxis repository.
 
 Remaining evidence:
 
-- Actual Praxis application integration is unexecuted; a compatible application/configuration path and runtime are still needed.
+- Actual installed Praxis2 integration remains unexecuted. Verify against the installed client when accessible; no change to either Praxis repository is authorized or a prerequisite for RefactoredMemory MCP support.
 - Independent SDK evidence does not certify that SDK for the modern protocol or every LLM host.
 
 Acceptance criteria:
@@ -624,23 +629,25 @@ Workstream parent: M00.
 
 Sources: [MCP.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP.md), [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md), [MCP-CONFORMANCE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md).
 
-### M03 — Demonstrate real Praxis and independent-client memory workflows
+### M03 — Demonstrate real Praxis2 and independent-client memory workflows
 
 Repository-work status: **In Progress**.
 
-Current-standard MCP stdio/HTTP and explicit legacy stdio compatibility are implemented. The installed independent Python MCP SDK 1.29.0 passed real Store/Service workflows over the 2025-11-25 compatibility path; modern 2026-07-28 checks are protocol/schema evidence.
+Praxis2 is the confirmed integration target. Record actual installed-client use when it can be executed, without changing either Praxis repository. Independent SDK results remain valid evidence for their tested protocol path, not a substitute for installed Praxis2 evidence.
+
+Current-standard MCP stdio/HTTP and explicit legacy stdio compatibility are implemented. The installed independent Python MCP SDK 1.29.0 passed real Store/Service workflows over the 2025-11-25 compatibility path; modern 2026-07-28 checks are protocol/schema evidence. Praxis2 is the confirmed target, with actual installed integration still unexecuted. Both independent SDK tests passed locally; hosted macOS skips them. Do not change either Praxis repository.
 
 Remaining evidence:
 
-- Actual Praxis application integration is unexecuted; a compatible application/configuration path and runtime are still needed.
+- Actual installed Praxis2 integration remains unexecuted. Verify against the installed client when accessible; no change to either Praxis repository is authorized or a prerequisite for RefactoredMemory MCP support.
 - Independent SDK evidence does not certify that SDK for the modern protocol or every LLM host.
 
 Acceptance criteria:
 
 - Record actual client/SDK/protocol versions and connection configuration without secrets.
-- From Praxis and an independent client, discover capabilities, submit an automatically accepted sourced inference within a configured grant without per-item review, query temporal evidence, inspect/correct it and verify denied unauthorized use. Acceptance retains provenance/uncertainty and is not human verification.
-- Provide repeatable setup/run instructions and distinguish unavailable-client gaps from passed harness checks.
-- Exercise all three C25/M20 day-one workflows through supported MCP clients and retain source/time/history/coverage fidelity; the installed independent SDK result does not substitute for actual Praxis application qualification.
+- From Praxis2 and an independent client, discover capabilities, submit an automatically accepted sourced inference within a configured grant without per-item review, query temporal evidence, inspect/correct it and verify denied unauthorized use. Acceptance retains provenance/uncertainty and is not human verification.
+- Provide repeatable RefactoredMemory connection/run instructions and distinguish unexecuted installed Praxis2 integration from passing independent SDK/protocol checks. Neither Praxis repository is to be modified.
+- Exercise all three C25/M20 day-one workflows through supported MCP clients and retain source/time/history/coverage fidelity; the installed independent SDK result does not substitute for actual Praxis2 application qualification.
 
 Requirements: C08, C24, C25 · Tests: M19, M20 · Decisions: Q6.
 
@@ -804,33 +811,33 @@ Sources: [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/bl
 
 Repository-work status: **In Progress**.
 
-Coordinated Linux implementation verification reports 83 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.
+Local Linux verification passed all 86 synthetic tests, including both optional independent SDK tests. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2. Recorded acceptance, MCP, import, sync, benchmark and CLI evidence remains partial qualification.
 
 Remaining evidence:
 
-- Actual Mac, actual Praxis and full original-archive qualification remain blocked on runtime/access/source evidence.
+- Owner’s actual Mac, installed Praxis2 and full original-archive qualification remain blocked on runtime/access/source evidence.
 - No complete personal-v1 release acceptance, real-data migration or external deployment is claimed.
 
 Acceptance criteria:
 
 - Complete synthetic semantic/failure qualification, inspectability, comparable performance evidence, runtime packaging and the final acceptance matrix.
-- Provide reproducible run/MCP/import/sync/restore instructions with limitations; distinguish measured Linux results from remaining actual Mac, Praxis and full-archive qualification.
+- Provide reproducible run/MCP/import/sync/restore instructions with limitations; distinguish measured Linux results from remaining actual Mac, Praxis2 and full-archive qualification.
 
 Requirements: C01, C02, C03, C04, C05, C06, C07, C08, C09, C10, C11, C12, C13, C14, C15, C16, C17, C18, C19, C20, C21, C23, C24, C25 · Tests: M01, M02, M03, M04, M05, M06, M07, M09, M10, M11, M12, M13, M14, M15, M16, M18, M19, M20.
 
 Prerequisites: R09.
 
-Sources: [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [MCP-CONFORMANCE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md), [IMPORT-FORMATS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md), [SYNC-PROTOCOL.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md).
+Sources: [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [MCP-CONFORMANCE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md), [IMPORT-FORMATS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md), [SYNC-PROTOCOL.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [verify.yml](https://github.com/ProvisioInsights/RefactoredMemory/blob/ebb73d2/.github/workflows/verify.yml).
 
 ### Q01 — Run integrated temporal, durability and failure-injection qualification
 
 Repository-work status: **In Progress**.
 
-Coordinated Linux implementation verification reports 83 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.
+Local Linux verification passed all 86 synthetic tests, including both optional independent SDK tests. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2. Recorded acceptance, MCP, import, sync, benchmark and CLI evidence remains partial qualification.
 
 Remaining evidence:
 
-- Actual Mac, actual Praxis and full original-archive qualification remain blocked on runtime/access/source evidence.
+- Owner’s actual Mac, installed Praxis2 and full original-archive qualification remain blocked on runtime/access/source evidence.
 - No complete personal-v1 release acceptance, real-data migration or external deployment is claimed.
 
 Acceptance criteria:
@@ -846,17 +853,17 @@ Prerequisites: R09, G06, S03.
 
 Workstream parent: Q00.
 
-Sources: [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [MCP-CONFORMANCE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md), [IMPORT-FORMATS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md), [SYNC-PROTOCOL.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md).
+Sources: [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [MCP-CONFORMANCE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md), [IMPORT-FORMATS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md), [SYNC-PROTOCOL.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [verify.yml](https://github.com/ProvisioInsights/RefactoredMemory/blob/ebb73d2/.github/workflows/verify.yml).
 
 ### Q02 — Verify usable inspection, bounds, coverage and safe operational reporting
 
 Repository-work status: **In Progress**.
 
-Coordinated Linux implementation verification reports 83 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.
+Local Linux verification passed all 86 synthetic tests, including both optional independent SDK tests. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2. Recorded acceptance, MCP, import, sync, benchmark and CLI evidence remains partial qualification.
 
 Remaining evidence:
 
-- Actual Mac, actual Praxis and full original-archive qualification remain blocked on runtime/access/source evidence.
+- Owner’s actual Mac, installed Praxis2 and full original-archive qualification remain blocked on runtime/access/source evidence.
 - No complete personal-v1 release acceptance, real-data migration or external deployment is claimed.
 
 Acceptance criteria:
@@ -871,7 +878,7 @@ Prerequisites: R09, G04, G05, S03, M01.
 
 Workstream parent: Q00.
 
-Sources: [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md), [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [MCP-CONFORMANCE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md), [IMPORT-FORMATS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md), [SYNC-PROTOCOL.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md).
+Sources: [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md), [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [MCP-CONFORMANCE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md), [IMPORT-FORMATS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md), [SYNC-PROTOCOL.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [verify.yml](https://github.com/ProvisioInsights/RefactoredMemory/blob/ebb73d2/.github/workflows/verify.yml).
 
 ### Q03 — Benchmark representative personal reads, writes, sync and recovery
 
@@ -881,7 +888,7 @@ A correctness-checked 1,100-entity/assertion Linux benchmark records repeated re
 
 Remaining evidence:
 
-- Actual Mac, actual Praxis and full original-archive qualification remain blocked on runtime/access/source evidence.
+- Owner’s actual Mac, installed Praxis2 and full original-archive qualification remain blocked on runtime/access/source evidence.
 - No complete personal-v1 release acceptance, real-data migration or external deployment is claimed.
 - Actual Mac performance, larger stores and repeated cross-network convergence/recovery distributions are not established.
 
@@ -903,11 +910,11 @@ Sources: [RESEARCH.md](https://github.com/ProvisioInsights/RefactoredMemory/blob
 
 Repository-work status: **In Progress**.
 
-Coordinated Linux implementation verification reports 83 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.
+Local Linux verification passed all 86 synthetic tests, including both optional independent SDK tests. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2. Recorded acceptance, MCP, import, sync, benchmark and CLI evidence remains partial qualification.
 
 Remaining evidence:
 
-- Actual Mac, actual Praxis and full original-archive qualification remain blocked on runtime/access/source evidence.
+- Owner’s actual Mac, installed Praxis2 and full original-archive qualification remain blocked on runtime/access/source evidence.
 - No complete personal-v1 release acceptance, real-data migration or external deployment is claimed.
 
 Acceptance criteria:
@@ -922,23 +929,23 @@ Prerequisites: R09, S04, M03, I05.
 
 Workstream parent: Q00.
 
-Sources: [DECISIONS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/DECISIONS.md), [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [MCP-CONFORMANCE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md), [IMPORT-FORMATS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md), [SYNC-PROTOCOL.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md).
+Sources: [DECISIONS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/DECISIONS.md), [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [MCP-CONFORMANCE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md), [IMPORT-FORMATS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md), [SYNC-PROTOCOL.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [verify.yml](https://github.com/ProvisioInsights/RefactoredMemory/blob/ebb73d2/.github/workflows/verify.yml).
 
 ### Q05 — Close the personal-v1 acceptance matrix with evidence and limitations
 
 Repository-work status: **In Progress**.
 
-Coordinated Linux implementation verification reports 83 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.
+Local Linux verification passed all 86 synthetic tests, including both optional independent SDK tests. The 83-test suite passed hosted macOS and Ubuntu CI at commit ebb73d2. Hosted macOS skipped two optional SDK tests; both SDK tests passed in the local Linux run. This cross-platform CI does not qualify the owner’s actual Mac/Linux pair or installed Praxis2. Recorded acceptance, MCP, import, sync, benchmark and CLI evidence remains partial qualification.
 
 Remaining evidence:
 
-- Actual Mac, actual Praxis and full original-archive qualification remain blocked on runtime/access/source evidence.
+- Owner’s actual Mac, installed Praxis2 and full original-archive qualification remain blocked on runtime/access/source evidence.
 - No complete personal-v1 release acceptance, real-data migration or external deployment is claimed.
 
 Acceptance criteria:
 
 - Link each in-scope C/M requirement to actual passing evidence or a named unresolved gap; deferred M08/M17/P01–P06 remain deferred, not passed.
-- Verify real Praxis/independent-client workflows, actual Mac/Linux offline sync, importer compatibility and rollback, scoped automatic inferred-addition acceptance without per-item review, personal authority and representative performance. Prove all three Q10 tasks (project decisions/why, relationships/evidence, changes since last month) and accepted proactive capture, owner-correction preference with retained conflicts/history, and MCP/CLI-only v1 with evidence.
+- Verify real Praxis2/independent-client workflows, actual Mac/Linux offline sync, importer compatibility and rollback, scoped automatic inferred-addition acceptance without per-item review, personal authority and representative performance. Prove all three Q10 tasks (project decisions/why, relationships/evidence, changes since last month) and accepted proactive capture, owner-correction preference with retained conflicts/history, and MCP/CLI-only v1 with evidence.
 - Reconcile final PRD/ADRs/run instructions and report what was built, passed, remains, and how to use it. Do not declare release acceptance with missing required evidence or infer permission for a live cutover.
 
 Requirements: C01, C02, C03, C04, C05, C06, C07, C08, C09, C10, C11, C12, C13, C14, C15, C16, C17, C18, C19, C20, C21, C23, C24, C25 · Tests: M01, M02, M03, M04, M05, M06, M07, M09, M10, M11, M12, M13, M14, M15, M16, M18, M19, M20 · Decisions: Q6, Q7, Q8, Q9, Q10.
@@ -947,7 +954,7 @@ Prerequisites: R09, Q01, Q02, Q03, Q04, M03, I05, S04.
 
 Workstream parent: Q00.
 
-Sources: [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md), [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [MCP-CONFORMANCE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md), [IMPORT-FORMATS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md), [SYNC-PROTOCOL.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md).
+Sources: [VALIDATION.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/VALIDATION.md), [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md), [ACCEPTANCE-RESULTS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md), [MCP-CONFORMANCE.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md), [IMPORT-FORMATS.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/IMPORT-FORMATS.md), [SYNC-PROTOCOL.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/SYNC-PROTOCOL.md), [RUNBOOK.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/RUNBOOK.md), [verify.yml](https://github.com/ProvisioInsights/RefactoredMemory/blob/ebb73d2/.github/workflows/verify.yml).
 
 ## RefactoredMemory — Later roadmap
 
@@ -1041,7 +1048,7 @@ Sources: [PRD.md](https://github.com/ProvisioInsights/RefactoredMemory/blob/main
 
 ## Coverage maps
 
-Identifiers preserve source-document scope. Mapping and partial Linux evidence do not imply passed full qualification; deferred corporate/mesh cases remain later.
+Identifiers preserve source-document scope. Mapping and partial local/hosted test evidence do not imply passed full qualification; deferred corporate/mesh cases remain later.
 
 ### Requirements
 

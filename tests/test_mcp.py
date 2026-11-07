@@ -59,6 +59,79 @@ class FakeService:
         return {"saved": arguments["value"], "verified": False}
 
 
+class CaptureSchemaTests(unittest.TestCase):
+    def test_capture_contract_is_enforced_before_store_submission(self):
+        from refactoredmemory.service import Service
+
+        class SubmissionRecorder:
+            def __init__(self):
+                self.submissions = []
+
+            def authenticate(self, token, scope=None):
+                return {"id": "synthetic-owner", "kind": "owner"}
+
+            def submit(self, actions, **kwargs):
+                self.submissions.append(actions)
+                return {"accepted": True}
+
+        store = SubmissionRecorder()
+        service = Service(store)
+        entity = {"type": "entity", "id": "e", "entity_type": "person", "label": "Synthetic"}
+        source = {"type": "source", "id": "s", "uri": "synthetic://source", "content": "Synthetic evidence"}
+        fact = {"type": "assertion", "id": "a", "subject": "e", "predicate": "likes",
+                "value": "tea", "source_ids": ["s"]}
+        relation = {key: value for key, value in fact.items() if key != "value"}
+        relation["object"] = "other-entity"
+        correction = {**fact, "kind": "correct", "predecessors": ["previous"], "reason": "Synthetic correction"}
+        for action in (entity, source, fact, relation, correction):
+            service.call("memory_submit", {"actions": [action]}, "synthetic-grant")
+        self.assertEqual(len(store.submissions), 5)
+
+        malformed = [
+            {**correction, "reason": 42},
+            {**correction, "reason": True},
+            {**correction, "reason": []},
+            {**fact, "object": "other-entity"},
+            {key: value for key, value in fact.items() if key != "value"},
+            {**fact, "kind": "invented"},
+            {**fact, "time_precision": "invented"},
+            {**fact, "source_ids": ["s", "s"]},
+            {**fact, "type": {}},
+            {**entity, "extra": "undeclared"},
+            {**source, "metadata": []},
+        ]
+        for action in malformed:
+            with self.subTest(action=action), self.assertRaises(ValueError):
+                service.call("memory_submit", {"actions": [action]}, "synthetic-grant")
+        for arguments in (None, [], {"actions": None}, {"actions": [None]}):
+            with self.subTest(arguments=arguments), self.assertRaises(ValueError):
+                service.call("memory_submit", arguments, "synthetic-grant")
+        for action in ({**fact, "actor": "owner"},
+                       {**fact, "provenance": {"nested": {"human_verified": True}}},
+                       {"type": "delete", "id": "suppression", "entity_id": "e", "reason": "Test"}):
+            with self.subTest(authority=action), self.assertRaises(PermissionError):
+                service.call("memory_submit", {"actions": [action]}, "synthetic-grant")
+        self.assertEqual(len(store.submissions), 5, "Invalid or unauthorized captures reached Store.submit")
+
+    def test_schema_equality_distinguishes_boolean_from_number_recursively(self):
+        from refactoredmemory.service import validate
+
+        # Python equates True with 1; JSON Schema must keep these alternatives
+        # distinct while treating equal integer/float JSON numbers as equal.
+        alternatives = {"oneOf": [{"const": True}, {"const": 1}]}
+        for value in (True, 1, 1.0):
+            validate(value, alternatives)
+        with self.assertRaises(ValueError):
+            validate(1, {"enum": [True]})
+        validate(1.0, {"enum": [1]})
+        unique = {"type": "array", "uniqueItems": True}
+        validate([{"value": [True]}, {"value": [1]}], unique)
+        with self.assertRaises(ValueError):
+            validate([{"value": [1], "other": None}, {"other": None, "value": [1.0]}], unique)
+        with self.assertRaises(ValueError):
+            validate(1, {"oneOf": [{"const": 1}, {"enum": [1.0]}]})
+
+
 class ProtocolTests(unittest.TestCase):
     def setUp(self):
         self.service = FakeService()

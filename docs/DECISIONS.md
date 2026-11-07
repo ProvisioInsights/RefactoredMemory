@@ -8,7 +8,7 @@ Updated 7 November 2026. The owner answered Q7–Q10 and explicitly said **“Pr
 | V1 purpose | Accepted | One owner's personal knowledge store. People and organizations may be subjects of knowledge without becoming tenants or separate corporate owners. |
 | Two personal peers (Q1) | Accepted | Both accept offline writes, query locally and synchronize. Convergence and recovery are v1 requirements. |
 | First runtime pair (Q2) | Accepted | Owner's Mac plus a personally controlled Linux VM/container. This does not authorize new external provisioning. |
-| MCP | Required v1 | Latest published stable revision, verified against actual Praxis and another independent MCP client. |
+| MCP | Required v1 | Latest published stable revision; Praxis2 is the confirmed target. No changes to either Praxis repository. Separate standards conformance and independent-client results from actual installed-Praxis2 validation, which remains unverified until a compatible connection is available. |
 | Initial import (Q5) | Required v1 | Markdown/Logseq plus data from prior LivingAtlas runs. Inventory concrete legacy generations and available artifacts before defining adapters. |
 | Inferred-write policy (Q6) | Accepted | Automatically accept model-inferred additions within configured client/agent grants, without per-item human review. Preserve evidence, actor/model/derivation attribution, uncertainty, conflicts and correction history. Acceptance is not human verification or established truth. |
 | Capture triggers (Q7) | Accepted | Configured clients/agents may proactively capture useful knowledge within their grants. This does not authorize arbitrary source access, continuous monitoring of unapproved sources or a separate extraction service. |

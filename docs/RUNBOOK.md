@@ -2,7 +2,7 @@
 
 Use an existing Python 3.12+ interpreter on macOS or Linux. The runtime uses only the Python standard library and SQLite; run it directly from the repository checkout. No package installation, external deployment, real-data ingestion, or credentials from another service are required for the synthetic examples below.
 
-The automated CLI qualification runs two independent Linux processes and exercises the production HTTP handler. These commands are portable to the intended Mac/Linux pair, but the owner's actual Mac, original archives and Praxis application still require their separate qualification evidence. See [acceptance results](ACCEPTANCE-RESULTS.md) and [MCP conformance](MCP-CONFORMANCE.md).
+The automated CLI qualification runs two independent Linux processes and exercises the production HTTP handler. These commands are portable to the intended Mac/Linux pair, but the owner's actual Mac, original archives and Praxis2 application still require their separate qualification evidence. See [acceptance results](ACCEPTANCE-RESULTS.md) and [MCP conformance](MCP-CONFORMANCE.md).
 
 ## Start with synthetic data
 
@@ -48,11 +48,11 @@ python3 -m refactoredmemory --db "$REFMEM_DATA/mac.sqlite3" history --args '{"si
 
 The request ID makes an identical retry safe. Reusing it for different content is an error. The grant defaults to `agent`; an accepted inferred claim is not marked human verified. `query`, `history`, `owner-submit`, pairing and grant commands are local owner administration and rely on OS access to the database. Consumer MCP calls always require their configured grant.
 
-## Connect Praxis or another MCP client
+## Connect Praxis2 or another MCP client
 
 Create a separate `read,write,correct` grant for each client. Use a read-only grant when capture is unnecessary. The token is written once to a new mode-0600 file and is never printed. Keep token files, databases, WAL/SHM files, backups and pairing material outside version control; the plaintext storage profile requires an approved host before real personal use.
 
-A typical stdio client configuration is below. Replace each absolute path with the actual checkout, interpreter and local files. Use the client's normal MCP server configuration location; this example does not install or modify Praxis automatically.
+A typical stdio client configuration is below. Replace each absolute path with the actual checkout, interpreter and local files. Use the client's normal MCP server configuration location; this generic example is not a verified Praxis2 configuration file. Do not edit either Praxis repository or its configuration as part of this implementation; the installed Praxis2 connection has not been exercised.
 
 ```json
 {
@@ -72,7 +72,7 @@ A typical stdio client configuration is below. Replace each absolute path with t
 
 The server instructions tell connected clients to proactively save useful facts, preferences, decisions, rationale and relationships within their grant, attach evidence/uncertainty, and retrieve sources before answering. A host must actually follow that policy and invoke the tools; the server does not monitor unrelated conversations or run an extraction model. Tools include `memory_submit`, `memory_query`, `memory_history`, `memory_traverse`, `memory_source`, `memory_entity` and `memory_status`.
 
-MCP `2026-07-28` requests use per-request metadata and `server/discover`. Explicit `2025-11-25` stdio compatibility is available for older clients. Remote HTTP is the modern protocol only. Use the version/client matrix in [MCP conformance](MCP-CONFORMANCE.md); a successful protocol harness is not proof that a particular Praxis release works.
+MCP `2026-07-28` requests use per-request metadata and `server/discover`. Explicit `2025-11-25` stdio compatibility is available for older clients. Remote HTTP is the modern protocol only and requires a client that can supply a preconfigured owner-issued bearer token. This custom authentication strategy does not implement OAuth discovery or OAuth-only host onboarding. Use the version/client matrix in [MCP conformance](MCP-CONFORMANCE.md); a successful protocol harness is not proof that a particular Praxis2 release works.
 
 To revoke a client immediately on this peer:
 

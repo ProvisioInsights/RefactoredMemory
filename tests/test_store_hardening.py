@@ -2,10 +2,29 @@
 
 import unittest
 
-from refactoredmemory.store import Store
+from refactoredmemory.store import Store, ValidationError
 
 
 class TombstoneLineageTests(unittest.TestCase):
+    def test_invalid_correction_reason_cannot_enter_owner_journal(self):
+        with Store(":memory:", store_id="synthetic-reason", peer_id="peer-a") as store:
+            store.submit([
+                {"type": "entity", "id": "subject", "entity_type": "project", "label": "Synthetic"},
+                {"type": "source", "id": "source", "uri": "synthetic://reason", "content": "Synthetic evidence"},
+                {"type": "assertion", "id": "original", "subject": "subject", "predicate": "decision",
+                 "value": "First", "source_ids": ["source"]},
+            ])
+            before = store.status()["frontier"]
+            for reason in (42, True, [], {"text": "Incorrect shape"}, None):
+                with self.subTest(reason=reason), self.assertRaises(ValidationError):
+                    store.submit([
+                        {"type": "assertion", "id": "correction", "subject": "subject", "predicate": "decision",
+                         "value": "Second", "source_ids": ["source"], "kind": "correct",
+                         "predecessors": ["original"], "reason": reason},
+                    ])
+                self.assertEqual(store.status()["frontier"], before)
+                self.assertIsNone(store.read("assertion", "correction"))
+
     def test_deleted_corrected_endpoint_does_not_resurrect_superseded_edge(self):
         with Store(":memory:", store_id="synthetic-tombstone", peer_id="peer-a") as store:
             original = store.submit([

@@ -333,6 +333,8 @@ class Store:
                         identifier(value)
                 if not action.get("source_ids"):
                     raise ValidationError("Assertions require evidence")
+                if "reason" in action and not isinstance(action["reason"], str):
+                    raise ValidationError("Assertion reason must be text")
                 if action_kind != "assert" and (not action.get("predecessors") or not action.get("reason")):
                     raise ValidationError("Semantic actions require predecessors and a reason")
                 if action_kind == "assert" and action.get("predecessors"):

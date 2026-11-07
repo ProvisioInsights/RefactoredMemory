@@ -1,12 +1,12 @@
 # Personal v1 architecture
 
-**Status:** implementation authorized on 7 November 2026. The initial runtime is Python 3.12+ standard library with SQLite WAL/FULL transactions and an immutable operation journal. The [implementation contract](CONTRACT.md) defines APIs, direct sync, local grants and knowledge semantics; qualification remains to be established.
+**Status:** implementation authorized on 7 November 2026. The initial runtime is Python 3.12+ standard library with SQLite WAL/FULL transactions and an immutable operation journal. The [implementation contract](CONTRACT.md) defines APIs, direct sync, local grants and knowledge semantics; synthetic and hosted-OS results are recorded in [acceptance evidence](ACCEPTANCE-RESULTS.md), with owner-device and installed-Praxis2 qualification still open.
 
 V1 has one owner and two full peers: the owner's Mac and a personally controlled Linux VM/container. Each peer has local durable knowledge, local queries, MCP access and authenticated peer synchronization. It can accept writes while disconnected. A peer may be implemented as one process; diagram boxes describe responsibilities, not required services.
 
 ```mermaid
 flowchart TB
-    C["Praxis and another MCP client"] -->|"required MCP"| A
+    C["Praxis2 and another MCP client"] -->|"required MCP"| A
     F["Markdown / Logseq"] --> IMP["Required source importer and legacy migration"]
     L["Prior LivingAtlas data"] --> IMP
     IMP -->|"authorized, source-linked operations"| A
