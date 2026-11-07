@@ -14,6 +14,8 @@ import re
 import stat
 from typing import Any
 
+from .store import CapacityError
+
 MAX_FILE_BYTES = 1024 * 1024
 MAX_FILES = 500
 MAX_RECORDS = 10000
@@ -624,8 +626,9 @@ def apply_import(store: Any, plan: ImportPlan, *, actor: dict | None = None,
     pending = []
     pending_bytes = 0
     failed = False
+    pause = None
     def flush() -> None:
-        nonlocal pending, pending_bytes, batches, failed
+        nonlocal pending, pending_bytes, batches, failed, pause
         if not pending or failed:
             return
         ids = [a["id"] for a in pending]
@@ -634,6 +637,9 @@ def apply_import(store: Any, plan: ImportPlan, *, actor: dict | None = None,
             store.submit(pending, actor=import_actor, request_id=request_id)
         except Exception as exc:
             failed = True
+            if isinstance(exc, CapacityError):
+                pause = {"error": exc.code, "reason": exc.reason,
+                         "retry_after_seconds": exc.retry_after_seconds}
             for action in pending:
                 for row in owners.get(action["id"], []):
                     row.update(status="failed", reason=f"graph-rejected-{type(exc).__name__}")
@@ -661,8 +667,11 @@ def apply_import(store: Any, plan: ImportPlan, *, actor: dict | None = None,
     for row in rows:
         if row["status"] == "planned":
             row.update(status="failed", reason="not-applied-after-batch-failure" if failed else "no-semantic-mapping")
-    return _result(plan, rows, backup_path=str(backup_path), batches=batches,
-                   status="partial" if failed and batches else "failed" if failed else "complete")
+    report = _result(plan, rows, backup_path=str(backup_path), batches=batches,
+                     status="partial" if failed and batches else "failed" if failed else "complete")
+    if pause is not None:
+        report["pause"] = pause
+    return report
 
 
 def _result(plan: ImportPlan, rows: list[dict], *, backup_path: str | None, batches: int, status: str) -> dict:

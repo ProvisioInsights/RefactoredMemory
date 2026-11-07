@@ -1,4 +1,4 @@
-"""Bounded MCP 2026-07-28 transport; legacy 2025-11-25 stdio compatibility.
+"""Bounded MCP 2026-07-28 transport with explicit 2025-11-25 compatibility.
 
 The graph service owns authorization and semantics. This module never obtains
 authority from protocol metadata, tool arguments, or a prior modern request.
@@ -12,7 +12,10 @@ import json
 import ssl
 import sys
 import threading
+import uuid
 from http.server import BaseHTTPRequestHandler
+
+from .store import CapacityError
 
 PROTOCOL_VERSION = "2026-07-28"
 LEGACY_VERSION = "2025-11-25"
@@ -74,15 +77,16 @@ def _request_id(message):
 class Dispatcher:
     """Dispatch one request without modern connection/session context.
 
-    legacy_stdio enables only the documented legacy stdio lifecycle. HTTP does
-    not silently fall back to legacy semantics or infer version from a session.
+    legacy_stdio enables the documented stdio lifecycle. The HTTP caller can
+    explicitly select stateless legacy dispatch after validating its version.
+    Modern metadata never falls back to legacy semantics.
     """
     def __init__(self, service, *, legacy_stdio=False):
         self.service = service
         self.legacy_stdio = legacy_stdio
         self._legacy_initialized = False
 
-    def dispatch(self, message, token):
+    def dispatch(self, message, token, *, legacy_http=False, http_auth_errors=False):
         request_id = _request_id(message)
         if not isinstance(message, dict) or message.get("jsonrpc") != "2.0":
             return _error(request_id, -32600, "Invalid JSON-RPC request")
@@ -101,7 +105,9 @@ class Dispatcher:
             return _error(request_id, -32602, "Parameters must be an object")
         try:
             self.service.authenticate(token)
-        except PermissionError:
+        except PermissionError as error:
+            if http_auth_errors and _is_oauth_error(error):
+                raise
             return _error(request_id, 403, "Access denied")
         except Exception:
             return _error(request_id, -32603, "Authorization unavailable")
@@ -111,19 +117,24 @@ class Dispatcher:
             return _error(request_id, -32602, "Metadata must be an object")
         modern = isinstance(meta, dict) and any(
             META_PREFIX + key in meta for key in ("protocolVersion", "clientCapabilities", "clientInfo"))
-        if method == "initialize" and self.legacy_stdio and not modern:
+        if method == "initialize" and (self.legacy_stdio or legacy_http) and not modern:
             if (not isinstance(params.get("protocolVersion"), str)
                     or not isinstance(params.get("capabilities"), dict)
                     or not isinstance(params.get("clientInfo"), dict)
                     or not all(isinstance(params["clientInfo"].get(k), str) and params["clientInfo"][k]
                                for k in ("name", "version"))):
                 return _error(request_id, -32602, "Invalid initialization parameters")
-            self._legacy_initialized = True
+            if legacy_http and params["protocolVersion"] != LEGACY_VERSION:
+                return _error(request_id, -32022, "Unsupported legacy protocol version", {
+                    "supported": [LEGACY_VERSION], "requested": params["protocolVersion"],
+                })
+            if self.legacy_stdio:
+                self._legacy_initialized = True
             return {"jsonrpc": "2.0", "id": request_id, "result": {
                 "protocolVersion": LEGACY_VERSION, "capabilities": {"tools": {}},
                 "serverInfo": dict(SERVER_INFO), "instructions": INSTRUCTIONS,
             }}
-        legacy = self.legacy_stdio and self._legacy_initialized and not modern
+        legacy = (legacy_http or (self.legacy_stdio and self._legacy_initialized)) and not modern
         if not legacy:
             if not modern:
                 return _error(request_id, -32602,
@@ -176,7 +187,18 @@ class Dispatcher:
                     return _error(request_id, -32602, "Unknown tool")
                 try:
                     value = self.service.call(name, arguments, token)
-                except PermissionError:
+                except CapacityError as error:
+                    reason = (error.reason if error.reason in ("low_disk", "store_limit")
+                              else "capacity_unavailable")
+                    return complete({"content": [{"type": "text", "text":
+                        "Storage capacity paused this operation; no write was accepted. "
+                        "Reads remain available. Retry after 300 seconds using the same request_id, "
+                        "once capacity is available."}], "structuredContent": {
+                            "error": "capacity_paused", "reason": reason,
+                            "retry_after_seconds": 300}, "isError": True})
+                except PermissionError as error:
+                    if http_auth_errors and _is_oauth_error(error):
+                        raise
                     return complete({"content": [{"type": "text", "text": "Access denied by the current grant."}],
                                      "structuredContent": {"error": "access_denied"}, "isError": True})
                 except (ValueError, TypeError):
@@ -186,9 +208,18 @@ class Dispatcher:
                                  "structuredContent": value, "isError": False})
             return _error(request_id, -32601,
                           "Method not found; supported modern version: " + PROTOCOL_VERSION)
-        except Exception:
+        except Exception as error:
+            if http_auth_errors and _is_oauth_error(error):
+                raise
             # Do not expose traceback, content, local paths, tokens or SQL in MCP.
             return _error(request_id, -32603, "Internal error")
+
+
+def _is_oauth_error(error):
+    # Importing the optional OAuth module does not import PyJWT or cryptography;
+    # those dependencies are loaded only when its authorizer is constructed.
+    from .oauth import OAuthAuthenticationError, OAuthScopeError
+    return isinstance(error, (OAuthAuthenticationError, OAuthScopeError))
 
 
 def run_stdio(service, token, *, input_stream=None, output_stream=None):
@@ -289,16 +320,30 @@ def validate_http_headers(message, headers):
             raise ValueError("header mismatch")
 
 
-def make_handler(service, *, allowed_origins=(), allowed_hosts=()):
+def make_handler(service, *, allowed_origins=(), allowed_hosts=(),
+                 allow_legacy_http=False, oauth=None, audit=None):
     """Return a handler for /mcp, suitable for a /sync-aware subclass.
 
     A present browser Origin is refused unless explicitly allowlisted. Host is
     restricted to the bound endpoint/localhost unless explicitly allowlisted.
     Non-loopback clients require an actual TLS socket, not forwarded headers.
+    OAuth publishes only its exact metadata path. Legacy HTTP is opt-in and
+    selected per request, never from another connection's initialization state.
     """
     dispatcher = Dispatcher(service)
     origin_set, host_set = set(allowed_origins), set(allowed_hosts)
     concurrency = threading.BoundedSemaphore(16)
+    metadata_path = oauth.metadata_path if oauth is not None else None
+    credential_limit = 4096
+    if oauth is not None:
+        from .oauth import MAX_TOKEN_BYTES
+        credential_limit = MAX_TOKEN_BYTES + len("Bearer ")
+    if metadata_path is not None and (not isinstance(metadata_path, str)
+            or not metadata_path.startswith("/.well-known/oauth-protected-resource")
+            or any(c in metadata_path for c in "?#\r\n")):
+        raise ValueError("Invalid OAuth metadata path")
+    known_methods = {"server/discover", "initialize", "ping", "tools/list", "tools/call",
+                     "notifications/initialized", "notifications/cancelled"}
 
     class MCPHandler(BaseHTTPRequestHandler):
         protocol_version = "HTTP/1.1"
@@ -340,19 +385,29 @@ def make_handler(service, *, allowed_origins=(), allowed_hosts=()):
         def log_message(self, *_args):
             pass
 
-        def _reply(self, status, response=None):
+        def _reply(self, status, response=None, *, auth_error=None, auth_scope=None,
+                   response_headers=None):
+            for name, value in (response_headers or {}).items():
+                # Extra headers are selected by a trusted local handler, never
+                # reflected from request parameters or upstream headers.
+                if name != "Retry-After" or not isinstance(value, str) or not value.isdecimal():
+                    raise ValueError("Unsupported response header")
             body = b"" if response is None else _json(response).encode("utf-8")
             self.send_response(status)
             if body:
                 self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(body)))
             self.send_header("Cache-Control", "no-store")
-            self.send_header("MCP-Protocol-Version", PROTOCOL_VERSION)
+            self.send_header("MCP-Protocol-Version", getattr(self, "_reply_version", PROTOCOL_VERSION))
             self.send_header("Connection", "close")
+            for name, value in (response_headers or {}).items():
+                self.send_header(name, value)
             if status == 405:
-                self.send_header("Allow", "POST")
-            if status == 401:
-                self.send_header("WWW-Authenticate", 'Bearer realm="RefactoredMemory"')
+                self.send_header("Allow", "GET" if self.path == metadata_path else "POST")
+            if status == 401 or (status == 403 and auth_error == "insufficient_scope"):
+                challenge = (oauth.www_authenticate(error=auth_error, scope=auth_scope)
+                             if oauth is not None else 'Bearer realm="RefactoredMemory"')
+                self.send_header("WWW-Authenticate", challenge)
             self.end_headers()
             self.close_connection = True
             if body:
@@ -361,8 +416,23 @@ def make_handler(service, *, allowed_origins=(), allowed_hosts=()):
                 except (BrokenPipeError, ConnectionResetError):
                     pass
 
-        def _valid_endpoint(self):
-            if self.path != "/mcp":
+            if audit is not None and not getattr(self, "_audit_emitted", False):
+                self._audit_emitted = True
+                event = {"event": "mcp_http", "request_id": uuid.uuid4().hex,
+                         "route": "mcp" if self.path == "/mcp" else
+                                  "metadata" if self.path == metadata_path else "unknown",
+                         "method": getattr(self, "_audit_method", None),
+                         "tool": getattr(self, "_audit_tool", None),
+                         "grant_id": getattr(self, "_audit_grant", None), "status": status}
+                try:
+                    audit(event)
+                except Exception:
+                    # Logging must not turn a committed response into a retry or
+                    # disclose sensitive sink errors. Deployment monitors the sink.
+                    pass
+
+        def _valid_endpoint(self, expected_path="/mcp"):
+            if self.path != expected_path:
                 self._reply(404)
                 return False
             critical = ("Host", "Origin", "Authorization", "Content-Length", "Content-Type",
@@ -386,6 +456,17 @@ def make_handler(service, *, allowed_origins=(), allowed_hosts=()):
                 return False
             return True
 
+        def _oauth_failure(self, error):
+            if not _is_oauth_error(error):
+                return False
+            insufficient = getattr(error, "error", None) == "insufficient_scope"
+            status = 403 if insufficient else 401
+            self._reply(status, _error(None, status,
+                        "Insufficient token scope" if insufficient else "Invalid or expired access token"),
+                        auth_error="insufficient_scope" if insufficient else "invalid_token",
+                        auth_scope=getattr(error, "scope", None) if insufficient else None)
+            return True
+
         def do_POST(self):
             self.connection.settimeout(self.request_timeout)
             if not self._valid_endpoint():
@@ -395,6 +476,9 @@ def make_handler(service, *, allowed_origins=(), allowed_hosts=()):
                 return
             try:
                 self._post()
+            except PermissionError as error:
+                if not self._oauth_failure(error):
+                    self._reply(403, _error(None, 403, "Access denied"))
             except (TimeoutError, ConnectionError, OSError):
                 self.close_connection = True
             finally:
@@ -402,13 +486,17 @@ def make_handler(service, *, allowed_origins=(), allowed_hosts=()):
 
         def _post(self):
             credential = self.headers.get("Authorization", "")
-            if not credential.startswith("Bearer ") or not credential[7:] or len(credential) > 4096:
+            if not credential.startswith("Bearer ") or not credential[7:] or len(credential) > credential_limit:
                 self._reply(401, _error(None, 401, "Bearer authentication required"))
                 return
             token = credential[7:]
             try:
-                service.authenticate(token)
-            except PermissionError:
+                actor = service.authenticate(token)
+                if isinstance(actor, dict) and isinstance(actor.get("id"), str):
+                    self._audit_grant = actor["id"]
+            except PermissionError as error:
+                if self._oauth_failure(error):
+                    return
                 self._reply(401, _error(None, 401, "Invalid or revoked credential"))
                 return
             except Exception:
@@ -449,34 +537,93 @@ def make_handler(service, *, allowed_origins=(), allowed_hosts=()):
             except (ValueError, UnicodeError, RecursionError):
                 self._reply(400, _error(None, -32700, "Invalid JSON"))
                 return
+            legacy_http = False
+            if isinstance(message, dict):
+                method = message.get("method")
+                self._audit_method = method if isinstance(method, str) and method in known_methods else "unknown"
+                params = message.get("params", {})
+                if method == "tools/call" and isinstance(params, dict):
+                    name = params.get("name")
+                    self._audit_tool = name if isinstance(name, str) and name in {
+                        t["name"] for t in service.tools()} else "unknown"
+                meta = params.get("_meta", {}) if isinstance(params, dict) else {}
+                modern = (not isinstance(meta, dict) or any(META_PREFIX + key in meta
+                          for key in ("protocolVersion", "clientCapabilities", "clientInfo")))
+                header_version = self.headers.get("MCP-Protocol-Version")
+                if allow_legacy_http and not modern:
+                    is_initialization = method == "initialize"
+                    if is_initialization and header_version in (None, LEGACY_VERSION):
+                        legacy_http = True
+                    elif header_version == LEGACY_VERSION:
+                        legacy_http = True
+                    elif header_version not in (None, PROTOCOL_VERSION):
+                        self._reply(400, _error(_request_id(message), -32022,
+                            "Unsupported protocol version", {
+                                "supported": [PROTOCOL_VERSION, LEGACY_VERSION],
+                                "requested": header_version,
+                            }))
+                        return
+                if legacy_http:
+                    self._reply_version = LEGACY_VERSION
+                    # Legacy clients do not require mirrored method/name headers;
+                    # if supplied, they must not contradict the actual request.
+                    expected = {"Mcp-Method": method}
+                    if method == "tools/call" and isinstance(params, dict):
+                        expected["Mcp-Name"] = params.get("name")
+                    try:
+                        for name, value in expected.items():
+                            if name in self.headers and _decoded_header(self.headers[name]) != value:
+                                raise ValueError("header mismatch")
+                    except (ValueError, UnicodeError):
+                        self._reply(400, _error(_request_id(message), -32020,
+                                               "Headers inconsistent with legacy request"))
+                        return
             if isinstance(message, dict) and "id" in message:
                 params = message.get("params", {})
                 meta = params.get("_meta", {}) if isinstance(params, dict) else {}
-                if (not isinstance(params, dict) or not isinstance(meta, dict)
+                if not legacy_http and (not isinstance(params, dict) or not isinstance(meta, dict)
                         or not isinstance(meta.get(META_PREFIX + "protocolVersion"), str)
                         or not isinstance(meta.get(META_PREFIX + "clientCapabilities"), dict)):
                     self._reply(400, _error(_request_id(message), -32602,
                                            "Required request metadata missing; supported version: " + PROTOCOL_VERSION))
                     return
-                try:
-                    validate_http_headers(message, self.headers)
-                except (ValueError, UnicodeError, TypeError):
-                    self._reply(400, _error(_request_id(message), -32020,
-                                           "Required headers missing or inconsistent with body; supported version: " + PROTOCOL_VERSION))
-                    return
-            response = dispatcher.dispatch(message, token)
+                if not legacy_http:
+                    try:
+                        validate_http_headers(message, self.headers)
+                    except (ValueError, UnicodeError, TypeError):
+                        self._reply(400, _error(_request_id(message), -32020,
+                                               "Required headers missing or inconsistent with body; supported version: " + PROTOCOL_VERSION))
+                        return
+            response = dispatcher.dispatch(message, token, legacy_http=legacy_http, http_auth_errors=True)
             if response is None:
                 self._reply(202)
                 return
             code = response.get("error", {}).get("code")
             status = 404 if code == -32601 else 403 if code == 403 else 500 if code == -32603 else 400 if code else 200
-            self._reply(status, response)
+            result = response.get("result", {})
+            paused = (result.get("isError") is True
+                      and result.get("structuredContent", {}).get("error") == "capacity_paused")
+            # A tool-level capacity refusal remains an MCP result; HTTP error
+            # statuses would make SDK clients discard its structured guidance.
+            self._reply(status, response, response_headers={"Retry-After": "300"} if paused else None)
 
         def do_GET(self):
+            if metadata_path is not None and self.path == metadata_path:
+                if self._valid_endpoint(metadata_path):
+                    self._reply(200, oauth.resource_metadata())
+                return
             if self._valid_endpoint():
                 self._reply(405)
 
-        do_DELETE = do_GET
-        do_OPTIONS = do_GET
+        def _not_allowed(self):
+            path = metadata_path if metadata_path is not None and self.path == metadata_path else "/mcp"
+            if self._valid_endpoint(path):
+                self._reply(405)
+
+        do_DELETE = _not_allowed
+        do_OPTIONS = _not_allowed
+        do_PUT = _not_allowed
+        do_PATCH = _not_allowed
+        do_HEAD = _not_allowed
 
     return MCPHandler

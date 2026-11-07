@@ -13,8 +13,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - name: Verify preinstalled runtime
-        run: python3 -c 'import sys; print(sys.version); assert sys.version_info >= (3, 12), "Python 3.12+ required; no automatic installation"'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install declared test dependencies
+        run: python3 -m pip install -r requirements-test.txt
       - name: Run synthetic tests
         run: python3 -m unittest discover -s tests -v
       - name: Run the three day-one journeys

@@ -2,38 +2,39 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import ipaddress
 import json
 import os
 from pathlib import Path
 import ssl
+import signal
 import sys
 import threading
 from http.server import ThreadingHTTPServer
 from socketserver import TCPServer
+from urllib.parse import urlsplit
 
-from .store import Store, MemoryError, AuthorizationError, ValidationError, canonical
+from .store import Store, MemoryError, AuthorizationError, ValidationError, CapacityError, canonical
 from .service import Service
 from .mcp import make_handler, run_stdio, decode_message
 from .sync import MAX_BODY_BYTES, SyncError, decode_body, exchange, sync_once
 
 
-def server_handler(service, *, allowed_origins=(), allowed_hosts=()):
+def server_handler(service, *, allowed_origins=(), allowed_hosts=(), sync_only=False):
     base = make_handler(service, allowed_origins=allowed_origins, allowed_hosts=allowed_hosts)
     slots = threading.BoundedSemaphore(8)
 
     class Handler(base):
         def do_POST(self):
             if self.path != "/sync":
+                if sync_only:
+                    self._reply(404)
+                    return
                 return super().do_POST()
             self.connection.settimeout(15)
             # Reuse Host/Origin/TLS/duplicate-header protections on the peer endpoint.
-            self.path = "/mcp"
-            try:
-                valid = self._valid_endpoint()
-            finally:
-                self.path = "/sync"
-            if not valid:
+            if not self._valid_endpoint("/sync"):
                 return
             if not slots.acquire(blocking=False):
                 self._reply(429, {"error": "busy"})
@@ -76,10 +77,32 @@ def server_handler(service, *, allowed_origins=(), allowed_hosts=()):
                 self._reply(200, result)
             except AuthorizationError:
                 self._reply(403, {"error": "origin_denied"})
+            except CapacityError as exc:
+                self._reply(503, {"error": exc.code, "reason": exc.reason,
+                                  "retry_after_seconds": exc.retry_after_seconds},
+                            response_headers={"Retry-After": str(exc.retry_after_seconds)})
             except (MemoryError, SyncError, ValueError):
                 self._reply(400, {"error": "invalid_exchange"})
             except Exception:
                 self._reply(500, {"error": "exchange_failed"})
+
+        def do_GET(self):
+            if not sync_only:
+                return super().do_GET()
+            if self._valid_endpoint("/sync"):
+                self._reply(405)
+
+        def _not_allowed(self):
+            if not sync_only:
+                return super()._not_allowed()
+            if self._valid_endpoint("/sync"):
+                self._reply(405)
+
+        do_DELETE = _not_allowed
+        do_OPTIONS = _not_allowed
+        do_PUT = _not_allowed
+        do_PATCH = _not_allowed
+        do_HEAD = _not_allowed
     return Handler
 
 
@@ -129,6 +152,106 @@ class PeerHTTPServer(ThreadingHTTPServer):
     def handle_error(self, request, client_address):
         # No request data, bearer credentials or remote stack traces in logs.
         pass
+
+
+@contextlib.contextmanager
+def stop_signals(stop_event):
+    """Signals only set an event; shutdown and database closure stay ordered."""
+    previous = {}
+    if threading.current_thread() is threading.main_thread():
+        for number in (signal.SIGINT, signal.SIGTERM):
+            previous[number] = signal.signal(number, lambda *_args: stop_event.set())
+    try:
+        yield
+    finally:
+        for number, handler in previous.items():
+            signal.signal(number, handler)
+
+
+def _tls_context(cert_file, key_file):
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    context.minimum_version = ssl.TLSVersion.TLSv1_2
+    try:
+        context.load_cert_chain(cert_file, key_file)
+    except (OSError, ValueError):
+        raise ValidationError("TLS certificate or private key is unavailable or invalid") from None
+    return context
+
+
+def _validate_audit_destination(path, protected_paths):
+    """Do not append to or rotate a database, credential or trust file."""
+    destination = Path(path)
+    for candidate in (destination, destination.with_name(destination.name + ".1")):
+        for protected in protected_paths:
+            if candidate.resolve() == Path(protected).resolve():
+                raise ValidationError("Audit destination conflicts with a protected runtime file")
+            try:
+                if candidate.samefile(protected):
+                    raise ValidationError("Audit destination conflicts with a protected runtime file")
+            except FileNotFoundError:
+                pass
+
+
+def serve_nas(store, args, *, stop_event=None):
+    """A public OAuth resource and private sync listener sharing one Store."""
+    from .oauth import OAuthAuthenticator
+    from .audit import AuditLog
+    event = stop_event or threading.Event()
+    for port in (args.mcp_port, args.sync_port):
+        if not 0 <= port <= 65535:
+            raise ValidationError("Listener port must be 0–65535")
+    if args.mcp_port and (args.mcp_host, args.mcp_port) == (args.sync_host, args.sync_port):
+        raise ValidationError("MCP and sync require distinct listeners")
+    store.configure_capacity(min_free_bytes=args.min_free_bytes, max_store_bytes=args.max_store_bytes)
+    oauth = OAuthAuthenticator(store, args.oauth_config)
+    contexts = [_tls_context(args.mcp_cert_file, args.mcp_key_file),
+                _tls_context(args.sync_cert_file, args.sync_key_file)]
+    # The resource authority was explicitly pinned in trusted local config.
+    mcp_hosts = set(args.allow_host) | {urlsplit(oauth.resource).netloc}
+    if args.audit_log:
+        protected = [store.path + suffix for suffix in ("", "-wal", "-shm", "-journal")]
+        protected += [args.mcp_cert_file, args.mcp_key_file, args.sync_cert_file, args.sync_key_file]
+        protected += list(oauth.local_files)
+        _validate_audit_destination(args.audit_log, protected)
+    audit = AuditLog(args.audit_log) if args.audit_log else None
+    servers, threads = [], []
+    try:
+        handlers = [
+            make_handler(Service(store, authenticate=oauth), allowed_origins=args.allow_origin,
+                         allowed_hosts=mcp_hosts, oauth=oauth,
+                         allow_legacy_http=args.allow_legacy_http, audit=audit),
+            server_handler(Service(store), allowed_origins=args.allow_origin,
+                           allowed_hosts=args.allow_host, sync_only=True),
+        ]
+        for address, handler, context in zip(
+                [(args.mcp_host, args.mcp_port), (args.sync_host, args.sync_port)], handlers, contexts):
+            server = PeerHTTPServer(address, handler, context)
+            # server_close must join accepted requests before the Store closes.
+            server.daemon_threads = False
+            servers.append(server)
+        with stop_signals(event):
+            for server in servers:
+                thread = threading.Thread(target=server.serve_forever, daemon=True)
+                thread.start()
+                threads.append(thread)
+            print(canonical({"profile": "nas", "tls": True,
+                             "mcp": {"listening": servers[0].server_address,
+                                     "endpoints": ["/mcp", oauth.metadata_path]},
+                             "sync": {"listening": servers[1].server_address,
+                                      "endpoints": ["/sync"]}}), file=sys.stderr, flush=True)
+            while not event.wait(0.5):
+                if any(not thread.is_alive() for thread in threads):
+                    raise ValidationError("A NAS listener stopped unexpectedly")
+    finally:
+        for server, thread in zip(servers, threads):
+            if thread.is_alive():
+                server.shutdown()
+        for server in servers:
+            server.server_close()
+        for thread in threads:
+            thread.join()
+        if audit is not None:
+            audit.close()
 
 
 def load_json(value):
@@ -189,6 +312,8 @@ def parser():
     submit = sub.add_parser("owner-submit", help="Explicit local owner assertions/corrections/admin actions")
     submit.add_argument("--actions", required=True, help="JSON action array or @file")
     submit.add_argument("--request-id")
+    submit.add_argument("--min-free-bytes", type=int, default=536870912)
+    submit.add_argument("--max-store-bytes", type=int)
     query = sub.add_parser("query")
     query.add_argument("--args", default="{}")
     hist = sub.add_parser("history")
@@ -202,11 +327,29 @@ def parser():
     serve.add_argument("--key-file")
     serve.add_argument("--allow-origin", action="append", default=[])
     serve.add_argument("--allow-host", action="append", default=[])
+    nas = sub.add_parser("serve-nas", help="Separate TLS OAuth MCP and private peer-sync listeners")
+    nas.add_argument("--mcp-host", default="0.0.0.0")
+    nas.add_argument("--mcp-port", type=int, default=8765)
+    nas.add_argument("--mcp-cert-file", required=True)
+    nas.add_argument("--mcp-key-file", required=True)
+    nas.add_argument("--oauth-config", required=True)
+    nas.add_argument("--sync-host", default="127.0.0.1")
+    nas.add_argument("--sync-port", type=int, default=8766)
+    nas.add_argument("--sync-cert-file", required=True)
+    nas.add_argument("--sync-key-file", required=True)
+    nas.add_argument("--allow-origin", action="append", default=[])
+    nas.add_argument("--allow-host", action="append", default=[])
+    nas.add_argument("--min-free-bytes", type=int, default=536870912)
+    nas.add_argument("--max-store-bytes", type=int)
+    nas.add_argument("--allow-legacy-http", action="store_true")
+    nas.add_argument("--audit-log", help="Private bounded audit file; defaults to disabled")
     sync = sub.add_parser("sync")
     sync.add_argument("--url", required=True)
     sync.add_argument("--token-file")
     sync.add_argument("--expected-peer", required=True)
     sync.add_argument("--batch-size", type=int, default=100)
+    watch = sub.add_parser("sync-watch", help="Run bounded, resumable synchronization until stopped")
+    watch.add_argument("--config", required=True, help="Private local JSON scheduler configuration")
     backup = sub.add_parser("backup")
     backup.add_argument("destination")
     restore = sub.add_parser("restore")
@@ -220,6 +363,8 @@ def parser():
     imp.add_argument("--namespace", default="personal-import")
     imp.add_argument("--apply", action="store_true")
     imp.add_argument("--backup")
+    imp.add_argument("--min-free-bytes", type=int, default=536870912)
+    imp.add_argument("--max-store-bytes", type=int)
     return p
 
 
@@ -270,6 +415,7 @@ def main(argv=None):
                 elif args.command == "call":
                     result = service.call(args.tool, load_json(args.args), token_value(args))
                 elif args.command == "owner-submit":
+                    store.configure_capacity(min_free_bytes=args.min_free_bytes, max_store_bytes=args.max_store_bytes)
                     result = store.submit(load_json(args.actions), request_id=args.request_id)
                 elif args.command == "query":
                     result = store.query(**load_json(args.args))
@@ -278,6 +424,14 @@ def main(argv=None):
                 elif args.command == "serve-stdio":
                     run_stdio(service, token_value(args))
                     return 0
+                elif args.command == "serve-nas":
+                    serve_nas(store, args)
+                    return 0
+                elif args.command == "sync-watch":
+                    from .sync import SyncRunner
+                    stopped = threading.Event()
+                    with stop_signals(stopped):
+                        result = SyncRunner(store, args.config, stop_event=stopped).run()
                 elif args.command == "serve":
                     try:
                         loopback = ipaddress.ip_address(args.host).is_loopback
@@ -308,11 +462,14 @@ def main(argv=None):
                 elif args.command == "import":
                     if not args.backup:
                         raise ValidationError("Applying an import requires --backup to a new path")
+                    store.configure_capacity(min_free_bytes=args.min_free_bytes, max_store_bytes=args.max_store_bytes)
                     from .importers import import_path
                     result = import_path(store, args.path, approved_root=args.root, namespace=args.namespace, dry_run=False, backup_path=args.backup)
                 else:
                     raise ValidationError("Unknown command")
         print(json.dumps(result, ensure_ascii=False, indent=2))
+        if args.command == "import" and result.get("status") in {"failed", "partial"}:
+            return 2
         return 0
     except (MemoryError, SyncError, ValueError, OSError, KeyError) as exc:
         print(f"RefactoredMemory: {type(exc).__name__}: {exc}", file=sys.stderr)

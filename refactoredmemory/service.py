@@ -131,11 +131,12 @@ def validate(value, schema, path="arguments"):
 
 
 class Service:
-    def __init__(self, store):
+    def __init__(self, store, authenticate=None):
         self.store = store
+        self._authenticate = authenticate or store.authenticate
 
-    def auth(self, token):
-        return self.store.authenticate(token)
+    def auth(self, token, scope=None):
+        return self._authenticate(token, scope)
 
     authenticate = auth
 
@@ -152,7 +153,7 @@ class Service:
         if actor["kind"] == "peer":
             raise AuthorizationError("Peer credentials cannot call consumer tools")
         if name == "memory_submit":
-            self.store.authenticate(token, "write")
+            self.auth(token, "write")
             actions = arguments.get("actions") if isinstance(arguments, dict) else None
             reserved = {"actor", "owner", "owner_correction", "human_verified", "reviewed_by", "review", "reviewer", "authority", "scopes", "grant"}
             def check_provenance(value):
@@ -178,10 +179,10 @@ class Service:
             validate(arguments, tool["inputSchema"])
             for action in actions:
                 if action.get("type") == "assertion" and action.get("kind", "assert") != "assert":
-                    self.store.authenticate(token, "correct")
+                    self.auth(token, "correct")
             return self.store.submit(actions, actor=actor, request_id=arguments.get("request_id"))
         validate(arguments, tool["inputSchema"])
-        self.store.authenticate(token, "read")
+        self.auth(token, "read")
         if name == "memory_query":
             return self.store.query(**arguments)
         if name == "memory_history":

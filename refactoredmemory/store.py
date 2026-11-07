@@ -13,6 +13,7 @@ import json
 import os
 from pathlib import Path
 import secrets
+import shutil
 import sqlite3
 import threading
 import uuid
@@ -37,6 +38,17 @@ class AuthorizationError(MemoryError, PermissionError):
 
 class ConflictError(MemoryError, ValueError):
     pass
+
+
+class CapacityError(MemoryError):
+    """A retryable local storage pause; no operation was acknowledged."""
+
+    code = "capacity_paused"
+    retry_after_seconds = 300
+
+    def __init__(self, reason="low_disk"):
+        self.reason = reason
+        super().__init__("Storage capacity pause: " + reason)
 
 
 def canonical(value):
@@ -96,6 +108,8 @@ class Store:
     def __init__(self, path, *, store_id=None, peer_id=None):
         self.path = str(path)
         self._lock = threading.RLock()
+        self._min_free_bytes = 0
+        self._max_store_bytes = None
         if self.path != ":memory:":
             p = Path(path)
             p.parent.mkdir(parents=True, exist_ok=True)
@@ -166,6 +180,36 @@ class Store:
         with self._lock:
             self.db.close()
 
+    def configure_capacity(self, *, min_free_bytes=0, max_store_bytes=None):
+        """Enable conservative graph-write admission without disabling reads.
+
+        The ceiling measures allocated SQLite pages, not backup/log file size.
+        Free-space checks reserve space for WAL/index growth. Other processes
+        can still consume the disk after admission; SQLite failures roll back.
+        """
+        for value in (min_free_bytes, max_store_bytes):
+            if value is not None and (type(value) is not int or value < 0):
+                raise ValidationError("Capacity limits must be nonnegative byte counts")
+        if min_free_bytes is None or max_store_bytes == 0:
+            raise ValidationError("Invalid capacity limits")
+        with self._lock:
+            self._min_free_bytes = min_free_bytes
+            self._max_store_bytes = max_store_bytes
+
+    def _check_capacity(self, incoming_bytes=0, action_count=0):
+        if not self._min_free_bytes and self._max_store_bytes is None:
+            return
+        # Conservative allowance for journal, projection, B-tree pages and WAL.
+        reserve = 4 * incoming_bytes + 512 * action_count + (65536 if incoming_bytes else 0)
+        if self._min_free_bytes and self.path != ":memory:":
+            free = shutil.disk_usage(Path(self.path).resolve().parent).free
+            if free < self._min_free_bytes + reserve:
+                raise CapacityError("low_disk")
+        if self._max_store_bytes is not None:
+            allocated = self.db.execute("PRAGMA page_count").fetchone()[0] * self.db.execute("PRAGMA page_size").fetchone()[0]
+            if allocated + reserve > self._max_store_bytes:
+                raise CapacityError("store_limit")
+
     @contextlib.contextmanager
     def _transaction(self):
         with self._lock:
@@ -173,8 +217,12 @@ class Store:
             try:
                 yield
                 self.db.execute("COMMIT")
-            except BaseException:
-                self.db.execute("ROLLBACK")
+            except BaseException as exc:
+                # SQLITE_FULL may already have rolled back the transaction.
+                if self.db.in_transaction:
+                    self.db.execute("ROLLBACK")
+                if isinstance(exc, sqlite3.OperationalError) and getattr(exc, "sqlite_errorcode", None) == sqlite3.SQLITE_FULL:
+                    raise CapacityError("low_disk") from exc
                 raise
 
     def _meta(self, key):
@@ -467,6 +515,7 @@ class Store:
             encoded = canonical(body)
             if len(encoded.encode()) > MAX_OPERATION:
                 raise ValidationError("Operation exceeds 1 MiB")
+            self._check_capacity(len(encoded.encode()), len(actions))
             signature = hmac.new(bytes.fromhex(self._meta("key_hex")), encoded.encode(), hashlib.sha256).hexdigest()
             self.db.execute("INSERT INTO operations(id,origin,seq,body,signature,received_at) VALUES (?,?,?,?,?,?)",
                             (body["id"], self.peer_id, seq, encoded, signature, utcnow()))
@@ -474,6 +523,7 @@ class Store:
             self._apply(body, position)
             if request_id:
                 self.db.execute("INSERT INTO requests VALUES (?,?,?,?)", (actor["id"], request_id, digest, body["id"]))
+            self._check_capacity()
             return {"operation_id": body["id"], "known_position": position,
                     "action_ids": [a["id"] for a in actions], "duplicate": False}
 
@@ -552,6 +602,7 @@ class Store:
                 expected = hmac.new(bytes.fromhex(key), encoded.encode(), hashlib.sha256).hexdigest()
                 if not isinstance(wire["signature"], str) or not hmac.compare_digest(expected, wire["signature"]):
                     raise AuthorizationError("Invalid origin authentication")
+                self._check_capacity(len(encoded.encode()), len(body["actions"]))
                 self.db.execute("INSERT INTO operations(id,origin,seq,body,signature,received_at) VALUES (?,?,?,?,?,?)",
                                 (body["id"], body["origin"], seq, encoded, wire["signature"], utcnow()))
                 received += 1
@@ -563,6 +614,7 @@ class Store:
                     body = json.loads(row["body"])
                     if any(frontier.get(origin, 0) < seq for origin, seq in body["dependencies"].items()):
                         continue
+                    self._check_capacity(len(row["body"].encode()), len(body["actions"]))
                     # Savepoint prevents a malformed remote group exposing a partial projection.
                     self.db.execute("SAVEPOINT incoming")
                     try:
@@ -578,6 +630,8 @@ class Store:
                     frontier[body["origin"]] = body["seq"]
                 if not progress:
                     break
+            if received or applied:
+                self._check_capacity()
             pending_count = self.db.execute("SELECT count(*) FROM operations WHERE position IS NULL").fetchone()[0]
             return {"received": received, "applied": applied, "pending": pending_count,
                     "rejected": self.db.execute("SELECT count(*) FROM operations WHERE rejected IS NOT NULL").fetchone()[0], "frontier": self._frontier()}
@@ -850,6 +904,11 @@ class Store:
         if destination.exists() or str(destination.resolve()) == str(Path(self.path).resolve()):
             raise ConflictError("Backup destination must be new")
         destination.parent.mkdir(parents=True, exist_ok=True)
+        if self._min_free_bytes:
+            with self._lock:
+                allocated = self.db.execute("PRAGMA page_count").fetchone()[0] * self.db.execute("PRAGMA page_size").fetchone()[0]
+            if shutil.disk_usage(destination.parent).free < self._min_free_bytes + allocated + 65536:
+                raise CapacityError("low_disk")
         fd = os.open(destination, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
         os.close(fd)
         with self._lock:
