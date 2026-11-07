@@ -14,6 +14,7 @@ Updated 7 November 2026. This records accepted scope, not approval to implement.
 | Corporate ownership principle (Q3) | Retained for later phases | Organizations retain their data when people leave; people retain personal data. Corporate domain/offboarding implementation does not gate v1. |
 | Product encryption and key recovery (Q4) | Deferred | No new content-encryption/key-custody system in v1. An encrypted legacy input may still need its original approved keys for import. |
 | Documentation authority | Accepted | Repository docs are authoritative; companion Pages are reconciled. |
+| Linear setup | Paused by owner | Preserve the prepared backlog under `docs/tracking/`; resume external setup only when requested. No team/projects/issues were created. Linear is not a readiness or implementation prerequisite. |
 | Implementation transition | Explicit gate | Updated docs and answered questions are necessary; the owner must then explicitly say “proceed.” |
 
 ## Remaining design and evidence work
