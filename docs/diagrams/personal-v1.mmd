@@ -1,0 +1,37 @@
+flowchart TB
+    C["Praxis and other MCP-capable LLM clients"]
+    U["One personal owner<br/>client grants and peer admission"]
+
+    subgraph V1["RefactoredMemory personal v1 — two required offline-writable peers"]
+        I["Required import and migration<br/>Markdown / Logseq / previous LivingAtlas runs"]
+        subgraph PA["Personal peer A — owner's Mac"]
+            MA["Required MCP server and graph API<br/>latest stable protocol; tested clients"]
+            AA["Owner-authorized client access"]
+            GA["Temporal graph<br/>assertions, evidence, corrections, provenance"]
+            SA["Independent durable history<br/>and rebuildable query indexes"]
+            RA["Admitted peer synchronization"]
+            MA --> AA --> GA --> SA
+            RA <-->|"validated graph operations"| GA
+        end
+
+        subgraph PB["Personal peer B — owner's Linux VM/container"]
+            MB["Required MCP server and graph API<br/>latest stable protocol; tested clients"]
+            AB["Owner-authorized client access"]
+            GB["Temporal graph<br/>assertions, evidence, corrections, provenance"]
+            SB["Independent durable history<br/>and rebuildable query indexes"]
+            RB["Admitted peer synchronization"]
+            MB --> AB --> GB --> SB
+            RB <-->|"validated graph operations"| GB
+        end
+
+        RA <-->|"direct sync after reconnect<br/>retain concurrent branches and local knowledge history"| RB
+        I -->|"authorized graph submissions<br/>preserve sources, time, IDs and correction lineage"| AA
+        I -->|"authorized graph submissions<br/>safe repeat/change handling and rollback"| AB
+    end
+
+    C -->|"MCP reads and authorized writes"| MA
+    C -->|"MCP reads and authorized writes"| MB
+    U --> AA
+    U --> AB
+    W["Later experiment: memory consolidation"] -.->|"scoped, source-linked proposals"| MA
+    N["Later: multitenancy, corporate domains,<br/>product content encryption, relay mesh"]
