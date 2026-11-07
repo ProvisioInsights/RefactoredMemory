@@ -23,6 +23,8 @@ The canonical docs and Pages were reconciled before the authorized NAS productio
 
 ## Sources to inspect
 
+Begin each continuation with the current [acceptance evidence](ACCEPTANCE-RESULTS.md) and its pinned runtime/deployment results. Use [NAS commissioning](NAS-COMMISSIONING.md) for explicit initialization, mount validation, private credential handoff, graceful stop and isolated backup/restore. Preserve the fail-closed startup checks, snapshot-correct backup receipts, query-memory bounds and absolute network deadlines. Keep actual host/client qualification open until exercised; a previous synthetic pass is not a deployment approval.
+
 Read the accessible primary sources and relevant repository history:
 
 1. PRD, originally Atlas Draft 0.9 and now reconciled for RefactoredMemory personal v1: historical planning Page available through authorized private access; current authority: `docs/PRD.md`

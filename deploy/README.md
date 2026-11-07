@@ -2,6 +2,8 @@
 
 These artifacts target a Linux VM on the RS822+ with a separate VLAN/IP. They do not install anything on DSM, configure the router, create a Cloudflare tunnel or load personal data. Read [NAS-DEPLOYMENT](../docs/NAS-DEPLOYMENT.md) and [REMOTE-ADMIN](../docs/REMOTE-ADMIN.md) first. The NAS and actual provider connections still need qualification.
 
+For container-only initialization, private path checks, stop/restart and backup/recovery procedures, follow [NAS-COMMISSIONING](../docs/NAS-COMMISSIONING.md). The optional `compose.owner.yaml` profile runs existing owner CLI commands with no network and only dedicated data/configuration/export/backup mounts. It never starts the public tunnel.
+
 ## Build and test locally
 
 From the repository root, with Docker Engine and Compose already available:
@@ -11,6 +13,7 @@ docker build -t refactoredmemory:local .
 docker build -f deploy/Keycloak.Dockerfile -t refactoredmemory-keycloak:local deploy
 docker compose --env-file deploy/env.example -f deploy/compose.yaml -f deploy/compose.oidc.yaml config --quiet
 python deploy/smoke_test.py
+python deploy/operator_smoke_test.py
 ```
 
 The smoke test needs the optional packages in `requirements-oauth.txt`. It starts a randomly named local project, creates synthetic users/data/certificates, exercises real Keycloak authorization-code + S256 PKCE and the memory service, and removes its containers, volumes and temporary credentials. It does not start `cloudflared`. First runs pull the pinned Postgres and HAProxy images. The test requires a Linux local Docker socket and an unprivileged UID 1000, matching the Keycloak reference image; it is not the Mac hardware qualification. The application image itself supports other configured UIDs. In this managed build environment, add `--secret id=proxy_ca,src="$CODEX_PROXY_CERT"` to the memory build command. That CA is a build-only secret and is not copied into the image.
@@ -26,6 +29,7 @@ Prepare only these paths on the VM's local persistent filesystem:
 | Path under the private directory | Ownership / access |
 | --- | --- |
 | `data/` | Memory runtime UID/GID, mode 0700; persistent database and audit log. |
+| `exports/` and the separate `REFMEM_BACKUP_DIR` | Memory runtime UID/GID, mode 0700; owner-operation exports and snapshots. |
 | `config/` and `config/secrets/` | Memory runtime UID/GID, mode 0700; read-only in the service. |
 | `config/oauth.json`, `config/jwks.json` | Trusted administrator-managed configuration; readable by memory UID. |
 | `config/secrets/*.token` | Memory runtime UID, mode 0400 or 0600, regular files without symlinks. |

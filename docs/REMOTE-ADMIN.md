@@ -7,6 +7,7 @@ The account should remain usable across authorized engineering sessions. That do
 ## Identity and network scope
 
 - Create a dedicated unprivileged account, such as `refmem-maint`, on the workload VM. Do not reuse the owner's DSM account or personal SSH key.
+- Choose a numeric UID distinct from every production runtime's effective host UID. The rootful reference uses UID 10001 for memory, 1000 for Keycloak and 70 for Postgres; UID 1000 is often an ordinary VM login. Different usernames do not prevent same-UID access to private files. Inspect actual host mappings if using rootless containers or user namespaces before assigning ownership.
 - Give the Codex-side VPN identity permission to reach only the workload VM's SSH port. Do not advertise the home LAN as a subnet route or configure an exit node for this task.
 - Restrict SSH access to approved VPN identities or addresses. Disable root login, password login, SSH agent forwarding and unnecessary TCP forwarding for this account.
 - Pin the SSH server's host key in a dedicated known-hosts file. Verify its fingerprint through an independently trusted administrative path before the first connection. Do not use `StrictHostKeyChecking=no`.
@@ -22,6 +23,8 @@ Prefer a supported rootless container runtime inside the VM for the engineering 
 For a privileged runtime, routine service control can instead use a narrow, root-owned helper that supports fixed actions such as status, restart and redacted logs for this service. The helper, its Compose configuration and every file it executes as root must be owned by root and not writable by the engineering account. It must not accept arbitrary commands, paths, environment overrides, Compose files, image names or Docker arguments. Granting sudo to `docker`, `docker compose`, a shell, or a script loaded from the writable checkout defeats this restriction.
 
 Deployment promotion that changes privileged configuration or mounts remains an owner-controlled action. Reviewed image digests can be promoted through a fixed deployment process. Code editing and synthetic tests do not require DSM administration or a writable production data directory.
+
+The shell conveniences and `compose.owner.yaml` profile in [NAS-COMMISSIONING](NAS-COMMISSIONING.md) are for the approved deployment operator. They deliberately perform owner operations on the private database and accept operation arguments; they are not safe substitutes for a fixed privileged helper delegated to the engineering account. Host preflight is read-only but may require the operator's permission to inspect private path ownership.
 
 ## Information needed when access is provided
 

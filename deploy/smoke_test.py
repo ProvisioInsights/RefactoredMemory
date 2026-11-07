@@ -18,6 +18,7 @@ import ssl
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import urllib.error
 import urllib.parse
@@ -73,6 +74,11 @@ def main():
         result = subprocess.run(args, env=env, text=True, capture_output=True, timeout=timeout)
         if result.returncode:
             raise RuntimeError(f"Command failed ({args[0]}): {result.stderr[-3000:]}")
+        return result.stdout
+    def binary(args, data=None):
+        result = subprocess.run(args, env=env, input=data, capture_output=True, timeout=120)
+        if result.returncode:
+            raise RuntimeError(f"Binary database operation failed: {result.stderr.decode(errors='replace')[-1500:]}")
         return result.stdout
     project = "refmemtest" + secrets.token_hex(4)
     results = {"environment": "local Linux Docker; synthetic data only", "checks": []}
@@ -165,6 +171,17 @@ def main():
             run(compose + ["config", "--quiet"])
             run(compose + ["up", "--no-build", "-d", "postgres", "keycloak", "auth-admin-ingress"])
             discovery = json.loads(ready(issuer + "/.well-known/openid-configuration"))
+            archive = binary(compose + ["exec", "-T", "postgres", "pg_dump", "-U", "keycloak", "-d", "keycloak", "--format=custom"])
+            assert archive.startswith(b"PGDMP"), "Postgres dump is not a custom-format archive"
+            assert b"TABLE" in binary(compose + ["exec", "-T", "postgres", "pg_restore", "--list"], archive)
+            run(compose + ["exec", "-T", "postgres", "createdb", "-U", "keycloak", "refmem_restore_check"])
+            binary(compose + ["exec", "-T", "postgres", "pg_restore", "-U", "keycloak", "-d", "refmem_restore_check", "--no-owner", "--exit-on-error"], archive)
+            verification = "SELECT id FROM user_entity WHERE username='synthetic-owner'; SELECT count(*) FROM client; SELECT count(*) FROM component_config;"
+            original_state = run(compose + ["exec", "-T", "postgres", "psql", "-U", "keycloak", "-d", "keycloak", "-Atc", verification])
+            restored_state = run(compose + ["exec", "-T", "postgres", "psql", "-U", "keycloak", "-d", "refmem_restore_check", "-Atc", verification])
+            assert original_state == restored_state and subject in restored_state
+            run(compose + ["exec", "-T", "postgres", "dropdb", "-U", "keycloak", "refmem_restore_check"])
+            results["checks"].append("Postgres custom dump validates and restores owner/client/key metadata into a separate database")
             status, _, jwks = request(discovery["jwks_uri"])
             assert status == 200
             signing_keys = [k for k in json.loads(jwks)["keys"] if k.get("use") == "sig" and k.get("alg") == "RS256"]
@@ -248,7 +265,9 @@ def main():
             assert config["HostConfig"]["ReadonlyRootfs"] and "ALL" in config["HostConfig"]["CapDrop"]
             assert "no-new-privileges:true" in config["HostConfig"]["SecurityOpt"]
             assert len(config["NetworkSettings"]["Networks"]) == 1
-            assert all(m["Destination"] in ("/data", "/config", "/tls") for m in config["Mounts"])
+            assert {m["Destination"] for m in config["Mounts"]} == {
+                "/data", "/config", "/tls/memory.crt", "/tls/memory.key", "/tls/ca.crt", "/operator/container_entrypoint.py"}
+            run(docker + ["exec", cid, "python", "-c", "from pathlib import Path; assert not Path('/tls/keycloak.key').exists()"])
             run(docker + ["exec", cid, "python", "-c", "import os; assert os.geteuid()!=0; assert open('/proc/self/status').read().split('CapEff:')[1].split()[0]=='0000000000000000'"])
             keycloak_cid = run(compose + ["ps", "-q", "keycloak"]).strip()
             keycloak_info = json.loads(run(docker + ["inspect", keycloak_cid]))[0]
@@ -264,6 +283,28 @@ def main():
                 store.revoke_grant(grant)
             assert mcp(token)[0] == 401, "Grant revocation did not take effect immediately"
             results["checks"].extend(["acknowledged assertion queried after container restart", "live grant revocation rejects existing OAuth access token"])
+            # Keep a partial header active so idle timeout alone cannot drain it.
+            # The application absolute deadline must finish before Docker's grace.
+            idle = context.wrap_socket(socket.create_connection(("127.0.0.1", mcp_port)), server_hostname="localhost")
+            idle.sendall(b"POST /mcp HTTP/1.1\r\nX-Synthetic-Drip: ")
+            finished = threading.Event()
+            def drip():
+                while not finished.wait(.1):
+                    try:
+                        idle.sendall(b"a")
+                    except OSError:
+                        break
+            writer = threading.Thread(target=drip, daemon=True)
+            writer.start()
+            try:
+                run(compose + ["stop", "memory"], timeout=45)
+            finally:
+                finished.set()
+                idle.close()
+                writer.join(timeout=2)
+            stopped = json.loads(run(docker + ["inspect", cid]))[0]
+            assert stopped["State"]["ExitCode"] == 0 and not stopped["State"]["OOMKilled"], "Graceful stop was killed"
+            results["checks"].append("30-second Docker stop drains a slow-header connection without SIGKILL")
             results["limitations"] = ["No actual NAS/VLAN/router/firewall qualification", "No external tunnel or provider-app login", "Synthetic owner bypasses production MFA enrollment only in disposable test realm"]
             print(json.dumps(results, indent=2))
         except BaseException:

@@ -16,7 +16,11 @@ services:
       POSTGRES_PASSWORD_FILE: /run/secrets/db-password
     volumes:
       - auth_database:/var/lib/postgresql/data
-      - ${REFMEM_PRIVATE_DIR}/auth/postgres-password:/run/secrets/db-password:ro
+      - type: bind
+        source: ${REFMEM_PRIVATE_DIR}/auth/postgres-password
+        target: /run/secrets/db-password
+        read_only: true
+        bind: {create_host_path: false}
     tmpfs:
       - /tmp:size=32m,mode=1777,noexec,nosuid,nodev
       - /var/run/postgresql:size=1m,uid=70,gid=70,mode=0700,noexec,nosuid,nodev
@@ -56,11 +60,36 @@ services:
       KC_LOG_LEVEL: WARN
       JAVA_OPTS_KC_HEAP: -XX:MaxRAMPercentage=65.0
     volumes:
-      - ./keycloak-entrypoint.sh:/etc/refmem/entrypoint.sh:ro
-      - ${REFMEM_PRIVATE_DIR}/auth/keycloak-password:/run/secrets/db-password:ro
-      - ${REFMEM_PRIVATE_DIR}/auth/admin-password:/run/secrets/admin-password:ro
-      - ${REFMEM_PRIVATE_DIR}/auth/realm.json:/opt/keycloak/data/import/realm.json:ro
-      - ${REFMEM_PRIVATE_DIR}/tls:/tls:ro
+      - type: bind
+        source: ./keycloak-entrypoint.sh
+        target: /etc/refmem/entrypoint.sh
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${REFMEM_PRIVATE_DIR}/auth/keycloak-password
+        target: /run/secrets/db-password
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${REFMEM_PRIVATE_DIR}/auth/admin-password
+        target: /run/secrets/admin-password
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${REFMEM_PRIVATE_DIR}/auth/realm.json
+        target: /opt/keycloak/data/import/realm.json
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${REFMEM_PRIVATE_DIR}/tls/keycloak.crt
+        target: /tls/keycloak.crt
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${REFMEM_PRIVATE_DIR}/tls/keycloak.key
+        target: /tls/keycloak.key
+        read_only: true
+        bind: {create_host_path: false}
     tmpfs:
       - /tmp:size=64m,mode=1777,nosuid,nodev
       - /opt/keycloak/data:size=64m,uid=1000,gid=0,mode=0700,nosuid,nodev
@@ -82,7 +111,11 @@ services:
     cpus: 0.25
     restart: unless-stopped
     volumes:
-      - ./auth-admin-ingress.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - type: bind
+        source: ./auth-admin-ingress.cfg
+        target: /usr/local/etc/haproxy/haproxy.cfg
+        read_only: true
+        bind: {create_host_path: false}
     ports:
       - "${REFMEM_AUTH_ADMIN_BIND:-127.0.0.1}:${REFMEM_AUTH_ADMIN_PORT:-8443}:8443"
     networks: [auth_front, private_ingress]

@@ -39,7 +39,7 @@ Development/test fixtures are synthetic-only. Live data use, key access, externa
 
 ## Current implementation
 
-The personal graph, MCP/OAuth, imports, split TLS listeners, guarded writes and resumable automatic synchronization are implemented. Native Linux qualification passed 146 tests. The acceptance report records current container and hosted-OS evidence separately. Actual NAS/Mac networking, hosted provider clients and original archives remain unqualified.
+The personal graph, MCP/OAuth, imports, split TLS listeners, guarded writes and resumable automatic synchronization are implemented. Native Linux qualification passed 163 tests. Hosted Ubuntu passed all 163; macOS ran 163 with two Linux-only memory-limit checks skipped. Current container/operator evidence includes OAuth, private sync, graceful shutdown and isolated backup/recovery. Actual NAS/Mac networking, hosted provider clients and original archives remain unqualified.
 
 ## Evidence records
 

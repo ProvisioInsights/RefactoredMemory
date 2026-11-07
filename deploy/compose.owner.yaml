@@ -1,0 +1,39 @@
+# Explicit local owner operations; no listener, network or Docker socket.
+services:
+  owner:
+    profiles: [owner]
+    image: refactoredmemory:${REFMEM_IMAGE_TAG:-local}
+    user: "${REFMEM_UID:-10001}:${REFMEM_GID:-10001}"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 64
+    mem_limit: 512m
+    cpus: 1.0
+    network_mode: none
+    tmpfs: ["/tmp:size=16m,mode=1777,noexec,nosuid,nodev"]
+    entrypoint: [python, /operator/container_entrypoint.py, owner]
+    command: [status]
+    volumes:
+      - type: bind
+        source: ${REFMEM_PRIVATE_DIR:?Set the private runtime directory}/data
+        target: /data
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${REFMEM_PRIVATE_DIR}/config
+        target: /config
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${REFMEM_PRIVATE_DIR}/exports
+        target: /exports
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${REFMEM_BACKUP_DIR:?Set a dedicated private backup directory}
+        target: /backups
+        bind: {create_host_path: false}
+      - type: bind
+        source: ./container_entrypoint.py
+        target: /operator/container_entrypoint.py
+        read_only: true
+        bind: {create_host_path: false}

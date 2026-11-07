@@ -1,0 +1,128 @@
+{
+  "recorded_at": "2026-11-07T20:58:57.943242+00:00",
+  "result": "passed",
+  "environment": "Attached Linux x86_64 Docker workspace; synthetic data only, not owner Mac or NAS",
+  "source_commit": "26bd25938292451dcc780399de42368db910e161",
+  "package_sha256": "a8475afc2dc93ba5b8e5f8e48bdd6aea5ebe832dfbcbf0362369272d9224007c",
+  "image_package_sha256": "a8475afc2dc93ba5b8e5f8e48bdd6aea5ebe832dfbcbf0362369272d9224007c",
+  "package_hash_method": "SHA256 of sorted relative *.py filename + NUL + bytes concatenation under refactoredmemory/",
+  "deployment_file_sha256": {
+    "deploy/compose.yaml": "bb9e5a8530a625cd9f59f194ca712c42298513c4f9c2d5f9a02b44253ad23f7c",
+    "deploy/compose.oidc.yaml": "cd3fc73842ddcbd1cce1a60ceaf2b03a2a3a2062ce284a1de8bf350ca1fecdda",
+    "deploy/compose.owner.yaml": "e58f1212c8818df0097754a5f13224abe41b3eeb38f249316c24220ce06ddf4e",
+    "deploy/container_entrypoint.py": "9065732016c2dbd3dcbf10985aa749c3bb9e1fd05f5d8979f929503daa0108d5",
+    "deploy/preflight.py": "d43aadd3203b5be322affc1238d8ce9494ce47d868a4465ed504a4c4d338d755",
+    "deploy/operator_smoke_test.py": "a6dc3eb57a79543ee536e50f964c6abece8e4d39060c48938046a30649ff735d",
+    "deploy/smoke_test.py": "a2c34c006a908b973ae3a7a4c971f935be506e3c4d3c48d9712825025860105d",
+    "deploy/render_realm.py": "f315ba44e043493664aa08632a328acc6e268031b1c2e0b8c5df20dcf173c1e5",
+    "deploy/keycloak-entrypoint.sh": "5057eb2db1791c787ce32d2d55f13eb201a366f9cba410fcfcf07e52eaa70046",
+    "deploy/sync-ingress.cfg": "7f1294f0bf3ef8bf1a6aaf15ff74d5e9764cb9f40c476b9e1fdcc324c1232ea7",
+    "deploy/auth-admin-ingress.cfg": "2a11794bdf43a5bcb2d1a3863d94ab64352e1dde5e6319c5ef7f2e69d1773102",
+    "deploy/env.example": "86d7f59d334145cac86e5235e81cc4b5c7db12f7baacd26d3207e1fbf24f0632"
+  },
+  "images": {
+    "memory": {
+      "reference": "refactoredmemory:local",
+      "image_id": "sha256:a2da4ee437f56d2c14fcb2c5f3e05c6f2205a293d9d854d87734cad60872add7",
+      "repo_digests": [],
+      "architecture": "amd64"
+    },
+    "keycloak": {
+      "reference": "refactoredmemory-keycloak:local",
+      "image_id": "sha256:23288dfc25c9b9e4b651845aff93b0dd48472d86d8f057f8c4a21031eafd21bf",
+      "repo_digests": [],
+      "architecture": "amd64"
+    },
+    "postgres": {
+      "reference": "postgres:17-alpine@sha256:3540c0362c809df084ffac0ae69fe794515f9de92692f02178bcdce0ef0302ac",
+      "image_id": "sha256:aac5ed9e090c8b3e134bf1dcf3f9fe0787a29cecdf7867de8b53b5d8abc3eef2",
+      "repo_digests": [
+        "postgres@sha256:3540c0362c809df084ffac0ae69fe794515f9de92692f02178bcdce0ef0302ac"
+      ],
+      "architecture": "amd64"
+    },
+    "haproxy": {
+      "reference": "haproxy:3.2.26-alpine@sha256:96ec3c75a9264ba94e733eeacb44051ed6e7b79bb77a73c2c36f236b6423f1f0",
+      "image_id": "sha256:d392bc106c144248cfed41f18f14ff3668dc5d49b2d27da370375d7ed6be985d",
+      "repo_digests": [
+        "haproxy@sha256:96ec3c75a9264ba94e733eeacb44051ed6e7b79bb77a73c2c36f236b6423f1f0"
+      ],
+      "architecture": "amd64"
+    }
+  },
+  "commands": [
+    {
+      "command": "docker build --secret id=proxy_ca,src=\"$CODEX_PROXY_CERT\" -t refactoredmemory:local .",
+      "result": "passed; build-only CA not retained in runtime"
+    },
+    {
+      "command": "docker compose --env-file deploy/env.example -f deploy/compose.yaml -f deploy/compose.oidc.yaml -f deploy/compose.owner.yaml config --quiet",
+      "exit_code": 0
+    },
+    {
+      "command": "python deploy/smoke_test.py",
+      "exit_code": 0,
+      "stdout": {
+        "environment": "local Linux Docker; synthetic data only",
+        "checks": [
+          "Postgres custom dump validates and restores owner/client/key metadata into a separate database",
+          "real Keycloak/Postgres TLS authorization-code + S256 PKCE",
+          "missing PKCE and authorization-code replay rejected",
+          "real OAuth access token accepted at MCP",
+          "ID token and raw local grant rejected",
+          "MCP/sync listener separation",
+          "OAuth sourced capture and query",
+          "private TLS bidirectional offline sync converges",
+          "nonroot/read-only/capability/mount hardening inspected",
+          "memory cannot initiate connection into separate authorization network",
+          "acknowledged assertion queried after container restart",
+          "live grant revocation rejects existing OAuth access token",
+          "30-second Docker stop drains a slow-header connection without SIGKILL"
+        ],
+        "limitations": [
+          "No actual NAS/VLAN/router/firewall qualification",
+          "No external tunnel or provider-app login",
+          "Synthetic owner bypasses production MFA enrollment only in disposable test realm"
+        ]
+      }
+    },
+    {
+      "command": "python deploy/operator_smoke_test.py",
+      "exit_code": 0,
+      "stdout": {
+        "result": "passed",
+        "environment": "local Linux Docker; disposable synthetic data",
+        "checks": [
+          "missing bind source is rejected without creating it",
+          "host bind symlink is rejected by preflight",
+          "unsafe private-directory/token modes and nested config symlink rejected",
+          "status and service reject zero-byte, foreign SQLite and missing-journal databases unchanged",
+          "status cannot silently initialize a missing database",
+          "init refuses existing empty DB and dangling WAL/rollback journal",
+          "explicit network-none container bootstrap and private credential export",
+          "consistent backup receipt and no-overwrite destination",
+          "fresh-directory restore retains evidence with a new peer identity",
+          "restored snapshot does not reactivate an old client grant"
+        ],
+        "limits": [
+          "No actual NAS filesystem or off-device backup transfer",
+          "No real-data restoration or public tunnel"
+        ]
+      }
+    }
+  ],
+  "additional_assertions": [
+    "Exact individual memory TLS mounts inspected; Keycloak private key absent from memory container despite equal test UIDs",
+    "30-second Compose stop grace and absolute request budget allowed slow-header request teardown with exit code 0, without OOM or forced kill",
+    "Read-only deployment guard rejects zero-byte, foreign SQLite and incomplete schema/journal before Store construction; operator regressions verify unchanged original bytes and directory entries"
+  ],
+  "cleanup": "All randomly named test containers, networks, synthetic database volumes and temporary private credentials removed; docker ps empty after both suites",
+  "limitations": [
+    "No actual NAS/VLAN/router/firewall or owner-Mac qualification",
+    "No real-data ingress, restoration or off-device backup transport",
+    "No external tunnel or hosted provider-app login",
+    "Postgres restore checked within a separate synthetic database, not a second NAS/VM",
+    "Snapshot restoration still requires reconciliation of later deletions and authorization changes"
+  ],
+  "review": "Focused read-only security review accepted identity/schema guard; full signed-journal integrity remains a restore operation"
+}

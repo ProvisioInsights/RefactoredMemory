@@ -4,7 +4,37 @@ This report records the implemented personal core and NAS/OAuth/automatic-sync e
 
 All tests, examples and benchmarks in this record use synthetic data. Executed Linux checks are recorded separately from requirements that still need the owner's Mac, actual application access or original legacy artifacts. Passing a synthetic fixture does not establish those unavailable results.
 
-## NAS extension local qualification
+## Current operational hardening qualification
+
+On 7 November 2026, **163 tests passed in 30.890 seconds with no skips** in the attached Linux workspace (Python 3.12.14, SQLite 3.53.1). [Raw native output](results/ops-linux-unittest.txt) includes 17 added regressions for snapshot publication, query memory and network deadlines. Runtime commit `26bd25938292451dcc780399de42368db910e161` has package SHA-256 `a8475afc2dc93ba5b8e5f8e48bdd6aea5ebe832dfbcbf0362369272d9224007c`, using sorted top-level package filenames, NUL separators and file bytes. The tested Docker image independently matches that digest. Deployment-file hashes are recorded separately in the [operator/container evidence](results/ops-docker-smoke.json).
+
+| Area | Executed evidence | Practical limit |
+| --- | --- | --- |
+| Backup publication | A concurrent writer cannot advance the snapshot receipt; final filenames appear only after validation/close/flush; failed copies can be retried; competing destinations are preserved. | Same-directory hard links are required. Copy the completed snapshot to remote backup storage; separately protect configuration and authorization state. |
+| Query memory | Large shared evidence no longer gets copied for every assertion. Query and post-deletion status succeed under a 256 MiB Linux address-space limit, with portable attribution/history checks. | This targeted regression is not a maximum-store or workload capacity guarantee. |
+| Inbound connections | Slow headers, bodies and TLS handshakes are closed within the absolute connection budget; public/private pools remain independent; shutdown joins workers. | Default NAS pools are 16 each, with 20-second absolute I/O and 15-second idle limits. An in-flight Store transaction is not aborted by socket closure. |
+| Outbound synchronization | Absolute attempt deadlines cover DNS, connect, TLS, headers and body; cancellation releases active I/O; DNS children are bounded and reaped; TLS identity and Retry-After behavior remain enforced. | Network deadlines do not bound a hung local filesystem or arbitrary CPU work. |
+| Operator/deployment | Real OAuth and TLS sync, PostgreSQL dump/isolated restore, private TLS-key mount separation, graceful Docker stop, explicit offline bootstrap, backup and fresh-identity recovery passed. | Host UID separation, NAS filesystem, VLAN/IPv6 rules, backup transport and actual provider accounts remain unverified. |
+
+The [hosted run at the same runtime commit](https://github.com/ProvisioInsights/RefactoredMemory/actions/runs/42413053084) succeeded on Ubuntu and macOS. Ubuntu passed **163 tests in 24.503 seconds without skips**. macOS ran **163 tests in 61.967 seconds, with two Linux-only memory-limit checks skipped**; the portable semantic regression ran there. Both platforms also passed the three synthetic day-one demonstrations. [Machine-readable CI summary](results/ops-hosted-ci.json).
+
+The new [commissioning guide](NAS-COMMISSIONING.md) gives concrete setup, credential handoff, stop/restart, memory backup/recovery and optional authorization-server recovery procedures. The deployment preflight validates existing bind paths and private permissions before startup. A read-only database guard also rejects missing, empty, unrelated or incomplete databases instead of silently creating a replacement identity; both owner status and service startup have unchanged-file regressions. These local checks qualify the tested artifacts, not an installed NAS or public service. Actual owner Mac/NAS pairing, ChatGPT/Claude/Praxis2 app/API access and original-archive migration remain open.
+
+### Current contract benchmark
+
+[The current 1,100-entity benchmark](../benchmarks/results/ops-linux-1100.json) passed its correctness checks against the same runtime digest. It measures the core Store contract with 31 samples per repeated workload, excluding OAuth, TLS and NAS disks. It ran on the shared Linux host; timings do not establish a controlled comparison with earlier runs.
+
+| Workload | p50 ms | p95 ms |
+| --- | ---: | ---: |
+| Acknowledged correction | 0.897 | 4.079 |
+| Current subject lookup | 0.644 | 1.171 |
+| Historical subject lookup | 0.586 | 0.918 |
+| Text search | 15.547 | 37.548 |
+| Four-hop traversal | 11.261 | 14.821 |
+
+One signed in-process transfer of 55 operations took 138.166 ms; backup 20.071 ms, restore 154.277 ms, rebuild 61.647 ms and reopen 1.974 ms. These single measurements do not establish larger-store capacity or an engine winner. Text search remains scan-oriented despite removing the shared-evidence amplification.
+
+## Historical NAS extension local qualification
 
 On 7 November 2026, **146 tests passed in 28.911 seconds with no skips** in the attached Linux workspace (Python 3.12.14, SQLite 3.53.1). [Raw native output](results/nas-linux-unittest.txt) includes the 86 baseline tests plus 15 OAuth, 9 HTTP-profile, 16 scheduler, 12 NAS/CLI/audit and 8 capacity tests. The three synthetic day-one demonstrations also ran successfully.
 
@@ -29,7 +59,7 @@ The container test is a reproducible local integration test, not a NAS installat
 
 The preceding macOS run found a test-only path comparison between `/var` and `/private/var`. The assertion now compares the expected canonical path; the runtime already pinned that configuration directory correctly. No runtime source changed for this correction. These hosted checks do not qualify the owner's actual Mac/NAS pair.
 
-### Current contract benchmark
+### Historical NAS extension contract benchmark
 
 [Raw NAS-extension runtime benchmark](../benchmarks/results/nas-linux-1100.json) repeats the 1,100-entity contract workload and passes its correctness checks. It identifies the same runtime digest above. Core Store defaults are measured; this is not an OAuth, TLS, NAS-disk or end-to-end client benchmark. The shared Linux host also ran container qualification, so the timings do not establish a regression or improvement against earlier runs.
 

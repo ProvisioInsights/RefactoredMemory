@@ -52,7 +52,7 @@
       "name": "RefactoredMemory — Personal knowledge store v1",
       "state": "In Progress",
       "summary": "NAS-primary endpoint plus independently writable Mac; required MCP/OAuth, automatic sync and source-preserving import.",
-      "description": "The personal graph, MCP/OAuth, imports, split TLS listeners, guarded writes and resumable automatic synchronization are implemented. Native Linux qualification passed 146 tests. The acceptance report records current container and hosted-OS evidence separately. Actual NAS/Mac networking, hosted provider clients and original archives remain unqualified. Corporate tenancy, product content encryption, third-peer mesh and a cloud storage peer remain later. No Praxis repository changes or Linear setup.",
+      "description": "The personal graph, MCP/OAuth, imports, split TLS listeners, guarded writes and resumable automatic synchronization are implemented. Native Linux qualification passed 163 tests. Hosted Ubuntu passed all 163; macOS ran 163 with two Linux-only memory-limit checks skipped. Current container/operator evidence includes OAuth, private sync, graceful shutdown and isolated backup/recovery. Actual NAS/Mac networking, hosted provider clients and original archives remain unqualified. Corporate tenancy, product content encryption, third-peer mesh and a cloud storage peer remain later. No Praxis repository changes or Linear setup.",
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md",
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md",
@@ -2750,7 +2750,9 @@
       "requiresProceed": false,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/ACCEPTANCE-RESULTS.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/ACCEPTANCE-RESULTS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-COMMISSIONING.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/results/ops-docker-smoke.json"
       ],
       "milestone": "NAS deployment and local qualification",
       "labels": [
@@ -2758,7 +2760,7 @@
       ],
       "trackingStatus": "repository_only",
       "requiresResumeRequest": false,
-      "progress": "Local hardened-container and real Keycloak/Postgres qualification passed. Actual NAS, Mac and hosted clients remain under N06."
+      "progress": "Local hardened-container, real Keycloak/Postgres, graceful shutdown and isolated operator bootstrap/backup/recovery qualification passed. Actual NAS, Mac and hosted clients remain under N06."
     },
     {
       "key": "N03",
@@ -2796,7 +2798,7 @@
       ],
       "trackingStatus": "repository_only",
       "requiresResumeRequest": false,
-      "progress": "Automatic sync and capacity refusal passed local synthetic tests."
+      "progress": "Automatic sync, capacity refusal, absolute outbound attempt deadlines, cancellation and bounded DNS cleanup passed synthetic tests."
     },
     {
       "key": "N04",
@@ -2834,7 +2836,7 @@
       ],
       "trackingStatus": "repository_only",
       "requiresResumeRequest": false,
-      "progress": "Private VPN/SSH runbook delivered; actual connection awaits access."
+      "progress": "Private VPN/SSH and commissioning/recovery runbooks delivered, including host UID separation; actual connection awaits access."
     },
     {
       "key": "N05",
@@ -2875,7 +2877,9 @@
       "requiresProceed": false,
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-CONTRACT.md",
-        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/ACCEPTANCE-RESULTS.md"
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/ACCEPTANCE-RESULTS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-COMMISSIONING.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/results/ops-docker-smoke.json"
       ],
       "milestone": "NAS deployment and local qualification",
       "labels": [
@@ -2883,7 +2887,7 @@
       ],
       "trackingStatus": "repository_only",
       "requiresResumeRequest": false,
-      "progress": "Local hardened-container and real Keycloak/Postgres qualification passed. Actual NAS, Mac and hosted clients remain under N06."
+      "progress": "Local hardened-container, real Keycloak/Postgres, graceful shutdown and isolated operator bootstrap/backup/recovery qualification passed. Actual NAS, Mac and hosted clients remain under N06."
     },
     {
       "key": "N06",
@@ -3730,15 +3734,16 @@
   "implementationEvidence": {
     "date": "2026-11-07",
     "platform": "Local Linux; hosted-OS and Docker results recorded separately",
-    "syntheticTestsPassed": 146,
-    "summary": "The personal graph, MCP/OAuth, imports, split TLS listeners, guarded writes and resumable automatic synchronization are implemented. Native Linux qualification passed 146 tests. The acceptance report records current container and hosted-OS evidence separately. Actual NAS/Mac networking, hosted provider clients and original archives remain unqualified. The real Keycloak/Postgres Docker smoke workflow passed, including OAuth capture/read, private TLS sync, restart and revocation. Hosted Ubuntu and macOS each passed all 146 tests and the three demonstrations at 73ab9e8.",
+    "syntheticTestsPassed": 163,
+    "summary": "The personal graph, MCP/OAuth, imports, split TLS listeners, guarded writes and resumable automatic synchronization are implemented. Native Linux qualification passed 163 tests. Hosted Ubuntu passed all 163; macOS ran 163 with two Linux-only memory-limit checks skipped. Current container/operator evidence includes OAuth, private sync, graceful shutdown and isolated backup/recovery. Actual NAS/Mac networking, hosted provider clients and original archives remain unqualified.",
     "evidenceLinks": [
       "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/ACCEPTANCE-RESULTS.md",
       "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/MCP-CONFORMANCE.md",
       "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-DEPLOYMENT.md",
       "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/REMOTE-ADMIN.md",
       "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/IMPORT-FORMATS.md",
-      "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/SYNC-PROTOCOL.md"
+      "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/SYNC-PROTOCOL.md",
+      "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-COMMISSIONING.md"
     ],
     "remainingGaps": [
       "Actual RS822+ DSM/packages/RAM/filesystem, workload VLAN/IPv6/firewall and private maintenance connection.",
@@ -3779,30 +3784,80 @@
         "qualificationBoundary": "Hosted runners do not qualify the owner’s actual Mac/Linux peer pair or installed Praxis2 application."
       }
     },
-    "containerEvidence": "docs/results/nas-docker-smoke.json; passed, package hash matched runtime commit a0ff34b8",
+    "containerEvidence": "docs/results/ops-docker-smoke.json; passed, image package hash matches runtime commit 26bd259",
     "hostedCI": {
-      "commit": "73ab9e8948de969854d74488445b6e37bf0175f0",
-      "run_url": "https://github.com/ProvisioInsights/RefactoredMemory/actions/runs/42411467535",
-      "suite_tests": 146,
-      "skipped": 0,
+      "commit": "26bd25938292451dcc780399de42368db910e161",
+      "run_url": "https://github.com/ProvisioInsights/RefactoredMemory/actions/runs/42413053084",
+      "suite_tests": 163,
       "jobs": [
         {
           "platform": "Ubuntu",
-          "job_id": 128520326770,
-          "tests_seconds": 21.028,
+          "job_id": 128525104320,
+          "tests_seconds": 24.503,
+          "skipped": 0,
           "result": "passed",
           "demonstrations": "passed"
         },
         {
           "platform": "macOS",
-          "job_id": 128520327132,
-          "tests_seconds": 57.781,
+          "job_id": 128525104112,
+          "tests_seconds": 61.967,
+          "skipped": 2,
+          "skip_reason": "Linux address-space-limit regression; portable attribution/history test ran",
           "result": "passed",
           "demonstrations": "passed"
         }
       ],
-      "runtime_sha256": "2ad9d8ddd1954ae25b426e4d242f7d6e34aab334b8d25ecf78c51e2c4537a169",
-      "boundary": "Hosted runners are not the owner Mac or NAS. A test-only canonical-path expectation was corrected after the earlier macOS run; runtime source did not change."
+      "runtime_sha256": "a8475afc2dc93ba5b8e5f8e48bdd6aea5ebe832dfbcbf0362369272d9224007c",
+      "boundary": "Hosted runners are not the owner Mac or NAS. Docker/deployment artifacts are qualified separately by local integration tests."
+    },
+    "sourceCommit": "26bd25938292451dcc780399de42368db910e161",
+    "runtimeSha256": "a8475afc2dc93ba5b8e5f8e48bdd6aea5ebe832dfbcbf0362369272d9224007c",
+    "historicalNASEvidence": {
+      "date": "2026-11-07",
+      "platform": "Local Linux; hosted-OS and Docker results recorded separately",
+      "syntheticTestsPassed": 146,
+      "summary": "The personal graph, MCP/OAuth, imports, split TLS listeners, guarded writes and resumable automatic synchronization are implemented. Native Linux qualification passed 146 tests. The acceptance report records current container and hosted-OS evidence separately. Actual NAS/Mac networking, hosted provider clients and original archives remain unqualified. The real Keycloak/Postgres Docker smoke workflow passed, including OAuth capture/read, private TLS sync, restart and revocation. Hosted Ubuntu and macOS each passed all 146 tests and the three demonstrations at 73ab9e8.",
+      "evidenceLinks": [
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/ACCEPTANCE-RESULTS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/MCP-CONFORMANCE.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-DEPLOYMENT.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/REMOTE-ADMIN.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/IMPORT-FORMATS.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/SYNC-PROTOCOL.md",
+        "https://github.com/ProvisioInsights/RefactoredMemory/blob/codex/personal-memory-v1/docs/NAS-COMMISSIONING.md"
+      ],
+      "remainingGaps": [
+        "Actual RS822+ DSM/packages/RAM/filesystem, workload VLAN/IPv6/firewall and private maintenance connection.",
+        "Actual Mac/NAS peer pair and ChatGPT/Claude apps/APIs/Praxis2 connections.",
+        "Original prior-run archive inventory and authorized live-data migration."
+      ],
+      "releaseAccepted": false,
+      "containerEvidence": "docs/results/nas-docker-smoke.json; passed, package hash matched runtime commit a0ff34b8",
+      "hostedCI": {
+        "commit": "73ab9e8948de969854d74488445b6e37bf0175f0",
+        "run_url": "https://github.com/ProvisioInsights/RefactoredMemory/actions/runs/42411467535",
+        "suite_tests": 146,
+        "skipped": 0,
+        "jobs": [
+          {
+            "platform": "Ubuntu",
+            "job_id": 128520326770,
+            "tests_seconds": 21.028,
+            "result": "passed",
+            "demonstrations": "passed"
+          },
+          {
+            "platform": "macOS",
+            "job_id": 128520327132,
+            "tests_seconds": 57.781,
+            "result": "passed",
+            "demonstrations": "passed"
+          }
+        ],
+        "runtime_sha256": "2ad9d8ddd1954ae25b426e4d242f7d6e34aab334b8d25ecf78c51e2c4537a169",
+        "boundary": "Hosted runners are not the owner Mac or NAS. A test-only canonical-path expectation was corrected after the earlier macOS run; runtime source did not change."
+      }
     }
   },
   "clientTarget": {

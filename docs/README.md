@@ -19,6 +19,7 @@
 | [Implementation contract](CONTRACT.md) | Shared operation, temporal, authority and recovery APIs. | Implemented contract; limits remain explicit. |
 | [NAS contract](NAS-CONTRACT.md) | Accepted NAS/OAuth/automatic-sync extension. | Implemented extension contract; actual deployment and hosted-client evidence remain separate. |
 | [NAS deployment](NAS-DEPLOYMENT.md) | Isolated VM/container, tunnel and TLS deployment. | Device configuration requires actual NAS qualification. |
+| [NAS commissioning](NAS-COMMISSIONING.md) | Explicit bootstrap, private credential handoff, stop/restart and memory/authorization-server recovery. | Locally exercised operator procedures; actual host execution pending. |
 | [Maintenance access](REMOTE-ADMIN.md) | Private VPN and restricted SSH identity. | No broad DSM or Docker administrator grant. |
 | [Runbook](RUNBOOK.md) | Core CLI, optional OAuth dependencies, two peers and recovery. | Executable commands with synthetic-first guidance. |
 | [Acceptance evidence](ACCEPTANCE-RESULTS.md) | Actual test and benchmark results plus remaining qualification. | Distinguishes local Linux/SDK and hosted macOS/Ubuntu checks from unqualified owner-device/Praxis2/original-archive checks. |

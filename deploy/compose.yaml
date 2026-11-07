@@ -13,11 +13,39 @@ services:
     cpus: 1.0
     init: true
     restart: unless-stopped
+    stop_grace_period: 30s
     tmpfs: ["/tmp:size=16m,mode=1777,noexec,nosuid,nodev"]
+    entrypoint: [python, /operator/container_entrypoint.py, serve]
     volumes:
-      - ${REFMEM_PRIVATE_DIR:?Set an absolute private directory outside this repository}/data:/data
-      - ${REFMEM_PRIVATE_DIR}/config:/config:ro
-      - ${REFMEM_PRIVATE_DIR}/tls:/tls:ro
+      - type: bind
+        source: ${REFMEM_PRIVATE_DIR:?Set an absolute private directory outside this repository}/data
+        target: /data
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${REFMEM_PRIVATE_DIR}/config
+        target: /config
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${REFMEM_PRIVATE_DIR}/tls/memory.crt
+        target: /tls/memory.crt
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${REFMEM_PRIVATE_DIR}/tls/memory.key
+        target: /tls/memory.key
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${REFMEM_PRIVATE_DIR}/tls/ca.crt
+        target: /tls/ca.crt
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ./container_entrypoint.py
+        target: /operator/container_entrypoint.py
+        read_only: true
+        bind: {create_host_path: false}
     command:
       - serve-nas
       - --mcp-host
@@ -66,7 +94,11 @@ services:
     cpus: 0.25
     restart: unless-stopped
     volumes:
-      - ./sync-ingress.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - type: bind
+        source: ./sync-ingress.cfg
+        target: /usr/local/etc/haproxy/haproxy.cfg
+        read_only: true
+        bind: {create_host_path: false}
     ports:
       - "${REFMEM_SYNC_BIND:-127.0.0.1}:${REFMEM_SYNC_PORT:-8766}:8766"
     networks: [backend, private_ingress]
@@ -87,8 +119,16 @@ services:
     restart: unless-stopped
     command: [tunnel, --no-autoupdate, --config, /config/tunnel.yaml, run]
     volumes:
-      - ${REFMEM_PRIVATE_DIR}/tunnel:/config:ro
-      - ${REFMEM_PRIVATE_DIR}/tls/ca.crt:/tls/ca.crt:ro
+      - type: bind
+        source: ${REFMEM_PRIVATE_DIR}/tunnel
+        target: /config
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${REFMEM_PRIVATE_DIR}/tls/ca.crt
+        target: /tls/ca.crt
+        read_only: true
+        bind: {create_host_path: false}
     networks: [backend, tunnel_egress]
     logging:
       driver: json-file

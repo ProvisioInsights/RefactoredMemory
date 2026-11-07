@@ -1,5 +1,7 @@
 # Running RefactoredMemory personal v1
 
+For the NAS container deployment, follow [commissioning and recovery](NAS-COMMISSIONING.md) for the explicit owner profile, mount preflight, backup and isolated restore sequence. The CLI commands below also support native local peers.
+
 For the accepted NAS-first deployment and scoped continuous maintenance access, see [NAS-DEPLOYMENT.md](NAS-DEPLOYMENT.md), [REMOTE-ADMIN.md](REMOTE-ADMIN.md) and [NAS-CONTRACT.md](NAS-CONTRACT.md). The OAuth resource profile, split listeners, automatic runner and operational guards are implemented; current local results and unqualified real environments are listed in [acceptance evidence](ACCEPTANCE-RESULTS.md). Do not treat commands for synthetic peers as authorization to publish a tunnel or change the NAS.
 
 Use an existing Python 3.12+ interpreter on macOS or Linux. The core runtime uses the Python standard library and SQLite; run it directly from the repository checkout. The optional OAuth profile requires the declared PyJWT/cryptography dependencies in the prepared runtime. CI installs pinned test dependencies; tests never install them automatically. No package installation, external deployment, real-data ingestion, or credentials from another service are required for the synthetic examples below.
@@ -305,4 +307,4 @@ To roll back an interrupted import, restore its `before-import` backup into a fr
 
 ## Container artifact
 
-The repository includes core and optional OAuth image targets, a hardened Compose profile and maintained-AS reference artifacts under `deploy/`. Follow [NAS-DEPLOYMENT.md](NAS-DEPLOYMENT.md) and use [ACCEPTANCE-RESULTS.md](ACCEPTANCE-RESULTS.md) for actual image/AS test status. Local image or synthetic AS checks do not qualify the owner's NAS, its network isolation or hosted consumer apps. Keep the private persistent database volume on local storage and mount approved TLS/credential files separately; never embed them in an image.
+The repository includes one OAuth-capable application image, a hardened Compose profile and maintained-AS reference artifacts under `deploy/`. The Python core remains usable without the OAuth extra outside that image. Follow [NAS-DEPLOYMENT.md](NAS-DEPLOYMENT.md) and use [ACCEPTANCE-RESULTS.md](ACCEPTANCE-RESULTS.md) for actual image/AS test status. Local image or synthetic AS checks do not qualify the owner's NAS, its network isolation or hosted consumer apps. Keep the private persistent database volume on local storage and mount approved TLS/credential files separately; never embed them in an image.

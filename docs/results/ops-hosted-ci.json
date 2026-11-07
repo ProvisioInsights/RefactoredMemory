@@ -1,0 +1,26 @@
+{
+  "commit": "26bd25938292451dcc780399de42368db910e161",
+  "run_url": "https://github.com/ProvisioInsights/RefactoredMemory/actions/runs/42413053084",
+  "suite_tests": 163,
+  "jobs": [
+    {
+      "platform": "Ubuntu",
+      "job_id": 128525104320,
+      "tests_seconds": 24.503,
+      "skipped": 0,
+      "result": "passed",
+      "demonstrations": "passed"
+    },
+    {
+      "platform": "macOS",
+      "job_id": 128525104112,
+      "tests_seconds": 61.967,
+      "skipped": 2,
+      "skip_reason": "Linux address-space-limit regression; portable attribution/history test ran",
+      "result": "passed",
+      "demonstrations": "passed"
+    }
+  ],
+  "runtime_sha256": "a8475afc2dc93ba5b8e5f8e48bdd6aea5ebe832dfbcbf0362369272d9224007c",
+  "boundary": "Hosted runners are not the owner Mac or NAS. Docker/deployment artifacts are qualified separately by local integration tests."
+}
