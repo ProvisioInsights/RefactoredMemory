@@ -5,8 +5,10 @@ from __future__ import annotations
 import json
 import hashlib
 import hmac
-import multiprocessing
+import select
 import sqlite3
+import subprocess
+import sys
 import tempfile
 import threading
 import unittest
@@ -23,12 +25,21 @@ from refactoredmemory.sync import (
 )
 
 
-def _server_process(path, ready, stopping, initial_actions=None, drop_response=False):
+def _server_process(path, initial_actions=None, drop_response=False):
     """An independent Store process using the production exchange function."""
+    print("sync-test-peer: opening-store", file=sys.stderr, flush=True)
     store = Store(path)
     if initial_actions:
+        print("sync-test-peer: applying-offline-actions", file=sys.stderr, flush=True)
         store.submit(initial_actions, request_id="synthetic-offline-change")
     dropped = False
+    stopping = threading.Event()
+
+    def await_shutdown():
+        # The first stdin line configured the child. A second line (or parent
+        # pipe closure) requests a graceful shutdown without shared process IPC.
+        sys.stdin.readline()
+        stopping.set()
 
     class Handler(BaseHTTPRequestHandler):
         def do_POST(self):
@@ -62,10 +73,11 @@ def _server_process(path, ready, stopping, initial_actions=None, drop_response=F
         def log_message(self, *args):
             pass
 
+    print("sync-test-peer: binding-http", file=sys.stderr, flush=True)
     server = HTTPServer(("127.0.0.1", 0), Handler)
     server.timeout = 0.1
-    ready.send(server.server_address[1])
-    ready.close()
+    threading.Thread(target=await_shutdown, daemon=True).start()
+    print(json.dumps({"state": "ready", "port": server.server_address[1]}), flush=True)
     try:
         while not stopping.is_set():
             server.handle_request()
@@ -76,28 +88,63 @@ def _server_process(path, ready, stopping, initial_actions=None, drop_response=F
 
 @contextmanager
 def peer_server(path, *, initial_actions=None, drop_response=False):
-    context = multiprocessing.get_context("spawn")
-    reader, writer = context.Pipe(duplex=False)
-    stopping = context.Event()
-    process = context.Process(target=_server_process,
-                              args=(str(path), writer, stopping,
-                                    initial_actions, drop_response))
-    process.start()
-    writer.close()
-    try:
-        if not reader.poll(10):
-            raise AssertionError("Synthetic peer failed to start")
-        port = reader.recv()
-        yield f"http://127.0.0.1:{port}/sync"
-    finally:
-        stopping.set()
-        process.join(5)
-        if process.is_alive():
-            process.terminate()
-            process.join(5)
-        reader.close()
-        if process.exitcode not in (0, None):
-            raise AssertionError(f"Synthetic peer exited with code {process.exitcode}")
+    # A plain interpreter subprocess exercises independent Store state without
+    # multiprocessing's platform-specific spawn/semaphore/Pipe bootstrap. Its
+    # unbuffered readiness message and diagnostic stages make startup failures
+    # distinguishable from a Store lock or bind failure on both macOS and Linux.
+    root = Path(__file__).resolve().parents[1]
+    script = Path(__file__).resolve()
+    launch = "import runpy,sys;runpy.run_path(sys.argv[1],run_name='__main__')"
+    with tempfile.TemporaryDirectory(prefix="refactoredmemory-peer-test-") as diagnostic_dir:
+        error_path = Path(diagnostic_dir) / "stderr.log"
+        with error_path.open("w", encoding="utf-8") as error_file:
+            process = subprocess.Popen(
+                [sys.executable, "-u", "-c", launch, str(script), "--sync-peer"],
+                cwd=root, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                stderr=error_file, text=True, encoding="utf-8",
+            )
+
+            def diagnostic():
+                return error_path.read_text(encoding="utf-8", errors="replace")[-8000:]
+
+            try:
+                process.stdin.write(json.dumps({"path": str(path), "initial_actions": initial_actions,
+                                                "drop_response": drop_response}) + "\n")
+                process.stdin.flush()
+                ready, _, _ = select.select([process.stdout], [], [], 10)
+                if not ready:
+                    raise AssertionError("Synthetic peer did not announce readiness. Child diagnostics:\n" + diagnostic())
+                announcement = process.stdout.readline()
+                if not announcement:
+                    raise AssertionError("Synthetic peer exited before readiness. Child diagnostics:\n" + diagnostic())
+                message = json.loads(announcement)
+                if message.get("state") != "ready" or not isinstance(message.get("port"), int):
+                    raise AssertionError("Synthetic peer returned invalid readiness metadata")
+                yield f"http://127.0.0.1:{message['port']}/sync"
+            finally:
+                failed = sys.exc_info()[0] is not None
+                try:
+                    process.stdin.write("stop\n")
+                    process.stdin.flush()
+                except (BrokenPipeError, OSError):
+                    pass
+                finally:
+                    try:
+                        process.stdin.close()
+                    except (BrokenPipeError, OSError):
+                        pass
+                try:
+                    process.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    process.terminate()
+                    try:
+                        process.wait(timeout=2)
+                    except subprocess.TimeoutExpired:
+                        process.kill()
+                        process.wait(timeout=2)
+                process.stdout.close()
+                if not failed and process.returncode != 0:
+                    raise AssertionError(f"Synthetic peer exited with code {process.returncode}. Child diagnostics:\n" + diagnostic())
 
 
 def seed_actions():
@@ -412,4 +459,7 @@ class DirectPeerTests(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    if sys.argv[-1:] == ["--sync-peer"]:
+        _server_process(**json.loads(sys.stdin.readline()))
+    else:
+        unittest.main()

@@ -34,6 +34,9 @@ test_identity_log_commit_boundary_and_alias_records_remain_visible (test_importe
 test_import_is_not_a_fresh_owner_correction_and_partial_batches_are_reported (test_importers.ImportTests.test_import_is_not_a_fresh_owner_correction_and_partial_batches_are_reported) ... ok
 test_markdown_dry_run_is_read_only_then_repeat_and_update_preserve_history (test_importers.ImportTests.test_markdown_dry_run_is_read_only_then_repeat_and_update_preserve_history) ... ok
 test_missing_lineage_is_preserved_without_fabricated_initial_claim (test_importers.ImportTests.test_missing_lineage_is_preserved_without_fabricated_initial_claim) ... ok
+test_parent_alias_does_not_allow_root_or_descendant_symlinks (test_importers.ImportTests.test_parent_alias_does_not_allow_root_or_descendant_symlinks) ... ok
+test_parent_alias_is_canonicalized_for_plan_apply_and_repeat (test_importers.ImportTests.test_parent_alias_is_canonicalized_for_plan_apply_and_repeat) ... ok
+test_parent_alias_retarget_does_not_change_an_existing_plan (test_importers.ImportTests.test_parent_alias_retarget_does_not_change_an_existing_plan) ... ok
 test_partial_dates_never_invent_definite_world_match (test_importers.ImportTests.test_partial_dates_never_invent_definite_world_match) ... ok
 test_quarantine_does_not_leak_through_source_content (test_importers.ImportTests.test_quarantine_does_not_leak_through_source_content) ... ok
 test_snapshot_envelopes_and_unknown_encrypted_records_are_accounted (test_importers.ImportTests.test_snapshot_envelopes_and_unknown_encrypted_records_are_accounted) ... ok
@@ -79,6 +82,6 @@ test_wrong_credential_does_not_apply_operations (test_sync.DirectPeerTests.test_
 test_wrong_store_is_rejected_before_receipt (test_sync.DirectPeerTests.test_wrong_store_is_rejected_before_receipt) ... ok
 
 ----------------------------------------------------------------------
-Ran 79 tests in 16.035s
+Ran 82 tests in 13.125s
 
 OK

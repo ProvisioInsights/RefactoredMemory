@@ -51,7 +51,7 @@
       "name": "RefactoredMemory — Personal knowledge store v1",
       "state": "In Progress",
       "summary": "One owner; Mac + Linux offline writes/sync; required MCP; Markdown/Logseq and LivingAtlas migration.",
-      "description": "Coordinated personal-v1 implementation is authorized and implemented core/MCP/import/sync/CLI streams are In Progress against their full criteria. The current Linux run reports 79 passing synthetic tests, including independent MCP SDK workflows; evidence reports distinguish that result from unexecuted actual Mac/Praxis and full original-archive qualification. Corporate tenancy, product content encryption, transitive mesh and browser UI are excluded. Live imports, keys, installations, credentials/permissions and external deployments retain separate approval requirements.",
+      "description": "Coordinated personal-v1 implementation is authorized and implemented core/MCP/import/sync/CLI streams are In Progress against their full criteria. The current Linux run reports 82 passing synthetic tests, including independent MCP SDK workflows; evidence reports distinguish that result from unexecuted actual Mac/Praxis and full original-archive qualification. Corporate tenancy, product content encryption, transitive mesh and browser UI are excluded. Live imports, keys, installations, credentials/permissions and external deployments retain separate approval requirements.",
       "sourceLinks": [
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/PRD.md",
         "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ARCHITECTURE.md",
@@ -1938,7 +1938,7 @@
         "validation"
       ],
       "progress": {
-        "summary": "Coordinated Linux implementation verification reports 79 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.",
+        "summary": "Coordinated Linux implementation verification reports 82 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
@@ -2020,7 +2020,7 @@
         "Q8"
       ],
       "progress": {
-        "summary": "Coordinated Linux implementation verification reports 79 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.",
+        "summary": "Coordinated Linux implementation verification reports 82 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
@@ -2093,7 +2093,7 @@
         "Q10"
       ],
       "progress": {
-        "summary": "Coordinated Linux implementation verification reports 79 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.",
+        "summary": "Coordinated Linux implementation verification reports 82 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
@@ -2231,7 +2231,7 @@
         "Q9"
       ],
       "progress": {
-        "summary": "Coordinated Linux implementation verification reports 79 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.",
+        "summary": "Coordinated Linux implementation verification reports 82 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
@@ -2338,7 +2338,7 @@
         "Q10"
       ],
       "progress": {
-        "summary": "Coordinated Linux implementation verification reports 79 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.",
+        "summary": "Coordinated Linux implementation verification reports 82 passing synthetic tests. Recorded independent acceptance, MCP, import and sync evidence, a correctness-checked personal benchmark and CLI/run instructions are available; qualification remains in progress.",
         "evidenceLinks": [
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
           "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",
@@ -3310,8 +3310,8 @@
   "implementationEvidence": {
     "date": "2026-11-07",
     "platform": "Linux",
-    "syntheticTestsPassed": 79,
-    "summary": "Core, MCP, import, direct synchronization and CLI implemented; current coordinated Linux run reports 79 passing tests including an independent real MCP SDK client. This aggregate count is not a claim that all personal-v1 acceptance requirements passed.",
+    "syntheticTestsPassed": 82,
+    "summary": "Core, MCP, import, direct synchronization and CLI implemented; current coordinated Linux run reports 82 passing tests including an independent real MCP SDK client. This aggregate count is not a claim that all personal-v1 acceptance requirements passed.",
     "evidenceLinks": [
       "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/ACCEPTANCE-RESULTS.md",
       "https://github.com/ProvisioInsights/RefactoredMemory/blob/main/docs/MCP-CONFORMANCE.md",

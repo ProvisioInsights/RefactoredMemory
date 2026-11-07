@@ -60,6 +60,8 @@ def _decode(text: str) -> Any:
 def _safe_read(path: Path, root: Path, limit: int) -> bytes:
     # Reject symlinks in every component before opening. O_NOFOLLOW also prevents
     # a final-component symlink swap. The supplied source tree must be quiescent.
+    if root.is_symlink():
+        raise ImportError("symlink-approved-root")
     absolute = Path(os.path.abspath(path))
     try:
         relative = absolute.relative_to(root)
@@ -109,6 +111,7 @@ class ImportPlan:
         for record in records:
             counts[record["status"]] = counts.get(record["status"], 0) + 1
         return {"schema": "refactoredmemory-import/1", "namespace": self.namespace,
+                "approved_root": str(self.root),
                 "files": files, "records": records, "counts": counts,
                 "file_count": len(files), "record_count": len(records),
                 "source_mutations": 0, "dry_run": True}
@@ -222,17 +225,26 @@ def plan_import(path: str | Path, *, approved_root: str | Path, namespace: str =
     if not 0 < max_file_bytes <= MAX_FILE_BYTES or not 0 < max_files <= MAX_FILES or not 0 < max_records <= MAX_RECORDS:
         raise ImportError("invalid-import-bounds")
     raw_root = Path(os.path.abspath(approved_root))
-    # A symlink anywhere in the declared root would make the approval ambiguous.
-    if any(p.is_symlink() for p in [raw_root, *raw_root.parents]):
+    # OS-managed ancestor aliases are normal (macOS /var -> /private/var).
+    # Pin that spelling once, while refusing a symlink chosen as the root itself.
+    # Descendants are never resolved here: _safe_read must still see and reject
+    # any symlinks that could cross the approved source boundary.
+    if raw_root.is_symlink():
         raise ImportError("symlink-approved-root")
-    root = raw_root.resolve(strict=True)
+    root = raw_root.parent.resolve(strict=True) / raw_root.name
     if not root.is_dir():
         raise ImportError("approved-root-is-not-directory")
-    target = Path(os.path.abspath(path))
+    named_target = Path(os.path.abspath(path))
     try:
-        target.relative_to(root)
-    except ValueError as exc:
-        raise ImportError("outside-approved-root") from exc
+        relative = named_target.relative_to(raw_root)
+    except ValueError:
+        # A caller may already hold the canonical spelling of the same root.
+        # This is a lexical comparison, not resolution of an untrusted child.
+        try:
+            relative = named_target.relative_to(root)
+        except ValueError as exc:
+            raise ImportError("outside-approved-root") from exc
+    target = root / relative
     current = root
     for part in target.relative_to(root).parts[:-1]:
         current = current / part

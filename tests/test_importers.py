@@ -211,6 +211,69 @@ class ImportTests(unittest.TestCase):
         report = plan_import(large, approved_root=self.sources, max_file_bytes=10).summary()
         self.assertEqual(report["records"][0]["reason"], "file-byte-limit")
 
+    def test_parent_alias_is_canonicalized_for_plan_apply_and_repeat(self):
+        physical = self.base / "physical-parent"
+        physical.mkdir()
+        canonical_root = physical / "notes"
+        canonical_root.mkdir()
+        (canonical_root / "note.md").write_text("Synthetic note through a system-style parent alias")
+        alias = self.base / "parent-alias"
+        alias.symlink_to(physical, target_is_directory=True)
+        named_root = alias / "notes"
+        plan = plan_import(named_root / "note.md", approved_root=named_root)
+        self.assertEqual(plan.root, canonical_root.resolve())
+        self.assertEqual(plan.summary()["approved_root"], str(canonical_root.resolve()))
+        self.assertEqual(plan.summary()["files"][0]["relative_path"], "note.md")
+        result = apply_import(self.store, plan, backup_path=self.base / "alias-backup.sqlite")
+        self.assertEqual(result["status"], "complete")
+        # The canonical target spelling is also accepted under the same approval.
+        repeated = import_path(self.store, canonical_root / "note.md", approved_root=named_root,
+                               dry_run=False, backup_path=self.base / "alias-repeat-backup.sqlite")
+        self.assertEqual(repeated["status"], "unchanged")
+
+    def test_parent_alias_retarget_does_not_change_an_existing_plan(self):
+        physical = self.base / "pinned-parent"
+        physical.mkdir()
+        canonical_root = physical / "notes"
+        canonical_root.mkdir()
+        (canonical_root / "note.md").write_text("Originally approved synthetic content")
+        replacement = self.base / "replacement-parent"
+        replacement.mkdir()
+        (replacement / "notes").mkdir()
+        (replacement / "notes" / "note.md").write_text("Unapproved replacement synthetic content")
+        alias = self.base / "mutable-parent-alias"
+        alias.symlink_to(physical, target_is_directory=True)
+        plan = plan_import(alias / "notes", approved_root=alias / "notes")
+        alias.unlink()
+        alias.symlink_to(replacement, target_is_directory=True)
+        result = apply_import(self.store, plan, backup_path=self.base / "pinned-backup.sqlite")
+        self.assertEqual(result["status"], "complete")
+        self.assertEqual(self.store.query()["assertions"][0]["value"], "Originally approved synthetic content")
+
+    def test_parent_alias_does_not_allow_root_or_descendant_symlinks(self):
+        physical = self.base / "bounded-parent"
+        physical.mkdir()
+        canonical_root = physical / "notes"
+        canonical_root.mkdir()
+        outside = self.base / "outside-directory"
+        outside.mkdir()
+        (outside / "note.md").write_text("Outside synthetic content")
+        (canonical_root / "escape").symlink_to(outside, target_is_directory=True)
+        (canonical_root / "linked.md").symlink_to(outside / "note.md")
+        alias = self.base / "bounded-parent-alias"
+        alias.symlink_to(physical, target_is_directory=True)
+        named_root = alias / "notes"
+        with self.assertRaisesRegex(ImportError, "symlink-input"):
+            plan_import(named_root / "escape" / "note.md", approved_root=named_root)
+        report = plan_import(named_root / "linked.md", approved_root=named_root).summary()
+        self.assertEqual(report["records"][0]["reason"], "symlink-input")
+        with self.assertRaisesRegex(ImportError, "outside-approved-root"):
+            plan_import(outside / "note.md", approved_root=named_root)
+        root_link = alias / "root-link"
+        root_link.symlink_to(canonical_root, target_is_directory=True)
+        with self.assertRaisesRegex(ImportError, "symlink-approved-root"):
+            plan_import(root_link, approved_root=root_link)
+
     def test_quarantine_does_not_leak_through_source_content(self):
         path = self.write_json("quarantined.json", {"schema_version": 1, "objects": [
             {"object_id": "quarantine", "access_class": "quarantine", "payload": {"kind": "plaintext-json", "data": {"secret": "synthetic"}}}
