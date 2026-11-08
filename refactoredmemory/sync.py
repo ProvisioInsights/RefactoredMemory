@@ -9,6 +9,9 @@ the Store. This module never copies a database or treats wall clocks as order.
 from __future__ import annotations
 
 import ipaddress
+import gzip
+import os
+import zlib
 import http.client
 import socket
 import threading
@@ -402,9 +405,35 @@ class _DeadlineHTTPSHandler(urllib.request.HTTPSHandler):
                             req, context=self._context)
 
 
+def decode_peer_request(data: bytes, encoding: str = "identity") -> dict[str, Any]:
+    """Bound both wire bytes and expanded bytes before parsing authenticated input."""
+    if len(data) > MAX_BODY_BYTES:
+        raise SyncError("too_large", "Peer request exceeds the bounded body size")
+    if encoding == "identity":
+        return decode_body(data)
+    if encoding != "gzip":
+        raise SyncError("invalid_encoding", "Unsupported peer request encoding")
+    try:
+        decoder = zlib.decompressobj(16 + zlib.MAX_WBITS)
+        raw = decoder.decompress(data, MAX_BODY_BYTES + 1)
+        if len(raw) > MAX_BODY_BYTES or decoder.unconsumed_tail:
+            raise SyncError("too_large", "Expanded peer request exceeds the bounded body size")
+        if not decoder.eof or decoder.unused_data:
+            raise SyncError("invalid_encoding", "Truncated or trailing compressed peer data")
+    except zlib.error as exc:
+        raise SyncError("invalid_encoding", "Invalid compressed peer request") from exc
+    return decode_body(raw)
+
+
 def _post(url: str, token: str, payload: dict[str, Any], timeout: float,
           retries: int, stop_event=None) -> dict[str, Any]:
     data = _encode(payload)
+    encoding = os.environ.get("REFMEM_SYNC_REQUEST_ENCODING", "identity")
+    if encoding not in {"identity", "gzip"}:
+        raise SyncError("invalid_encoding", "Unknown configured peer request encoding")
+    # Opt-in only after the destination has been upgraded; old peers remain valid.
+    if encoding == "gzip":
+        data = gzip.compress(data, compresslevel=6, mtime=0)
     for attempt in range(retries + 1):
         retry = False
         with _AttemptDeadline(timeout, stop_event) as deadline:
@@ -414,7 +443,7 @@ def _post(url: str, token: str, payload: dict[str, Any], timeout: float,
             opener = urllib.request.build_opener(*handlers)
             request = urllib.request.Request(url, data=data, method="POST", headers={
                 "Authorization": "Bearer " + token, "Content-Type": "application/json",
-                "Accept": "application/json", "Connection": "close",
+                "Accept": "application/json", "Connection": "close", "Content-Encoding": encoding,
             })
             try:
                 with opener.open(request, timeout=deadline.check()) as response:
@@ -815,6 +844,10 @@ class SyncRunner:
                 self.status["state"] = "stopped"
                 self._write_status()
                 return dict(self.status)
+            # A clean stop belongs to the previous process. Resume its saved
+            # retry deadline without treating that stop as a persistent pause.
+            if self.status["state"] == "stopped":
+                self.status["state"] = "backoff"
             if self._paused:
                 return dict(self.status)
             if self.clock() < self.status["next_attempt_at"]:

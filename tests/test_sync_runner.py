@@ -84,6 +84,23 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(os.stat(self.config["status_file"]).st_mode & 0o777, 0o600)
         self.assertNotIn("synthetic-peer-token", Path(self.config["status_file"]).read_text())
 
+    def test_clean_stop_resumes_without_skipping_saved_backoff(self):
+        event = threading.Event()
+        runner = self.runner(stop_event=event)
+        with patch("refactoredmemory.sync.sync_once", side_effect=SyncError("transport_error", "offline")):
+            state = runner.step()
+        deadline = state["next_attempt_at"]
+        event.set()
+        self.assertEqual(runner.step()["state"], "stopped")
+        resumed = self.runner()
+        with patch("refactoredmemory.sync.sync_once", return_value=result()) as sync:
+            self.assertEqual(resumed.step()["state"], "backoff")
+            self.assertEqual(sync.call_count, 0)
+            self.assertEqual(resumed.status["next_attempt_at"], deadline)
+            self.clock.now = deadline
+            self.assertEqual(resumed.step()["state"], "waiting")
+            self.assertEqual(sync.call_count, 1)
+
     def test_transport_backoff_increases_and_is_capped(self):
         runner = self.runner()
         delays = []

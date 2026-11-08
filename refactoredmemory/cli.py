@@ -21,7 +21,7 @@ from urllib.parse import urlsplit
 from .store import Store, MemoryError, AuthorizationError, ValidationError, CapacityError, canonical
 from .service import Service
 from .mcp import make_handler, run_stdio, decode_message
-from .sync import MAX_BODY_BYTES, SyncError, decode_body, exchange, sync_once
+from .sync import MAX_BODY_BYTES, SyncError, decode_body, decode_peer_request, exchange, sync_once
 
 
 def server_handler(service, *, allowed_origins=(), allowed_hosts=(), sync_only=False):
@@ -60,6 +60,13 @@ def server_handler(service, *, allowed_origins=(), allowed_hosts=(), sync_only=F
             except AuthorizationError:
                 self._reply(401, {"error": "access_denied"})
                 return
+            if len(self.headers.get_all("Content-Encoding", [])) > 1:
+                self._reply(400, {"error": "duplicate_encoding"})
+                return
+            encoding = self.headers.get("Content-Encoding", "identity").strip().lower()
+            if encoding not in {"identity", "gzip"}:
+                self._reply(415, {"error": "content_encoding"})
+                return
             length = self.headers.get("Content-Length", "")
             if self.headers.get("Transfer-Encoding") or not length.isascii() or not length.isdecimal() or len(length) > 10:
                 self._reply(400, {"error": "invalid_length"})
@@ -74,7 +81,7 @@ def server_handler(service, *, allowed_origins=(), allowed_hosts=(), sync_only=F
                 raw = self.rfile.read(int(length))
                 if len(raw) != int(length):
                     raise ValidationError("Truncated request")
-                result = exchange(service.store, decode_body(raw), actor["peer_id"])
+                result = exchange(service.store, decode_peer_request(raw, encoding), actor["peer_id"])
                 if len(canonical(result).encode()) > MAX_BODY_BYTES:
                     raise ValidationError("Response too large")
                 self._reply(200, result)
