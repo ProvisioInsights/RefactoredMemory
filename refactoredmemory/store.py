@@ -1163,7 +1163,16 @@ class Store:
                 except sqlite3.OperationalError:
                     pass
                 frontier = {}
-                for row in source.execute("SELECT * FROM operations ORDER BY position IS NULL,position,origin,seq"):
+                def operation_rows():
+                    # Sort only IDs, never multi-megabyte signed payloads. An
+                    # ORDER BY expression over SELECT * can make SQLite retain
+                    # gigabytes even when Python consumes its cursor lazily.
+                    orders = ("WHERE position IS NOT NULL ORDER BY position",
+                              "WHERE position IS NULL ORDER BY origin,seq")
+                    for order in orders:
+                        for item in source.execute("SELECT id FROM operations " + order):
+                            yield source.execute("SELECT * FROM operations WHERE id=?", (item[0],)).fetchone()
+                for row in operation_rows():
                     body = json.loads(row["body"])
                     if canonical(body) != row["body"] or body["store_id"] != restored.store_id or body["schema"] != SCHEMA:
                         raise ValidationError("Invalid snapshot operation encoding")
