@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from .store import AuthorizationError, ValidationError
+from . import knowledge
 
 
 def obj(properties=None, required=()):
@@ -47,7 +48,9 @@ TOOLS = [
      "inputSchema": obj({"actions": {"type": "array", "minItems": 1, "maxItems": 500, "items": CAPTURE_ACTION}, "request_id": STRING}, ["actions"])},
     {"name": "memory_query", "description": "Find sourced claims, competing alternatives and preferred owner corrections, with independent world-time and replica knowledge selectors. Coverage can be incomplete; unknown time is not a definite match.",
      "inputSchema": obj({"subject": STRING, "predicate": STRING, "object": STRING, "text": {"type": "string", "maxLength": 1024}, **VIEW,
-                         "include_inactive": {"type": "boolean"}, "limit": LIMIT, "offset": {"type": "integer", "minimum": 0, "maximum": 1000000}})},
+                         "include_inactive": {"type": "boolean"}, "limit": LIMIT, "offset": {"type": "integer", "minimum": 0, "maximum": 1000000},
+                         "knowledge_kind": {"enum": list(knowledge.KINDS)}, "category": {"enum": list(knowledge.CATEGORIES)},
+                         "excerpt_chars": {"type": "integer", "minimum": 100, "maximum": 4096}})},
     {"name": "memory_history", "description": "Inspect decisions, rationale and changes since a replica knowledge position or ISO timestamp; preserves correction history. Dates describe this peer's learning, not a global clock.",
      "inputSchema": obj({"entity_id": STRING, "since": {"type": ["integer", "string"]}, "known_at": POSITION, "limit": LIMIT})},
     {"name": "memory_traverse", "description": "Trace bounded outgoing relationships and evidence, for questions such as how you know a person. Includes alternative/conflicting claims instead of silently selecting truth.",
@@ -56,6 +59,10 @@ TOOLS = [
      "inputSchema": obj({"source_id": STRING}, ["source_id"])},
     {"name": "memory_entity", "description": "Read a stable entity identity; changing beliefs are sourced assertions.",
      "inputSchema": obj({"entity_id": STRING}, ["entity_id"])},
+    {"name": "memory_search_entities", "description": "Find named entity candidates and their canonical types. Matching names never authorize merging identities.",
+     "inputSchema": obj({"text": {"type": "string", "minLength": 1, "maxLength": 256}, "limit": {"type": "integer", "minimum": 1, "maximum": 100}}, ["text"])},
+    {"name": "memory_schema", "description": "Read the versioned knowledge kinds, categories, predicate cardinality and endpoint rules used for annotated claims. Legacy claims remain distinguishable.",
+     "inputSchema": obj()},
     {"name": "memory_status", "description": "Inspect local knowledge frontier, pending replication and declared plaintext storage profile. Does not reveal grants, signing keys or bearer credentials.", "inputSchema": obj()},
 ]
 
@@ -193,4 +200,8 @@ class Service:
             return {"source": self.store.get_source(arguments["source_id"])}
         if name == "memory_entity":
             return {"entity": self.store.get_entity(arguments["entity_id"])}
+        if name == "memory_search_entities":
+            return self.store.search_entities(**arguments)
+        if name == "memory_schema":
+            return self.store.knowledge_contract()
         return self.store.status()

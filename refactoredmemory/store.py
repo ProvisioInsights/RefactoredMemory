@@ -19,6 +19,7 @@ import sqlite3
 import threading
 import tempfile
 import uuid
+from . import knowledge
 
 MAX_OPERATION = 1024 * 1024
 MAX_ACTIONS = 500
@@ -403,6 +404,10 @@ class Store:
                     raise ValidationError("Unsupported time precision")
                 if not isinstance(action.get("provenance", {}), dict):
                     raise ValidationError("Provenance must be an object")
+                try:
+                    knowledge.validate_annotation(action)
+                except ValueError as exc:
+                    raise ValidationError(str(exc)) from exc
             else:
                 identifier(action.get("entity_id"), "entity")
                 if not isinstance(action.get("reason"), str) or not action["reason"]:
@@ -468,6 +473,12 @@ class Store:
                     raise ConflictError("Immutable record ID has different contents")
                 self.db.execute("INSERT OR IGNORE INTO record_events VALUES (?,?,?)", (kind, id, body["id"]))
                 continue
+            cutoff = json.loads(self._meta("knowledge_profile_cutoff") or "null")
+            strict = cutoff is not None and body["seq"] > cutoff.get(body["origin"], 0)
+            if strict and kind == "entity" and action["entity_type"] not in (*knowledge.ENDPOINT_TYPES, "source-document"):
+                raise ValidationError("New entities require a canonical type; inspect memory_schema")
+            if strict and kind == "assertion" and action["predicate"] != "content" and knowledge.annotation(action) is None:
+                raise ValidationError("New structured claims require the knowledge profile; inspect memory_schema")
             if kind == "assertion":
                 for entity in [action["subject"]] + ([action["object"]] if "object" in action else []):
                     if self.read("entity", entity) is None:
@@ -481,6 +492,13 @@ class Store:
                         raise ValidationError("Missing assertion predecessor")
                     if (previous["subject"], previous["predicate"]) != (action["subject"], action["predicate"]):
                         raise ValidationError("A correction cannot move a claim to another subject or predicate")
+                if knowledge.annotation(action) is not None and "object" in action:
+                    try:
+                        knowledge.validate_endpoints(action,
+                            self._canonical_types(action["subject"], body["dependencies"]),
+                            self._canonical_types(action["object"], body["dependencies"]))
+                    except ValueError as exc:
+                        raise ValidationError(str(exc)) from exc
             elif kind in {"delete", "restore"}:
                 if self.read("entity", action["entity_id"]) is None:
                     raise ValidationError("Missing entity dependency")
@@ -697,11 +715,18 @@ class Store:
         return self.db.execute(sql, args)
 
     def query(self, *, subject=None, predicate=None, object=None, text=None, valid_at=None,
-              known_at=None, frontier=None, include_inactive=False, limit=100, offset=0):
+              known_at=None, frontier=None, include_inactive=False, limit=100, offset=0,
+              knowledge_kind=None, category=None, excerpt_chars=None):
         if not isinstance(limit, int) or isinstance(limit, bool) or not 1 <= limit <= 1000 or not isinstance(offset, int) or isinstance(offset, bool) or not 0 <= offset <= 1000000:
             raise ValidationError("Invalid query bounds")
         if not isinstance(include_inactive, bool) or (text is not None and (not isinstance(text, str) or len(text) > 1024)):
             raise ValidationError("Invalid query filter")
+        if knowledge_kind is not None and knowledge_kind not in knowledge.KINDS:
+            raise ValidationError("Invalid knowledge kind filter")
+        if category is not None and category not in knowledge.CATEGORIES:
+            raise ValidationError("Invalid knowledge category filter")
+        if excerpt_chars is not None and (not isinstance(excerpt_chars, int) or isinstance(excerpt_chars, bool) or not 100 <= excerpt_chars <= 4096):
+            raise ValidationError("Excerpt length must be between 100 and 4096")
         at = timestamp(valid_at) if valid_at is not None else None
         with self._lock:
             position, view = self._view(known_at, frontier)
@@ -721,6 +746,9 @@ class Store:
                 # Retain lineage and filter results, not every document's text.
                 # Selected payloads are hydrated only after applying the limit.
                 a = {key: original[key] for key in metadata_fields if key in original}
+                semantics = knowledge.describe(original)
+                a["_matches_knowledge"] = ((knowledge_kind is None or semantics["kind"] == knowledge_kind)
+                    and (category is None or semantics.get("category") == category))
                 a["_matches_text"] = folded_text is None or folded_text in canonical(
                     {key: original.get(key) for key in ("value", "predicate", "reason", "provenance")}).casefold()
                 if row["operation_id"] not in actor_metadata:
@@ -773,7 +801,7 @@ class Store:
                         continue
                     if at < timestamp(a["valid_from"]) or (a.get("valid_to") is not None and at >= timestamp(a["valid_to"])):
                         continue
-                if not a["_matches_text"]:
+                if not a["_matches_text"] or not a["_matches_knowledge"]:
                     continue
                 key = (a["subject"], a["predicate"])
                 a["preferred"] = key in owner_keys and a.get("kind") == "correct" and a["actor"]["kind"] == "owner" and a["id"] not in superseded
@@ -793,7 +821,14 @@ class Store:
                             "preferred", "conflicts", "human_verified"):
                     a[key] = metadata[key]
                 a["alternatives"] = [other["id"] for other in grouped.get((a["subject"], a["predicate"]), [])
-                                     if other["id"] != a["id"] and (assertion_value(other["id"]), other.get("object")) != (a.get("value"), a.get("object"))]
+                                     if not knowledge.multi_valued(a["predicate"]) and other["id"] != a["id"] and (assertion_value(other["id"]), other.get("object")) != (a.get("value"), a.get("object"))]
+                a["knowledge"] = knowledge.describe(a)
+                if excerpt_chars is not None and a["predicate"] == "content" and isinstance(a.get("value"), str):
+                    content = a.pop("value")
+                    start, matched = knowledge.excerpt_offset(content, folded_text, excerpt_chars)
+                    a["excerpt"] = content[start:start + excerpt_chars]
+                    a["content_reference"] = {"characters": len(content), "offset": start,
+                        "truncated": len(content) > len(a["excerpt"]), "source_ids": a["source_ids"], "match_in_content": matched}
                 selected.append(a)
             return {"assertions": selected, "coverage": {"complete": total <= offset + limit and unknown == 0,
                     "has_more": total > offset + limit, "next_offset": offset + limit if total > offset + limit else None,
@@ -802,9 +837,70 @@ class Store:
                     "inherited_history": json.loads(self._meta("restored_from") or "null")},
                     "frontier": view, "known_position": position}
 
+    def _canonical_types(self, entity_id, frontier=None):
+        entity = self.read("entity", entity_id)
+        if entity is None:
+            return set()
+        # The operation's dependencies were validated by _check_dependencies.
+        # Resolve only this identity's type claims, never rescan the full journal
+        # to validate that same causal frontier for every relationship endpoint.
+        view = self._frontier() if frontier is None else frontier
+        claims, owners = {}, set()
+        for row in self._rows(entity_id, knowledge.TYPE_PREDICATE):
+            if row["seq"] > view.get(row["origin"], 0):
+                continue
+            claim = json.loads(row["body"])
+            claims[claim["id"]] = claim
+            actor = self.db.execute("SELECT json_extract(body,'$.actor.kind') FROM operations WHERE id=?", (row["operation_id"],)).fetchone()[0]
+            if actor == "owner" and claim.get("kind") == "correct":
+                owners.add(claim["id"])
+        superseded = {pred for claim in claims.values() for pred in claim.get("predecessors", [])
+                      if pred not in owners or claim["id"] in owners}
+        heads = [claim for id, claim in claims.items() if id not in superseded
+                 and claim.get("kind", "assert") not in {"retract", "invalidate"}]
+        preferred = [claim for claim in heads if claim["id"] in owners]
+        values = {claim.get("value") for claim in preferred or heads if isinstance(claim.get("value"), str)}
+        return values or ({entity["entity_type"]} if entity["entity_type"] in knowledge.ENDPOINT_TYPES else set())
+
+    def enable_knowledge_profile(self):
+        """Local operator policy: grandfather acknowledged history, validate new writes."""
+        with self._transaction():
+            if not self._meta("knowledge_profile_cutoff"):
+                self._setmeta("knowledge_profile_cutoff", canonical(self._frontier()))
+            return self.knowledge_contract()
+
+    def knowledge_contract(self):
+        with self._lock:
+            return {**knowledge.contract(), "enforcement": {
+                "new_structured_writes": bool(self._meta("knowledge_profile_cutoff")),
+                "legacy_history": "retained; not silently reclassified",
+                "raw_document_capture": "observation; no inferred relationships"}}
+
     def get_entity(self, entity_id):
         with self._lock:
-            return None if entity_id in self._deleted() else self.read("entity", entity_id)
+            entity = None if entity_id in self._deleted() else self.read("entity", entity_id)
+            if entity is not None:
+                types = sorted(self._canonical_types(entity_id))
+                entity["classification"] = {"canonical_types": types, "ambiguous": len(types) > 1,
+                    "original_entity_type": entity["entity_type"]}
+            return entity
+
+    def search_entities(self, text, *, limit=25):
+        if not isinstance(text, str) or not text.strip() or len(text) > 256 or not isinstance(limit, int) or isinstance(limit, bool) or not 1 <= limit <= 100:
+            raise ValidationError("Invalid entity search")
+        with self._lock:
+            deleted = self._deleted()
+            # Names find candidates; they never establish shared identity.
+            matches, total = [], 0
+            for row in self.db.execute("SELECT id,body FROM records WHERE kind='entity' ORDER BY id"):
+                entity = json.loads(row["body"])
+                if entity["id"] not in deleted and text.casefold() in entity["label"].casefold():
+                    total += 1
+                    if len(matches) < limit:
+                        matches.append(entity)
+            return {"entities": [self.get_entity(e["id"]) for e in matches],
+                    "matched": total, "has_more": total > limit,
+                    "identity_warning": "Matching names are candidates, not a merge decision."}
 
     def get_source(self, source_id):
         with self._lock:
@@ -1089,6 +1185,8 @@ class Store:
                 for row in source.execute("SELECT kind,id,body FROM records"):
                     if restored.read(row["kind"], row["id"]) != json.loads(row["body"]):
                         raise ValidationError("Snapshot projection does not match its journal")
+            if metadata.get("knowledge_profile_cutoff"):
+                restored.enable_knowledge_profile()
             return restored
         except (sqlite3.DatabaseError, KeyError, TypeError, ValueError) as exc:
             if isinstance(exc, MemoryError):

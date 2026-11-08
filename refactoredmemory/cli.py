@@ -368,6 +368,8 @@ def parser():
     init.add_argument("--store-id")
     init.add_argument("--peer-id")
     sub.add_parser("status")
+    sub.add_parser("knowledge-schema", help="Read the current knowledge contract and local enforcement state")
+    sub.add_parser("knowledge-enforce", help="Require the knowledge profile for new structured writes; preserve existing history")
     identity = sub.add_parser("identity", help="Export private pairing material into a new local file")
     identity.add_argument("--output", required=True)
     admit = sub.add_parser("peer-admit")
@@ -499,6 +501,10 @@ def main(argv=None):
                     result = store.submit(load_json(args.actions), request_id=args.request_id)
                 elif args.command == "query":
                     result = store.query(**load_json(args.args))
+                elif args.command == "knowledge-schema":
+                    result = store.knowledge_contract()
+                elif args.command == "knowledge-enforce":
+                    result = store.enable_knowledge_profile()
                 elif args.command == "history":
                     result = store.history(**load_json(args.args))
                 elif args.command == "serve-stdio":
