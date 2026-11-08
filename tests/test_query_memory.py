@@ -49,6 +49,29 @@ def memory_probe(mode):
 
 
 class QueryMemoryTests(unittest.TestCase):
+    def test_endpoint_lookup_does_not_scan_unrelated_assertions(self):
+        with Store(':memory:') as store:
+            store.submit([
+                {'type':'entity','id':'target','entity_type':'person','label':'Target'},
+                {'type':'entity','id':'noise','entity_type':'person','label':'Other'},
+                {'type':'source','id':'source','uri':'synthetic:index','content':'Synthetic'}])
+            for batch in range(10):
+                store.submit([{'type':'assertion','id':f'noise-{batch}-{i}',
+                    'subject':'noise','predicate':'content','value':'Unrelated',
+                    'source_ids':['source']} for i in range(400)])
+            store.submit([{'type':'assertion','id':'target-type','subject':'target',
+                'predicate':'rm:canonical-type','value':'person','source_ids':['source']}])
+            steps = 0
+            def budget():
+                nonlocal steps
+                steps += 100
+                return steps > 10000
+            store.db.set_progress_handler(budget, 100)
+            try:
+                self.assertEqual(store._canonical_types('target'), {'person'})
+            finally:
+                store.db.set_progress_handler(None, 0)
+
     def test_filtered_query_keeps_large_unreturned_values_out_of_memory(self):
         with Store(":memory:") as store:
             store.submit([

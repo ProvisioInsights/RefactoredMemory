@@ -702,7 +702,10 @@ class Store:
     def _rows(self, subject=None, predicate=None, object=None):
         # Cover journal metadata without revisiting large payload overflow pages.
         # Actor JSON is decoded once per operation by query(), after view filtering.
-        sql = "SELECT r.body,e.operation_id,o.origin,o.seq,o.position FROM records r JOIN record_events e ON e.kind=r.kind AND e.id=r.id JOIN operations o INDEXED BY operations_attribution ON o.id=e.operation_id WHERE r.kind='assertion'"
+        # Start with the filtered record index. Without the explicit join order,
+        # SQLite can start with every assertion's attribution and then fetch
+        # large unrelated record bodies for each endpoint lookup.
+        sql = "SELECT r.body,e.operation_id,o.origin,o.seq,o.position FROM records r CROSS JOIN record_events e ON e.kind=r.kind AND e.id=r.id JOIN operations o INDEXED BY operations_attribution ON o.id=e.operation_id WHERE r.kind='assertion'"
         args = []
         if subject is not None:
             identifier(subject, "subject")
