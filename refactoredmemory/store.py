@@ -25,6 +25,11 @@ MAX_OPERATION = 1024 * 1024
 MAX_ACTIONS = 500
 MAX_TEXT = 65536
 SCHEMA = 1
+KNOWLEDGE_WRITER_GATE_SQL = """CREATE TRIGGER knowledge_writer_gate
+            BEFORE INSERT ON operations BEGIN
+            SELECT CASE WHEN refmem_knowledge_writer_profile() != 'refactoredmemory.knowledge:v1'
+            THEN RAISE(ABORT,'Reconnect with a knowledge-profile-aware writer') END;
+            END"""
 
 
 class MemoryError(Exception):
@@ -887,11 +892,11 @@ class Store:
     def _ensure_knowledge_writer_gate(self):
         # The exact function/profile is controlled by this release, never input.
         # A persisted SQL trigger guards stale connections without killing them.
-        self.db.execute("""CREATE TRIGGER IF NOT EXISTS knowledge_writer_gate
-            BEFORE INSERT ON operations BEGIN
-            SELECT CASE WHEN refmem_knowledge_writer_profile() != 'refactoredmemory.knowledge:v1'
-            THEN RAISE(ABORT,'Reconnect with a knowledge-profile-aware writer') END;
-            END""")
+        row = self.db.execute("SELECT sql FROM sqlite_master WHERE type='trigger' AND name='knowledge_writer_gate'").fetchone()
+        if row is None:
+            self.db.execute(KNOWLEDGE_WRITER_GATE_SQL)
+        elif row[0] != KNOWLEDGE_WRITER_GATE_SQL:
+            raise ValidationError("Unexpected knowledge writer gate")
 
     def knowledge_contract(self):
         with self._lock:
@@ -1142,8 +1147,11 @@ class Store:
             source.execute("PRAGMA trusted_schema=OFF")
             if source.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
                 raise ValidationError("Snapshot is corrupt")
-            if source.execute("SELECT count(*) FROM sqlite_master WHERE type IN ('trigger','view')").fetchone()[0]:
-                raise ValidationError("Snapshot contains executable schema objects")
+            for item in source.execute("SELECT type,name,tbl_name,sql FROM sqlite_master WHERE type IN ('trigger','view')"):
+                if tuple(item) != ('trigger','knowledge_writer_gate','operations',KNOWLEDGE_WRITER_GATE_SQL):
+                    raise ValidationError("Snapshot contains executable schema objects")
+                # Never execute source SQL; rebuild the current gate only after
+                # the signed journal has been verified and replayed.
             metadata = dict(source.execute("SELECT key,value FROM metadata"))
             if metadata.get("schema") != str(SCHEMA):
                 raise ValidationError("Unsupported snapshot schema")

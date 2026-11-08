@@ -170,6 +170,19 @@ class KnowledgeProfileTests(unittest.TestCase):
                     self.assertEqual(legacy.execute('SELECT count(*) FROM records').fetchone()[0],2)
                 finally:legacy.close()
 
+    def test_restore_rejects_modified_writer_gate_without_executing_it(self):
+        import sqlite3
+        self.store.enable_knowledge_profile()
+        with tempfile.TemporaryDirectory() as tmp:
+            snapshot=Path(tmp)/'backup.sqlite3';destination=Path(tmp)/'restored.sqlite3'
+            self.store.backup(snapshot)
+            with sqlite3.connect(snapshot) as altered:
+                altered.execute('DROP TRIGGER knowledge_writer_gate')
+                altered.execute('CREATE TRIGGER knowledge_writer_gate BEFORE INSERT ON operations BEGIN SELECT 1; END')
+            with self.assertRaisesRegex(ValidationError,'executable schema'):
+                Store.restore(snapshot,destination)
+            self.assertFalse(destination.exists())
+
     def test_endpoint_validation_does_not_rescan_the_journal_view(self):
         original=self.store._view
         def refuse(*args,**kwargs):raise AssertionError('Endpoint check rescanned the journal')
