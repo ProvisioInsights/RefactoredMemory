@@ -1,0 +1,12 @@
+# Locally managed named tunnel. Provisioning/DNS is a separate owner action.
+# Mount the tunnel-only credential, never an account-wide cert.pem.
+tunnel: REPLACE_TUNNEL_UUID
+credentials-file: /config/tunnel.json
+ingress:
+  - hostname: memory.example.invalid
+    service: https://memory:8765
+    originRequest:
+      originServerName: memory
+      caPool: /tls/ca.crt
+      httpHostHeader: memory.example.invalid
+  - service: http_status:404

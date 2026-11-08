@@ -1,30 +1,26 @@
 # Personal v1 architecture
 
-**Status:** proposed implementation of accepted personal scope; engine, protocol and SDK choices remain open. Product implementation awaits an explicit “proceed.”
+**Accepted deployment direction, 7 November 2026:** a normally available NAS-hosted Linux peer plus an independently writable Mac peer. The graph engine and NAS/OAuth/automatic-sync extension are implemented under [NAS-CONTRACT.md](NAS-CONTRACT.md). [Acceptance evidence](ACCEPTANCE-RESULTS.md) separates executed local checks from earlier baseline results and untested owner-device/provider deployment.
 
-V1 has one owner and two full peers: the owner's Mac and a personally controlled Linux VM/container. Each peer has local durable knowledge, local queries, MCP access and authenticated peer synchronization. It can accept writes while disconnected. A peer may be implemented as one process; diagram boxes describe responsibilities, not required services.
+DSM and existing NAS services remain on the main LAN. The workload gets a separate identity and isolated VLAN, preferably in a small Linux VM with hardened containers. Public MCP and private synchronization use separate TLS listeners over the same local Store. Cloudflare is an optional outbound tunnel only. It does not hold the knowledge database, and there is no Workers/Durable Objects data port in this release. Primary endpoint does not confer sole-writer or owner authority.
 
 ```mermaid
 flowchart TB
-    C["Praxis and another MCP client"] -->|"required MCP"| A
-    F["Markdown / Logseq"] --> IMP["Required source importer and legacy migration"]
-    L["Prior LivingAtlas data"] --> IMP
-    IMP -->|"authorized, source-linked operations"| A
-    subgraph MAC["Personal peer A — owner's Mac"]
-        A["MCP and owner authorization"] --> G["Temporal graph and correction lineage"]
-        G --> D["Durable history, sources and sync journal"]
-        D --> I["Rebuildable query indexes"]
-        A --> Q["Time, graph, source and history queries"]
-        Q --> G
-        Q --> I
-        G <--> S["Personal peer admission and synchronization"]
+    C["Praxis2, ChatGPT, Claude and API clients"] -->|"HTTPS + per-client OAuth grant"| T["Optional Cloudflare Tunnel - transport only"]
+    T --> N
+    subgraph NAS["RS822+ workload VM or hardened container - isolated VLAN"]
+        N["Public MCP-only TLS listener"] --> A["Current local agent-grant authorization"]
+        A --> G["Personal temporal graph, evidence and history"]
+        G --> D["Dedicated local SQLite data volume"]
+        S["Private peer-sync TLS listener"] <--> G
     end
-    S <-->|"authenticated operations and dependencies"| B["Personal peer B — Linux VM/container<br/>same contract; independent local writes and queries"]
-    C -->|"configured MCP connection"| B
-    W["Optional later consolidation"] -.->|"scoped proposals"| A
+    M["Mac full peer - local MCP and offline writes"] <-->|"Bounded automatic authenticated sync"| S
+    F["Approved Markdown / Logseq / LivingAtlas inputs"] -->|"Local planning and import"| M
+    O["Private VPN + dedicated SSH account"] -->|"Scoped maintenance only"| NAS
+    X["Later: Cloudflare storage peer, selective cache, mesh"]
 ```
 
-The [editable diagram](diagrams/personal-v1.mmd) describes the same required topology. Public-safe diagrams do not contain personal endpoints, credentials or source paths.
+The [editable diagram](diagrams/personal-v1.mmd) contains no private endpoint or secret. OAuth uses a maintained authorization server with a strictly validated resource-server adapter and current local agent grants. Full personal-store read access is authorized independently for each app/API connection. A container bridge alone is not proof of LAN isolation; effective VLAN, host and IPv6 rules must be verified on the NAS. See [deployment](NAS-DEPLOYMENT.md) and [maintenance access](REMOTE-ADMIN.md).
 
 ## Knowledge contract
 
@@ -38,7 +34,7 @@ Correction, retraction, invalidation and reinstatement are distinct semantic ope
 
 An admitted semantic operation group and its required local metadata become durable before acknowledgment and visible atomically. Received operations wait for required dependencies. Use stable operation identities and safe retries. Clock skew, duplicate delivery and delivery order must not silently discard a correction.
 
-Peers authenticate each other and operate within the owner's admitted store. Test offline writes on both, concurrent corrections, interrupted exchange, missing dependencies, stale rejoin, restart and restore. A successful two-peer test does not establish a transitive relay mesh. Fine-grained subscriptions and larger meshes are separate later choices.
+Peers authenticate each other and operate within the owner's admitted store. The `sync-watch` runner exchanges bounded batches using durable frontiers, an exclusive runner lock, persisted retry deadlines, interruptible waits and explicit incomplete/paused status. `serve-nas` separates OAuth MCP from private peer TLS; configured capacity guards refuse graph writes while preserving reads. Tests cover offline writes on both, concurrent corrections, interrupted exchange, missing dependencies, stale rejoin, restart and restore. A successful two-peer test does not establish a transitive relay mesh. Fine-grained subscriptions and larger meshes are separate later choices.
 
 ## Import and migration
 
@@ -50,6 +46,6 @@ Legacy decryption support is an import compatibility concern when an existing so
 
 ## Personal protection and later evolution
 
-V1 requires local access controls, scoped MCP client/agent grants, authenticated peers, HTTPS/TLS for remote transport, bounded inputs/queries, and safe logs. Source text cannot grant permissions or execute tools. Current authority applies to historical queries. Model-inferred additions are automatically accepted within configured client/agent grants, without per-item human review. Preserve evidence, actor/model/derivation attribution, uncertainty, conflicts and correction history; acceptance is not human verification or established truth. Capture triggers and preferred-claim handling remain open in Q7/Q8, and the management surface remains open in Q9.
+V1 requires local access controls, scoped MCP client/agent grants, authenticated peers, HTTPS/TLS for remote transport, bounded inputs/queries, and safe logs. Source text cannot grant permissions or execute tools. Current authority applies to historical queries. Model-inferred additions are automatically accepted within configured client/agent grants, without per-item human review. Preserve evidence, actor/model/derivation attribution, uncertainty, conflicts and correction history; acceptance is not human verification or established truth. Q7 authorizes proactive client capture within grants. Q8 prefers explicit authenticated owner corrections while retaining contradictory claims and evidence. Q9 selects MCP and CLI first. Q10 requires the project-decision, relationship-evidence and recent-changes journeys.
 
 Product content encryption, corporate ownership boundaries and multitenancy are deferred. Stable IDs, versioned semantic contracts, provenance and portable export preserve a practical migration path. Future tenancy/custody must not introduce a prerequisite enterprise framework into personal v1.

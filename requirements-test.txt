@@ -1,0 +1,4 @@
+-r requirements-oauth.txt
+# Independent protocol client; production core does not import this package.
+mcp==1.29.0
+jsonschema==4.26.0

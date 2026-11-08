@@ -1,0 +1,160 @@
+"""Large legal operation groups must not multiply evidence into read memory."""
+from __future__ import annotations
+
+import json
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+import tracemalloc
+import unittest
+
+from refactoredmemory.store import Store
+
+
+ACTOR = {"id": "synthetic-agent", "kind": "agent"}
+
+
+def large_group():
+    # One legal <1 MiB / <500-action group. The old join copied its full
+    # evidence 480 times (~428 MiB) even when the caller requested one result.
+    return [
+        {"type": "entity", "id": "project", "entity_type": "project", "label": "Synthetic"},
+        *({"type": "source", "id": f"s{i}", "uri": f"synthetic:{i}", "content": "x" * 60000}
+          for i in range(14)),
+        *({"type": "assertion", "id": f"a{i}", "subject": "project", "predicate": "tag",
+           "value": str(i), "source_ids": ["s0"]} for i in range(480)),
+    ]
+
+
+def memory_probe(mode):
+    import resource
+    with tempfile.TemporaryDirectory(prefix="refmem-read-memory-") as directory:
+        with Store(Path(directory) / "synthetic.sqlite3") as store:
+            store.submit(large_group(), actor=ACTOR)
+            if mode == "status":
+                store.submit([{"type": "delete", "id": "suppress", "entity_id": "project",
+                               "reason": "Synthetic owner suppression"}])
+            resource.setrlimit(resource.RLIMIT_AS, (256 * 1024 * 1024, 256 * 1024 * 1024))
+            if mode == "query":
+                result = store.query(subject="project", limit=1)
+                assert len(result["assertions"]) == 1
+                assert result["coverage"]["matched"] == 480
+                assert result["assertions"][0]["actor"] == ACTOR
+            else:
+                result = store.status()
+                assert result["deleted_entities"] == 1
+                assert result["conflicts"] == {"items": [], "truncated": False}
+            print(json.dumps({"mode": mode, "passed": True}))
+
+
+class QueryMemoryTests(unittest.TestCase):
+    def test_endpoint_lookup_does_not_scan_unrelated_assertions(self):
+        with Store(':memory:') as store:
+            store.submit([
+                {'type':'entity','id':'target','entity_type':'person','label':'Target'},
+                {'type':'entity','id':'noise','entity_type':'person','label':'Other'},
+                {'type':'source','id':'source','uri':'synthetic:index','content':'Synthetic'}])
+            for batch in range(10):
+                store.submit([{'type':'assertion','id':f'noise-{batch}-{i}',
+                    'subject':'noise','predicate':'content','value':'Unrelated',
+                    'source_ids':['source']} for i in range(400)])
+            store.submit([{'type':'assertion','id':'target-type','subject':'target',
+                'predicate':'rm:canonical-type','value':'person','source_ids':['source']}])
+            steps = 0
+            def budget():
+                nonlocal steps
+                steps += 100
+                return steps > 10000
+            store.db.set_progress_handler(budget, 100)
+            try:
+                self.assertEqual(store._canonical_types('target'), {'person'})
+            finally:
+                store.db.set_progress_handler(None, 0)
+
+    def test_filtered_query_keeps_large_unreturned_values_out_of_memory(self):
+        with Store(":memory:") as store:
+            store.submit([
+                {"type": "entity", "id": "wide", "entity_type": "project", "label": "Synthetic wide history"},
+                {"type": "source", "id": "wide-source", "uri": "synthetic:wide", "content": "Synthetic evidence"},
+            ])
+            for batch in range(16):
+                store.submit([{"type": "assertion", "id": f"wide-{i:03}", "subject": "wide", "predicate": "content",
+                               "value": ("needle" if i == 0 else str(i)) + "x" * 60000,
+                               "source_ids": ["wide-source"]} for i in range(batch * 8, batch * 8 + 8)])
+            tracemalloc.start()
+            try:
+                result = store.query(text="needle", limit=1)
+                _, peak = tracemalloc.get_traced_memory()
+            finally:
+                tracemalloc.stop()
+            self.assertEqual(result["coverage"]["matched"], 1)
+            self.assertEqual(result["assertions"][0]["id"], "wide-000")
+            self.assertEqual(len(result["assertions"][0]["alternatives"]), 127)
+            self.assertLess(peak, 8 * 1024 * 1024)
+
+    def test_large_group_keeps_attribution_and_historical_views(self):
+        with Store(":memory:") as store:
+            original = store.submit(large_group(), actor=ACTOR)
+            first = store.query(subject="project", limit=1)
+            self.assertEqual(first["assertions"][0]["actor"], ACTOR)
+            self.assertEqual(first["coverage"]["matched"], 480)
+            self.assertTrue(first["coverage"]["has_more"])
+            store.submit([{"type": "assertion", "id": "owner-correction", "subject": "project",
+                           "predicate": "tag", "value": "Corrected", "source_ids": ["s0"],
+                           "kind": "correct", "predecessors": ["a0"], "reason": "Synthetic correction"}])
+            earlier = store.query(subject="project", known_at=original["known_position"], limit=1)
+            self.assertEqual(earlier["assertions"][0]["id"], "a0")
+            self.assertEqual(earlier["assertions"][0]["actor"], ACTOR)
+            current = store.query(subject="project", text="Corrected")
+            self.assertEqual([a["id"] for a in current["assertions"]], ["owner-correction"])
+            self.assertTrue(current["assertions"][0]["preferred"])
+            self.assertEqual(store.get_source("s13")["content"], "x" * 60000)
+
+    def test_duplicate_attribution_does_not_reparse_large_journals_per_assertion(self):
+        with Store(":memory:") as store:
+            first = store.submit(large_group(), actor=ACTOR)
+            second_actor = {"id": "second-synthetic-agent", "kind": "agent"}
+            store.submit(large_group(), actor=second_actor)
+            parsed_bytes = 0
+            def bounded_json_extract(body, path):
+                nonlocal parsed_bytes
+                parsed_bytes += len(body.encode())
+                if parsed_bytes > 3 * 1024 * 1024:
+                    raise RuntimeError("Journal decoding exceeded the bounded query budget")
+                self.assertEqual(path, "$.actor")
+                return json.dumps(json.loads(body)["actor"])
+            store.db.create_function("json_extract", 2, bounded_json_extract)
+            current = store.query(subject="project", limit=1)
+            self.assertEqual(len(current["assertions"][0]["attributions"]), 2)
+            self.assertEqual(current["coverage"]["matched"], 480)
+            self.assertLessEqual(parsed_bytes, 3 * 1024 * 1024)
+            parsed_bytes = 0
+            earlier = store.query(subject="project", known_at=first["known_position"], limit=1)
+            self.assertEqual(earlier["assertions"][0]["attributions"], [{
+                "actor": ACTOR, "operation_id": earlier["assertions"][0]["operation_id"]}])
+
+    def _probe(self, mode):
+        root = Path(__file__).resolve().parents[1]
+        # RLIMIT_AS reliably bounds the isolated process on Linux. macOS has
+        # different virtual-address accounting; portable semantics run above.
+        process = subprocess.run(
+            [sys.executable, "-c", "import runpy;runpy.run_path('tests/test_query_memory.py',run_name='__main__')",
+             "--memory-probe", mode], cwd=root, text=True, capture_output=True, timeout=30)
+        self.assertEqual(process.returncode, 0, process.stderr)
+        self.assertEqual(json.loads(process.stdout), {"mode": mode, "passed": True})
+
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Linux address-space-limit regression")
+    def test_query_large_group_under_256_mib_address_space(self):
+        self._probe("query")
+
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Linux address-space-limit regression")
+    def test_status_after_delete_under_256_mib_address_space(self):
+        self._probe("status")
+
+
+if __name__ == "__main__":
+    if len(sys.argv) == 3 and sys.argv[1] == "--memory-probe":
+        memory_probe(sys.argv[2])
+    else:
+        unittest.main()

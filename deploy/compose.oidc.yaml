@@ -1,0 +1,134 @@
+# Optional reference authorization server; needs additional RAM and its own backups.
+services:
+  postgres:
+    image: postgres:17.11-alpine3.24@sha256:3540c0362c809df084ffac0ae69fe794515f9de92692f02178bcdce0ef0302ac
+    user: "70:70"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 128
+    mem_limit: 512m
+    cpus: 1.0
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD_FILE: /run/secrets/db-password
+    volumes:
+      - auth_database:/var/lib/postgresql/data
+      - type: bind
+        source: ${REFMEM_PRIVATE_DIR}/auth/postgres-password
+        target: /run/secrets/db-password
+        read_only: true
+        bind: {create_host_path: false}
+    tmpfs:
+      - /tmp:size=32m,mode=1777,noexec,nosuid,nodev
+      - /var/run/postgresql:size=1m,uid=70,gid=70,mode=0700,noexec,nosuid,nodev
+    networks: [auth_database]
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U keycloak -d keycloak]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    logging:
+      driver: json-file
+      options: {max-size: 5m, max-file: "3"}
+  keycloak:
+    image: refactoredmemory-keycloak:local
+    build:
+      context: .
+      dockerfile: Keycloak.Dockerfile
+    user: "1000:0"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 256
+    mem_limit: 1536m
+    cpus: 2.0
+    restart: unless-stopped
+    entrypoint: [/bin/bash, /etc/refmem/entrypoint.sh]
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_HOSTNAME: https://${REFMEM_AUTH_HOST:?Set public authorization hostname}
+      KC_HOSTNAME_ADMIN: https://${REFMEM_AUTH_ADMIN_HOST:?Set private admin hostname}
+      KC_HTTPS_CERTIFICATE_FILE: /tls/keycloak.crt
+      KC_HTTPS_CERTIFICATE_KEY_FILE: /tls/keycloak.key
+      KC_HTTP_ENABLED: "false"
+      KC_BOOTSTRAP_ADMIN_USERNAME: bootstrap-admin
+      KC_LOG_LEVEL: WARN
+      JAVA_OPTS_KC_HEAP: -XX:MaxRAMPercentage=65.0
+    volumes:
+      - type: bind
+        source: ./keycloak-entrypoint.sh
+        target: /etc/refmem/entrypoint.sh
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${REFMEM_PRIVATE_DIR}/auth/keycloak-password
+        target: /run/secrets/db-password
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${REFMEM_PRIVATE_DIR}/auth/admin-password
+        target: /run/secrets/admin-password
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${REFMEM_PRIVATE_DIR}/auth/realm.json
+        target: /opt/keycloak/data/import/realm.json
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${REFMEM_PRIVATE_DIR}/tls/keycloak.crt
+        target: /tls/keycloak.crt
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${REFMEM_PRIVATE_DIR}/tls/keycloak.key
+        target: /tls/keycloak.key
+        read_only: true
+        bind: {create_host_path: false}
+    tmpfs:
+      - /tmp:size=64m,mode=1777,nosuid,nodev
+      - /opt/keycloak/data:size=64m,uid=1000,gid=0,mode=0700,nosuid,nodev
+    networks: [auth_front, auth_database]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    logging:
+      driver: json-file
+      options: {max-size: 5m, max-file: "3"}
+  auth-admin-ingress:
+    image: haproxy:3.2.26-alpine@sha256:96ec3c75a9264ba94e733eeacb44051ed6e7b79bb77a73c2c36f236b6423f1f0
+    user: "10001:10001"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 32
+    mem_limit: 64m
+    cpus: 0.25
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ./auth-admin-ingress.cfg
+        target: /usr/local/etc/haproxy/haproxy.cfg
+        read_only: true
+        bind: {create_host_path: false}
+    ports:
+      - "${REFMEM_AUTH_ADMIN_BIND:-127.0.0.1}:${REFMEM_AUTH_ADMIN_PORT:-8443}:8443"
+    networks: [auth_front, private_ingress]
+    depends_on: [keycloak]
+    logging:
+      driver: json-file
+      options: {max-size: 5m, max-file: "3"}
+  tunnel:
+    networks: [backend, tunnel_egress, auth_front]
+networks:
+  auth_front:
+    internal: true
+  auth_database:
+    internal: true
+volumes:
+  auth_database: {}

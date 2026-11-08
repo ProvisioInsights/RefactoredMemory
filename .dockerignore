@@ -1,0 +1,16 @@
+.git
+__pycache__
+**/__pycache__
+*.sqlite3*
+*.db*
+*.token
+*.pem
+*.key
+.env
+.local
+deploy
+docs
+tests
+benchmarks
+*.identity.json
+**/__pycache__

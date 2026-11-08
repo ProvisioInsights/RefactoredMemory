@@ -1,0 +1,12 @@
+[project]
+name = "refactoredmemory"
+version = "0.1.0"
+description = "Personal temporal knowledge store with sourced MCP access and direct offline peer sync"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.optional-dependencies]
+oauth = ["PyJWT[crypto]==2.13.0", "cryptography==50.0.0"]
+
+[project.scripts]
+refactoredmemory = "refactoredmemory.cli:main"

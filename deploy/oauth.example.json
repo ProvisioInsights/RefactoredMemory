@@ -1,0 +1,13 @@
+{
+  "issuer": "https://auth.example.invalid/realms/refactoredmemory",
+  "resource": "https://memory.example.invalid/mcp",
+  "jwks_file": "jwks.json",
+  "max_token_lifetime_seconds": 300,
+  "clock_skew_seconds": 5,
+  "bindings": [
+    {"subject": "REPLACE_OWNER_SUBJECT", "client_id": "refmem-chatgpt", "grant_token_file": "secrets/chatgpt.token"},
+    {"subject": "REPLACE_OWNER_SUBJECT", "client_id": "refmem-claude", "grant_token_file": "secrets/claude.token"},
+    {"subject": "REPLACE_OWNER_SUBJECT", "client_id": "refmem-openai-api", "grant_token_file": "secrets/openai-api.token"},
+    {"subject": "REPLACE_OWNER_SUBJECT", "client_id": "refmem-anthropic-api", "grant_token_file": "secrets/anthropic-api.token"}
+  ]
+}

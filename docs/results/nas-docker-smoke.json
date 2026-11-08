@@ -1,0 +1,129 @@
+{
+  "recorded_at": "2026-11-07T20:30:04.347889+00:00",
+  "result": "passed",
+  "environment": "Attached Linux x86_64 Docker workspace; synthetic data only, not owner Mac or NAS",
+  "source_commit": "a0ff34b8a7c64889e6110f878ddd8c8d454e7c84",
+  "package_sha256": "2ad9d8ddd1954ae25b426e4d242f7d6e34aab334b8d25ecf78c51e2c4537a169",
+  "image_package_sha256": "2ad9d8ddd1954ae25b426e4d242f7d6e34aab334b8d25ecf78c51e2c4537a169",
+  "package_hash_method": "SHA256 of sorted relative *.py filename + NUL + bytes concatenation under refactoredmemory/",
+  "images": {
+    "memory": {
+      "reference": "refactoredmemory:local",
+      "image_id": "sha256:c70fcd8ea48f3ab617276f879edfd228c7c1fdbd1d6f554dfe7a43430ab05274",
+      "repo_digests": [],
+      "architecture": "amd64"
+    },
+    "keycloak": {
+      "reference": "refactoredmemory-keycloak:local",
+      "image_id": "sha256:23288dfc25c9b9e4b651845aff93b0dd48472d86d8f057f8c4a21031eafd21bf",
+      "repo_digests": [],
+      "architecture": "amd64"
+    },
+    "postgres": {
+      "reference": "postgres:17-alpine@sha256:3540c0362c809df084ffac0ae69fe794515f9de92692f02178bcdce0ef0302ac",
+      "image_id": "sha256:aac5ed9e090c8b3e134bf1dcf3f9fe0787a29cecdf7867de8b53b5d8abc3eef2",
+      "repo_digests": [
+        "postgres@sha256:3540c0362c809df084ffac0ae69fe794515f9de92692f02178bcdce0ef0302ac"
+      ],
+      "architecture": "amd64"
+    },
+    "haproxy": {
+      "reference": "haproxy:3.2.26-alpine@sha256:96ec3c75a9264ba94e733eeacb44051ed6e7b79bb77a73c2c36f236b6423f1f0",
+      "image_id": "sha256:d392bc106c144248cfed41f18f14ff3668dc5d49b2d27da370375d7ed6be985d",
+      "repo_digests": [
+        "haproxy@sha256:96ec3c75a9264ba94e733eeacb44051ed6e7b79bb77a73c2c36f236b6423f1f0"
+      ],
+      "architecture": "amd64"
+    },
+    "cloudflared": {
+      "reference": "cloudflare/cloudflared:2026.10.7@sha256:4955524aeaa379e154023d5a027c250f7b35041a2e7e950cf13f144bc9b9c5ba",
+      "image_id": "sha256:5436e6763af2b3fb02aad5f5caebf4291e2bded1ea89b8cae774a06f55f91110",
+      "repo_digests": [
+        "cloudflare/cloudflared@sha256:4955524aeaa379e154023d5a027c250f7b35041a2e7e950cf13f144bc9b9c5ba"
+      ],
+      "architecture": "amd64"
+    }
+  },
+  "commands": [
+    {
+      "command": "docker build --secret id=proxy_ca,src=\"$CODEX_PROXY_CERT\" -t refactoredmemory:local .",
+      "result": "passed; build-only CA not copied to runtime"
+    },
+    {
+      "command": "docker build -f deploy/Keycloak.Dockerfile -t refactoredmemory-keycloak:local deploy",
+      "result": "passed"
+    },
+    {
+      "command": "docker compose --env-file deploy/env.example -f deploy/compose.yaml -f deploy/compose.oidc.yaml config --quiet",
+      "result": "passed"
+    },
+    {
+      "command": "python deploy/smoke_test.py",
+      "exit_code": 0,
+      "result": "passed"
+    },
+    {
+      "command": "cloudflared tunnel --config /config/tunnel.yaml ingress validate (both templates; container network none)",
+      "result": "passed"
+    },
+    {
+      "command": "cloudflared tunnel --config /config/tunnel.yaml ingress rule https://auth.example.invalid/realms/refactoredmemory/clients-registrations/openid-connect (container network none)",
+      "result": "matched final rule #2, http_status:404"
+    }
+  ],
+  "checks": [
+    {
+      "name": "real Keycloak/Postgres TLS authorization-code + S256 PKCE",
+      "result": "passed"
+    },
+    {
+      "name": "missing PKCE and authorization-code replay rejected",
+      "result": "passed"
+    },
+    {
+      "name": "real OAuth access token accepted at MCP",
+      "result": "passed"
+    },
+    {
+      "name": "ID token and raw local grant rejected",
+      "result": "passed"
+    },
+    {
+      "name": "MCP/sync listener separation",
+      "result": "passed"
+    },
+    {
+      "name": "OAuth sourced capture and query",
+      "result": "passed"
+    },
+    {
+      "name": "private TLS bidirectional offline sync converges",
+      "result": "passed"
+    },
+    {
+      "name": "nonroot/read-only/capability/mount hardening inspected",
+      "result": "passed"
+    },
+    {
+      "name": "memory cannot initiate connection into separate authorization network",
+      "result": "passed"
+    },
+    {
+      "name": "acknowledged assertion queried after container restart",
+      "result": "passed"
+    },
+    {
+      "name": "live grant revocation rejects existing OAuth access token",
+      "result": "passed"
+    }
+  ],
+  "cleanup": "All randomly named smoke containers, networks, synthetic database volumes and private temporary credentials removed by harness",
+  "limitations": [
+    "No actual NAS/VLAN/router/firewall qualification",
+    "No owner Mac pairing or hardware test",
+    "No external tunnel or provider-app login",
+    "Synthetic owner bypasses production MFA enrollment only in disposable test realm",
+    "Denied cross-Docker-network connection is not evidence of all LAN/DSM/IPv6 isolation",
+    "No vulnerability-scan claim; pinned images/dependencies require maintenance"
+  ]
+}
