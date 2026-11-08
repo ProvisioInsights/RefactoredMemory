@@ -131,6 +131,7 @@ class Store:
             position INTEGER UNIQUE,applied_at TEXT,rejected TEXT,
             UNIQUE(origin,seq));
         CREATE INDEX IF NOT EXISTS operations_position ON operations(position);
+        CREATE INDEX IF NOT EXISTS operations_attribution ON operations(id,origin,seq,position);
         CREATE TABLE IF NOT EXISTS records(
             kind TEXT NOT NULL,id TEXT NOT NULL,body TEXT NOT NULL,
             operation_id TEXT NOT NULL,subject TEXT,predicate TEXT,object TEXT,
@@ -670,16 +671,22 @@ class Store:
         return {entity for id, entity in deletes.items() if id not in restored}
 
     def _rows(self, subject=None, predicate=None, object=None):
-        # Select only attribution from the journal. Repeating a nearly 1 MiB
-        # operation (including evidence) for each of its hundreds of assertions
-        # would exhaust a small peer before the result limit could be applied.
-        sql = "SELECT r.body,e.operation_id,o.origin,o.seq,o.position,json_extract(o.body,'$.actor') AS actor FROM records r JOIN record_events e ON e.kind=r.kind AND e.id=r.id JOIN operations o ON o.id=e.operation_id WHERE r.kind='assertion'"
+        # Cover journal metadata without revisiting large payload overflow pages.
+        # Actor JSON is decoded once per operation by query(), after view filtering.
+        sql = "SELECT r.body,e.operation_id,o.origin,o.seq,o.position FROM records r JOIN record_events e ON e.kind=r.kind AND e.id=r.id JOIN operations o INDEXED BY operations_attribution ON o.id=e.operation_id WHERE r.kind='assertion'"
         args = []
-        for key, value in (("subject", subject), ("predicate", predicate), ("object", object)):
-            if value is not None:
-                identifier(value, key)
-                sql += f" AND r.{key}=?"
-                args.append(value)
+        if subject is not None:
+            identifier(subject, "subject")
+            sql += " AND r.subject=?"
+            args.append(subject)
+        if predicate is not None:
+            identifier(predicate, "predicate")
+            sql += " AND r.predicate=?"
+            args.append(predicate)
+        if object is not None:
+            identifier(object, "object")
+            sql += " AND r.object=?"
+            args.append(object)
         return self.db.execute(sql, args).fetchall()
 
     def query(self, *, subject=None, predicate=None, object=None, text=None, valid_at=None,
@@ -696,11 +703,18 @@ class Store:
             rows = self._rows(subject, predicate)
             visible = {}
             occurrences = {}
+            last_operation = None
+            actor_json = None
             for row in sorted(rows, key=lambda row: row["operation_id"]):
                 if row["seq"] > view.get(row["origin"], 0):
                     continue
                 a = json.loads(row["body"])
-                actor = json.loads(row["actor"])
+                if row["operation_id"] != last_operation:
+                    actor_json = self.db.execute(
+                        "SELECT json_extract(body,'$.actor') FROM operations WHERE id=?",
+                        (row["operation_id"],)).fetchone()[0]
+                    last_operation = row["operation_id"]
+                actor = json.loads(actor_json)
                 occurrences.setdefault(a["id"], []).append({"actor": actor, "operation_id": row["operation_id"]})
                 a.update(actor=actor, operation_id=row["operation_id"], known_position=row["position"])
                 # All views deterministically choose the same origin among visible occurrences.

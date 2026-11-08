@@ -66,6 +66,29 @@ class QueryMemoryTests(unittest.TestCase):
             self.assertTrue(current["assertions"][0]["preferred"])
             self.assertEqual(store.get_source("s13")["content"], "x" * 60000)
 
+    def test_duplicate_attribution_does_not_reparse_large_journals_per_assertion(self):
+        with Store(":memory:") as store:
+            first = store.submit(large_group(), actor=ACTOR)
+            second_actor = {"id": "second-synthetic-agent", "kind": "agent"}
+            store.submit(large_group(), actor=second_actor)
+            parsed_bytes = 0
+            def bounded_json_extract(body, path):
+                nonlocal parsed_bytes
+                parsed_bytes += len(body.encode())
+                if parsed_bytes > 3 * 1024 * 1024:
+                    raise RuntimeError("Journal decoding exceeded the bounded query budget")
+                self.assertEqual(path, "$.actor")
+                return json.dumps(json.loads(body)["actor"])
+            store.db.create_function("json_extract", 2, bounded_json_extract)
+            current = store.query(subject="project", limit=1)
+            self.assertEqual(len(current["assertions"][0]["attributions"]), 2)
+            self.assertEqual(current["coverage"]["matched"], 480)
+            self.assertLessEqual(parsed_bytes, 3 * 1024 * 1024)
+            parsed_bytes = 0
+            earlier = store.query(subject="project", known_at=first["known_position"], limit=1)
+            self.assertEqual(earlier["assertions"][0]["attributions"], [{
+                "actor": ACTOR, "operation_id": earlier["assertions"][0]["operation_id"]}])
+
     def _probe(self, mode):
         root = Path(__file__).resolve().parents[1]
         # RLIMIT_AS reliably bounds the isolated process on Linux. macOS has
