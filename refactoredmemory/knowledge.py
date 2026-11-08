@@ -351,6 +351,16 @@ PREDICATES = {
         "cardinality": "multi-valued"
     }
 }
+# The captured document identity is the observation; evidence remains a source
+# record. This is the concrete consumer for Atlas v2's observation/mentions model.
+ENDPOINT_TYPES = [*ENDPOINT_TYPES, "observation"]
+for _predicate in ("has-type", "about"):
+    PREDICATES[_predicate]["domain"] = [*PREDICATES[_predicate]["domain"], "observation"]
+for _endpoint in ("domain", "range"):
+    PREDICATES["part-of"][_endpoint] = [*PREDICATES["part-of"][_endpoint], "observation"]
+PREDICATES["mentions"] = {"category": "taxonomy", "direction": "directed",
+    "domain": ["observation"], "range": list(ENDPOINT_TYPES),
+    "required": [], "cardinality": "multi-valued"}
 KINDS = ("fact", "relationship", "observation")
 CATEGORIES = tuple(sorted({entry["category"] for entry in PREDICATES.values()}))
 # These labels are properties, not replacements for immutable entity identities.

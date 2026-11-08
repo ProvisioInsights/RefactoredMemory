@@ -32,6 +32,21 @@ require a reviewed contract revision. A recovery annotation may retain legacy
 context and explicit unresolved fields; those do not establish that the legacy
 claims were independently verified or remain true today.
 
+Captured `source-document` identities are exposed as canonical `observation`
+endpoints, while their immutable physical type and text remain unchanged. The
+additive `mentions` predicate connects an observation to a known entity. Its
+qualifiers must distinguish header-reported participants and explicit source
+links from inferred business relationships. A mention establishes neither an
+investment, an introduction, nor employment. Source/evidence records themselves
+do not become graph endpoints. Capture-layer classification and mention edges
+are labeled `qualifiers.layer = capture` so they can be counted separately from
+business relationships.
+
+Observation parts can use `part-of` to point at the first captured part of the
+same source version. This uses the existing same-kind composition rule; it does
+not merge different source versions. Commit type-recovery facts before new
+typed relationships that depend on them.
+
 ## Local operator enforcement
 
 After a consistent backup, compatibility checks on every peer, and isolated
@@ -54,6 +69,11 @@ The policy is retained across the supported fresh-identity restore procedure.
 Restore still revokes old consumer and peer admissions. A code rollback must
 retain the semantic enforcement implementation; older code does not understand
 this local policy. Do not roll a peer database backward in place.
+
+Restore streams operation payloads instead of retaining the complete journal
+in memory. The Linux regression restores more than 256 MiB of journal data
+under a 256 MiB address-space limit; historical signatures and projection
+equality are still verified.
 
 Queries accept `knowledge_kind`, `category`, and optional `excerpt_chars`
 (100 to 4096). Excerpt mode omits the large `content` value and returns its

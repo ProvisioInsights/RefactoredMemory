@@ -465,6 +465,13 @@ class Store:
                     progress = True
             if not progress:
                 raise ValidationError("Missing or cyclic action dependency")
+        cutoff = json.loads(self._meta("knowledge_profile_cutoff") or "null")
+        strict = cutoff is not None and body["seq"] > cutoff.get(body["origin"], 0)
+        canonical_type_cache = {}
+        def canonical_types(entity_id):
+            if entity_id not in canonical_type_cache:
+                canonical_type_cache[entity_id] = self._canonical_types(entity_id, body["dependencies"])
+            return canonical_type_cache[entity_id]
         for action in ordered:
             kind, id = action["type"], action["id"]
             old = self.read(kind, id)
@@ -473,8 +480,6 @@ class Store:
                     raise ConflictError("Immutable record ID has different contents")
                 self.db.execute("INSERT OR IGNORE INTO record_events VALUES (?,?,?)", (kind, id, body["id"]))
                 continue
-            cutoff = json.loads(self._meta("knowledge_profile_cutoff") or "null")
-            strict = cutoff is not None and body["seq"] > cutoff.get(body["origin"], 0)
             if strict and kind == "entity" and action["entity_type"] not in (*knowledge.ENDPOINT_TYPES, "source-document"):
                 raise ValidationError("New entities require a canonical type; inspect memory_schema")
             if strict and kind == "assertion" and action["predicate"] != "content" and knowledge.annotation(action) is None:
@@ -495,8 +500,7 @@ class Store:
                 if knowledge.annotation(action) is not None and "object" in action:
                     try:
                         knowledge.validate_endpoints(action,
-                            self._canonical_types(action["subject"], body["dependencies"]),
-                            self._canonical_types(action["object"], body["dependencies"]))
+                            canonical_types(action["subject"]), canonical_types(action["object"]))
                     except ValueError as exc:
                         raise ValidationError(str(exc)) from exc
             elif kind in {"delete", "restore"}:
@@ -860,7 +864,8 @@ class Store:
                  and claim.get("kind", "assert") not in {"retract", "invalidate"}]
         preferred = [claim for claim in heads if claim["id"] in owners]
         values = {claim.get("value") for claim in preferred or heads if isinstance(claim.get("value"), str)}
-        return values or ({entity["entity_type"]} if entity["entity_type"] in knowledge.ENDPOINT_TYPES else set())
+        native_type = "observation" if entity["entity_type"] == "source-document" else entity["entity_type"]
+        return values or ({native_type} if native_type in knowledge.ENDPOINT_TYPES else set())
 
     def enable_knowledge_profile(self):
         """Local operator policy: grandfather acknowledged history, validate new writes."""
@@ -1136,9 +1141,10 @@ class Store:
             identifier(fresh)
             if fresh in origins or fresh == metadata["peer_id"]:
                 raise ConflictError("Restore requires a fresh peer identity")
-            rows = list(source.execute("SELECT * FROM operations ORDER BY position IS NULL,position,origin,seq"))
-            applied = [row for row in rows if row["position"] is not None]
-            if [row["position"] for row in applied] != list(range(1, len(applied) + 1)) or int(metadata["position"]) != len(applied):
+            applied_count = source.execute("SELECT count(*) FROM operations WHERE position IS NOT NULL").fetchone()[0]
+            contiguous = all(row[0] == number for number, row in enumerate(
+                source.execute("SELECT position FROM operations WHERE position IS NOT NULL ORDER BY position"), 1))
+            if not contiguous or int(metadata["position"]) != applied_count:
                 raise ValidationError("Snapshot is missing acknowledged journal history")
             identifier(metadata["store_id"], "snapshot store")
             identifier(metadata["peer_id"], "snapshot peer")
@@ -1150,14 +1156,14 @@ class Store:
             with restored._transaction():
                 restored._setmeta("recovery_keys", canonical(keys))
                 restore_time = utcnow()
-                restored._setmeta("restored_from", canonical({"peer_id": metadata["peer_id"], "inherited_through": len(applied), "restored_at": restore_time}))
+                restored._setmeta("restored_from", canonical({"peer_id": metadata["peer_id"], "inherited_through": applied_count, "restored_at": restore_time}))
                 try:
                     for inherited in source.execute("SELECT * FROM inherited_receipts"):
                         restored.db.execute("INSERT OR IGNORE INTO inherited_receipts VALUES (?,?,?,?,?,?)", tuple(inherited))
                 except sqlite3.OperationalError:
                     pass
                 frontier = {}
-                for row in rows:
+                for row in source.execute("SELECT * FROM operations ORDER BY position IS NULL,position,origin,seq"):
                     body = json.loads(row["body"])
                     if canonical(body) != row["body"] or body["store_id"] != restored.store_id or body["schema"] != SCHEMA:
                         raise ValidationError("Invalid snapshot operation encoding")

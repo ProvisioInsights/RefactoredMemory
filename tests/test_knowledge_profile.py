@@ -168,5 +168,21 @@ class KnowledgeProfileTests(unittest.TestCase):
         self.assertEqual(self.store._canonical_types('legacy-project',frontier),{'project'})
         self.assertEqual(self.store._canonical_types('legacy-project'),{'organization'})
 
+    def test_document_mentions_are_capture_links_not_business_claims(self):
+        self.store.submit([{'type':'entity','id':'document','entity_type':'source-document','label':'Synthetic captured message'}])
+        self.store.enable_knowledge_profile()
+        self.store.submit([self.claim('mention',subject='document',predicate='mentions',object='person',
+                                    provenance=annotation(category='taxonomy',qualifiers={'layer':'capture','mention_kind':'header-reported-recipient'}))])
+        row=self.store.query(predicate='mentions')['assertions'][0]
+        self.assertEqual(self.store.get_entity('document')['entity_type'],'source-document')
+        self.assertEqual(self.store.get_entity('document')['classification']['canonical_types'],['observation'])
+        self.assertEqual(row['knowledge']['qualifiers']['layer'],'capture')
+        self.assertFalse(row['human_verified'])
+        self.assertEqual(self.store.query(predicate='invests-in')['assertions'],[])
+
+    def test_business_entity_cannot_pose_as_document_mention_source(self):
+        with self.assertRaises(ValidationError):
+            self.store.submit([self.claim('invalid',predicate='mentions',object='org-a',provenance=annotation(category='taxonomy'))])
+
 
 if __name__=='__main__': unittest.main()
