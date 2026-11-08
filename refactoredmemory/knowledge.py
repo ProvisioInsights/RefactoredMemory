@@ -365,6 +365,23 @@ KINDS = ("fact", "relationship", "observation")
 CATEGORIES = tuple(sorted({entry["category"] for entry in PREDICATES.values()}))
 # These labels are properties, not replacements for immutable entity identities.
 FACT_PREDICATES = tuple(["name","alias","description","status","homepage","founded-on","acquired-on","phone","email","address","birth-date","last-contacted","identifier"]) + (TYPE_PREDICATE, "rm:alias")
+FACT_DEFINITIONS = {
+    name: {"kind": "fact", "cardinality": "multi-valued", "description": description}
+    for name, description in {
+        "rm:contact-point": "An independently sourced contact address or profile URL; ownership and reachability are separate checks.",
+        "rm:profile-property": "A source-reported profile property with its original context and source version.",
+        "rm:reported-date": "A source-reported date property; different properties and observations may coexist.",
+        "rm:communication-record": "A dated mailbox record; receipt, delivery, reading and relationship validity are not inferred.",
+        "rm:meeting-record": "A captured provider meeting record with its reported date; participant identity is separate.",
+        "rm:conversation-reference": "A captured conversation address reference with explicit identity/time limitations.",
+        "rm:relationship-date-note": "A named date field reported in legacy relationship context; not a replacement validity interval.",
+        "rm:enrichment-review": "An independent source-linked issue requiring review.",
+        "rm:legacy-reference": "An explicit legacy identifier mapping; no affirmation of the referenced claim.",
+        "rm:contact-record": "A dated interaction observation within a scoped engagement.",
+        "rm:prospect-record": "A source-reported prospect within a project; not an established conversation.",
+        "rm:review-flag": "An independent source-linked quality review record.",
+    }.items()
+}
 
 
 def annotation(action):
@@ -397,6 +414,9 @@ def validate_annotation(action):
         raise ValueError("Knowledge category disagrees with predicate")
     if definition and value.get("cardinality", definition["cardinality"]) != definition["cardinality"]:
         raise ValueError("Knowledge cardinality disagrees with predicate")
+    fact_definition = FACT_DEFINITIONS.get(action["predicate"]) if expected == "fact" else None
+    if fact_definition and value.get("cardinality", fact_definition["cardinality"]) != fact_definition["cardinality"]:
+        raise ValueError("Knowledge cardinality disagrees with fact predicate")
     if action["predicate"] == TYPE_PREDICATE and action.get("value") not in ENDPOINT_TYPES:
         raise ValueError("Unsupported canonical endpoint type")
 
@@ -418,17 +438,23 @@ def describe(action):
     """Labels describe structure, never human verification or source authority."""
     supplied = annotation(action)
     if isinstance(supplied, dict) and supplied.get("schema") == PROFILE:
-        return dict(supplied)
+        result = dict(supplied)
+        if result.get("kind") == "fact" and action.get("predicate") in FACT_DEFINITIONS:
+            result["cardinality"] = FACT_DEFINITIONS[action["predicate"]]["cardinality"]
+        return result
     kind = "relationship" if "object" in action else "observation" if action.get("predicate") == "content" else "fact"
     result = {"kind": kind, "profile": "legacy-unannotated"}
     definition = PREDICATES.get(action.get("predicate"))
     if definition and kind == "relationship":
         result.update(category=definition["category"], cardinality=definition.get("cardinality", "multi-valued"))
+    if kind == "fact" and action.get("predicate") in FACT_DEFINITIONS:
+        result["cardinality"] = FACT_DEFINITIONS[action["predicate"]]["cardinality"]
     return result
 
 
 def multi_valued(predicate):
-    return PREDICATES.get(predicate, {}).get("cardinality") == "multi-valued"
+    return (PREDICATES.get(predicate, {}).get("cardinality") == "multi-valued"
+            or FACT_DEFINITIONS.get(predicate, {}).get("cardinality") == "multi-valued")
 
 
 def excerpt_offset(content, folded_text, length):
@@ -450,6 +476,7 @@ def contract():
     return {"schema": PROFILE, "atlas_revision": ATLAS_REVISION,
             "endpoint_types": list(ENDPOINT_TYPES), "knowledge_kinds": list(KINDS),
             "categories": list(CATEGORIES), "predicates": PREDICATES,
+            "fact_predicates": FACT_DEFINITIONS,
             "type_predicate": TYPE_PREDICATE,
             "limits": ["An annotation is not owner verification.",
                        "Unknown dates are not definite as-of matches.",

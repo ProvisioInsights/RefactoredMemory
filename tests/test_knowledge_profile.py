@@ -14,6 +14,35 @@ def annotation(kind='relationship', category='affiliation', qualifiers=None):
 
 
 class KnowledgeProfileTests(unittest.TestCase):
+    def test_contact_points_and_timeline_entries_coexist(self):
+        for predicate in ['rm:contact-point','rm:communication-record','rm:profile-property','rm:reported-date','rm:legacy-reference']:
+            self.store.submit([{'type':'assertion','id':predicate+suffix,'subject':'person','predicate':predicate,
+                'value':value,'source_ids':['evidence'],'provenance':annotation(kind='fact',category=None)}
+                for suffix,value in [('a',{'observed':'first'}),('b',{'observed':'second'})]])
+            rows=self.store.query(subject='person',predicate=predicate)['assertions']
+            self.assertEqual(len(rows),2)
+            self.assertTrue(all(row['alternatives']==[] for row in rows))
+            self.assertTrue(all(row['knowledge']['cardinality']=='multi-valued' for row in rows))
+
+    def test_multivalued_fact_keeps_real_correction_conflicts(self):
+        def point(id,**extra):return {'type':'assertion','id':id,'subject':'person','predicate':'rm:contact-point',
+            'value':id,'source_ids':['evidence'],'provenance':annotation(kind='fact',category=None),**extra}
+        self.store.submit([point('original')])
+        self.store.submit([point('correction-a',kind='correct',predecessors=['original'],reason='Synthetic correction')])
+        self.store.submit([point('correction-b',kind='correct',predecessors=['original'],reason='Synthetic competing correction')])
+        rows=self.store.query(predicate='rm:contact-point')['assertions']
+        self.assertEqual({r['id'] for r in rows},{'correction-a','correction-b'})
+        self.assertTrue(all(r['conflicts'] for r in rows))
+        self.assertTrue(all(r['alternatives']==[] for r in rows))
+
+    def test_fact_cardinality_is_published_and_cannot_be_overridden(self):
+        self.assertEqual(contract()['fact_predicates']['rm:contact-point']['cardinality'],'multi-valued')
+        metadata=annotation(kind='fact',category=None);metadata['knowledge']['cardinality']='functional'
+        with self.assertRaises(ValidationError):
+            self.store.submit([{'type':'assertion','id':'bad-cardinality','subject':'person','predicate':'rm:contact-point',
+                'value':'synthetic','source_ids':['evidence'],'provenance':metadata}])
+        self.assertIsNone(self.store.read('assertion','bad-cardinality'))
+
     def setUp(self):
         self.store = Store(':memory:')
         self.store.submit([

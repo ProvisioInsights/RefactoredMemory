@@ -87,6 +87,14 @@ original-character offset and source references. It does not remove full text.
 Legacy assertions are labeled `legacy-unannotated`; readable does not mean
 schema-qualified. Counts of imported records are not counts of reviewed facts.
 
+`memory_schema.fact_predicates` publishes known fact cardinalities. Contact
+points, source-reported profile properties, interaction observations, reported
+dates, legacy references and review issues are independent multi-valued facts.
+Two email addresses or two mailbox observations therefore do not automatically
+become competing alternatives. Explicit correction/retraction lineage and real
+branching correction conflicts remain visible. Unregistered generic fact
+predicates retain the existing functional default.
+
 ## Restoring legacy context
 
 An Atlas relationship can have both a target and a value containing attributes.
