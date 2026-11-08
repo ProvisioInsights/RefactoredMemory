@@ -1,5 +1,5 @@
 # Optional remote OAuth resource-server profile, pinned for reproducible images.
-PyJWT==2.13.0
+PyJWT==2.15.1
 cryptography==50.0.0
 cffi==2.1.1
 pycparser==3.0

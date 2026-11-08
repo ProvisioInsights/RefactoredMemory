@@ -1,26 +1,21 @@
 # syntax=docker/dockerfile:1
-FROM python:3.12.16-slim-trixie@sha256:4840d514c583a4d3d8cad3940e68dee6f0f6f3635c12fcd0a3d74c21a5b93a54 AS wheels
-WORKDIR /build
-COPY requirements-oauth.txt .
-# An optional build-only CA supports managed environments; it never enters the runtime.
+# Refresh both pins together and validate before promotion.
+FROM cgr.dev/chainguard/python:latest-dev@sha256:898360ca56a2a65c3facdd36a4e6151133a580aa367195261554e82948921ff1 AS builder
+WORKDIR /app
+RUN python -m venv /app/venv
+ENV PATH="/app/venv/bin:$PATH"
+COPY --chmod=0644 requirements-oauth.txt /app/requirements-oauth.txt
 RUN --mount=type=secret,id=proxy_ca,target=/tmp/proxy-ca \
     if [ -f /tmp/proxy-ca ]; then export PIP_CERT=/tmp/proxy-ca; fi; \
-    python -m pip wheel --disable-pip-version-check --no-cache-dir --only-binary=:all: \
-    --wheel-dir=/wheels -r requirements-oauth.txt
+    pip install --disable-pip-version-check --no-cache-dir --only-binary=:all: -r /app/requirements-oauth.txt \
+    && python -m pip uninstall --yes pip setuptools wheel
 
-FROM python:3.12.16-slim-trixie@sha256:4840d514c583a4d3d8cad3940e68dee6f0f6f3635c12fcd0a3d74c21a5b93a54
+FROM cgr.dev/chainguard/python:latest@sha256:1a00964779bf570a8cb2ea4fa086614af19c35069029785c08fcec0c50b66ac0
 WORKDIR /app
-COPY requirements-oauth.txt /tmp/requirements-oauth.txt
-COPY --from=wheels /wheels /tmp/wheels
-RUN python -m pip install --disable-pip-version-check --no-cache-dir --no-index \
-      --find-links=/tmp/wheels -r /tmp/requirements-oauth.txt \
-    && rm -rf /tmp/wheels /tmp/requirements-oauth.txt \
-    && groupadd --gid 10001 memory \
-    && useradd --uid 10001 --gid 10001 --no-create-home --shell /usr/sbin/nologin memory
-COPY --chown=0:0 refactoredmemory /app/refactoredmemory
-RUN chmod -R a+rX /app/refactoredmemory
-ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+COPY --from=builder /app/venv /app/venv
+COPY --chown=0:0 --chmod=0755 refactoredmemory /app/refactoredmemory
+ENV PATH="/app/venv/bin:$PATH" PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 USER 10001:10001
 EXPOSE 8765 8766
-ENTRYPOINT ["python", "-m", "refactoredmemory", "--db", "/data/memory.sqlite3"]
+ENTRYPOINT ["/app/venv/bin/python", "-m", "refactoredmemory", "--db", "/data/memory.sqlite3"]
 CMD ["serve", "--host", "127.0.0.1"]
