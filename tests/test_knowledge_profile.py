@@ -183,6 +183,24 @@ class KnowledgeProfileTests(unittest.TestCase):
                 Store.restore(snapshot,destination)
             self.assertFalse(destination.exists())
 
+    def test_deployment_guard_accepts_only_the_exact_policy_without_writes(self):
+        import importlib.util,sqlite3
+        from refactoredmemory.store import KNOWLEDGE_WRITER_GATE_SQL
+        path=Path(__file__).resolve().parents[1]/'deploy/container_entrypoint.py'
+        if not path.exists():self.skipTest('Standalone deployment guard is checked from the sealed source')
+        spec=importlib.util.spec_from_file_location('synthetic_deployment_guard',path)
+        guard=importlib.util.module_from_spec(spec);spec.loader.exec_module(guard)
+        self.assertEqual(guard.KNOWLEDGE_WRITER_GATE_SQL,KNOWLEDGE_WRITER_GATE_SQL)
+        self.store.enable_knowledge_profile()
+        with tempfile.TemporaryDirectory() as tmp:
+            snapshot=Path(tmp)/'backup.sqlite3';self.store.backup(snapshot)
+            before=snapshot.read_bytes();guard.validate_existing_database(snapshot)
+            self.assertEqual(snapshot.read_bytes(),before)
+            with sqlite3.connect(snapshot) as altered:
+                altered.execute('DROP TRIGGER knowledge_writer_gate')
+                altered.execute('CREATE TRIGGER knowledge_writer_gate BEFORE INSERT ON operations BEGIN SELECT 1; END')
+            with self.assertRaises(ValueError):guard.validate_existing_database(snapshot)
+
     def test_endpoint_validation_does_not_rescan_the_journal_view(self):
         original=self.store._view
         def refuse(*args,**kwargs):raise AssertionError('Endpoint check rescanned the journal')

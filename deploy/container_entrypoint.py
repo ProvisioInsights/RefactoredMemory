@@ -11,7 +11,16 @@ DATABASE = Path("/data/memory.sqlite3")
 OWNER_COMMANDS = {
     "init", "status", "identity", "peer-admit", "peer-revoke", "recovery-admit",
     "grant", "revoke", "owner-submit", "query", "history", "backup", "restore", "rebuild", "import",
+    "knowledge-schema", "knowledge-enforce",
 }
+
+# Exact allowlist shared with store.py, tested for equality. The guard stays
+# standalone and read-only: importing Store would open a writable connection.
+KNOWLEDGE_WRITER_GATE_SQL = """CREATE TRIGGER knowledge_writer_gate
+            BEFORE INSERT ON operations BEGIN
+            SELECT CASE WHEN refmem_knowledge_writer_profile() != 'refactoredmemory.knowledge:v1'
+            THEN RAISE(ABORT,'Reconnect with a knowledge-profile-aware writer') END;
+            END"""
 
 # This profile requires an existing schema-1 identity and table layout. The
 # guard performs no repair; restore performs full signed-journal verification.
@@ -46,8 +55,9 @@ def validate_existing_database(path):
         connection.execute("PRAGMA trusted_schema=OFF")
         connection.execute("PRAGMA query_only=ON")
         connection.execute("BEGIN")
-        if connection.execute("SELECT 1 FROM sqlite_master WHERE type IN ('trigger','view') LIMIT 1").fetchone():
-            raise ValueError(problem)
+        for item in connection.execute("SELECT type,name,tbl_name,sql FROM sqlite_master WHERE type IN ('trigger','view')"):
+            if tuple(item) != ('trigger','knowledge_writer_gate','operations',KNOWLEDGE_WRITER_GATE_SQL):
+                raise ValueError(problem)
         for table, columns in TABLE_COLUMNS.items():
             schema = connection.execute("SELECT type,sql FROM sqlite_master WHERE name=?", (table,)).fetchone()
             if not schema or schema[0] != "table" or not isinstance(schema[1], str) or not schema[1].lstrip().upper().startswith("CREATE TABLE"):
