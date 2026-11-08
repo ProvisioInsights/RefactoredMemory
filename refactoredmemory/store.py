@@ -121,6 +121,10 @@ class Store:
                 os.close(fd)
         self.db = sqlite3.connect(self.path, isolation_level=None, check_same_thread=False, timeout=30)
         self.db.row_factory = sqlite3.Row
+        # Connection-local capability: older already-open writers do not know
+        # this function and therefore fail closed once the policy is enabled.
+        self.db.create_function("refmem_knowledge_writer_profile", 0,
+                                lambda: knowledge.PROFILE, deterministic=True)
         self.db.execute("PRAGMA journal_mode=WAL")
         self.db.execute("PRAGMA synchronous=FULL")
         self.db.execute("PRAGMA foreign_keys=ON")
@@ -174,6 +178,8 @@ class Store:
             self.peer_id = self._meta("peer_id")
             identifier(self.store_id)
             identifier(self.peer_id)
+            if self._meta("knowledge_profile_cutoff"):
+                self._ensure_knowledge_writer_gate()
 
     def __enter__(self):
         return self
@@ -875,7 +881,17 @@ class Store:
         with self._transaction():
             if not self._meta("knowledge_profile_cutoff"):
                 self._setmeta("knowledge_profile_cutoff", canonical(self._frontier()))
+            self._ensure_knowledge_writer_gate()
             return self.knowledge_contract()
+
+    def _ensure_knowledge_writer_gate(self):
+        # The exact function/profile is controlled by this release, never input.
+        # A persisted SQL trigger guards stale connections without killing them.
+        self.db.execute("""CREATE TRIGGER IF NOT EXISTS knowledge_writer_gate
+            BEFORE INSERT ON operations BEGIN
+            SELECT CASE WHEN refmem_knowledge_writer_profile() != 'refactoredmemory.knowledge:v1'
+            THEN RAISE(ABORT,'Reconnect with a knowledge-profile-aware writer') END;
+            END""")
 
     def knowledge_contract(self):
         with self._lock:

@@ -152,6 +152,24 @@ class KnowledgeProfileTests(unittest.TestCase):
                 restored.submit([self.claim('typed',provenance=annotation())])
             finally:restored.close()
 
+    def test_enforcement_blocks_already_open_legacy_writer_but_keeps_reads(self):
+        import sqlite3
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/'policy.sqlite3'
+            with Store(path) as current:
+                current.submit([{'type':'entity','id':'person','entity_type':'person','label':'Synthetic'}])
+                legacy=sqlite3.connect(path,isolation_level=None)
+                try:
+                    current.enable_knowledge_profile()
+                    self.assertEqual(legacy.execute('SELECT count(*) FROM records').fetchone()[0],1)
+                    before=legacy.execute('SELECT count(*) FROM operations').fetchone()[0]
+                    with self.assertRaisesRegex(sqlite3.OperationalError,'no such function'):
+                        legacy.execute("INSERT INTO operations SELECT 'stale-writer',origin,seq+1,body,signature,received_at,NULL,NULL,NULL FROM operations LIMIT 1")
+                    self.assertEqual(legacy.execute('SELECT count(*) FROM operations').fetchone()[0],before)
+                    current.submit([{'type':'entity','id':'project','entity_type':'project','label':'Synthetic Project'}])
+                    self.assertEqual(legacy.execute('SELECT count(*) FROM records').fetchone()[0],2)
+                finally:legacy.close()
+
     def test_endpoint_validation_does_not_rescan_the_journal_view(self):
         original=self.store._view
         def refuse(*args,**kwargs):raise AssertionError('Endpoint check rescanned the journal')

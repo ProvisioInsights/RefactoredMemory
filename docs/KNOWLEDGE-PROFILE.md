@@ -65,6 +65,12 @@ peer operations are checked too, so an unupgraded writer can pause sync rather
 than silently introduce untyped structured records. Upgrade both peers before
 enabling this policy. The local policy is not a consumer MCP mutation.
 
+A connection-local profile capability and persisted insertion trigger also
+block already-open older writers. Their reads continue; new writes fail closed
+until the client reconnects to the upgraded runtime. This is a compatibility
+barrier for trusted local application connections, not an access boundary
+against a local operator able to modify the database or runtime itself.
+
 The policy is retained across the supported fresh-identity restore procedure.
 Restore still revokes old consumer and peer admissions. A code rollback must
 retain the semantic enforcement implementation; older code does not understand
