@@ -6,6 +6,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import tracemalloc
 import unittest
 
 from refactoredmemory.store import Store
@@ -48,6 +49,27 @@ def memory_probe(mode):
 
 
 class QueryMemoryTests(unittest.TestCase):
+    def test_filtered_query_keeps_large_unreturned_values_out_of_memory(self):
+        with Store(":memory:") as store:
+            store.submit([
+                {"type": "entity", "id": "wide", "entity_type": "project", "label": "Synthetic wide history"},
+                {"type": "source", "id": "wide-source", "uri": "synthetic:wide", "content": "Synthetic evidence"},
+            ])
+            for batch in range(16):
+                store.submit([{"type": "assertion", "id": f"wide-{i:03}", "subject": "wide", "predicate": "content",
+                               "value": ("needle" if i == 0 else str(i)) + "x" * 60000,
+                               "source_ids": ["wide-source"]} for i in range(batch * 8, batch * 8 + 8)])
+            tracemalloc.start()
+            try:
+                result = store.query(text="needle", limit=1)
+                _, peak = tracemalloc.get_traced_memory()
+            finally:
+                tracemalloc.stop()
+            self.assertEqual(result["coverage"]["matched"], 1)
+            self.assertEqual(result["assertions"][0]["id"], "wide-000")
+            self.assertEqual(len(result["assertions"][0]["alternatives"]), 127)
+            self.assertLess(peak, 8 * 1024 * 1024)
+
     def test_large_group_keeps_attribution_and_historical_views(self):
         with Store(":memory:") as store:
             original = store.submit(large_group(), actor=ACTOR)

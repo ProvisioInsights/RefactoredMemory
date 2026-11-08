@@ -694,7 +694,7 @@ class Store:
             identifier(object, "object")
             sql += " AND r.object=?"
             args.append(object)
-        return self.db.execute(sql, args).fetchall()
+        return self.db.execute(sql, args)
 
     def query(self, *, subject=None, predicate=None, object=None, text=None, valid_at=None,
               known_at=None, frontier=None, include_inactive=False, limit=100, offset=0):
@@ -710,24 +710,32 @@ class Store:
             rows = self._rows(subject, predicate)
             visible = {}
             occurrences = {}
-            last_operation = None
-            actor_json = None
-            for row in sorted(rows, key=lambda row: row["operation_id"]):
+            actor_metadata = {}
+            metadata_fields = ("id", "subject", "predicate", "object", "kind", "predecessors",
+                               "valid_from", "valid_to", "time_precision")
+            folded_text = text.casefold() if text else None
+            for row in rows:
                 if row["seq"] > view.get(row["origin"], 0):
                     continue
-                a = json.loads(row["body"])
-                if row["operation_id"] != last_operation:
-                    actor_json = self.db.execute(
+                original = json.loads(row["body"])
+                # Retain lineage and filter results, not every document's text.
+                # Selected payloads are hydrated only after applying the limit.
+                a = {key: original[key] for key in metadata_fields if key in original}
+                a["_matches_text"] = folded_text is None or folded_text in canonical(
+                    {key: original.get(key) for key in ("value", "predicate", "reason", "provenance")}).casefold()
+                if row["operation_id"] not in actor_metadata:
+                    actor_metadata[row["operation_id"]] = self.db.execute(
                         "SELECT json_extract(body,'$.actor') FROM operations WHERE id=?",
                         (row["operation_id"],)).fetchone()[0]
-                    last_operation = row["operation_id"]
-                actor = json.loads(actor_json)
+                actor = json.loads(actor_metadata[row["operation_id"]])
                 occurrences.setdefault(a["id"], []).append({"actor": actor, "operation_id": row["operation_id"]})
                 a.update(actor=actor, operation_id=row["operation_id"], known_position=row["position"])
                 # All views deterministically choose the same origin among visible occurrences.
                 # Preserve other submissions as attribution, never independent corroboration.
-                visible.setdefault(a["id"], a)
+                if a["id"] not in visible or a["operation_id"] < visible[a["id"]]["operation_id"]:
+                    visible[a["id"]] = a
             for id, a in visible.items():
+                occurrences[id].sort(key=lambda item: item["operation_id"])
                 a["attributions"] = occurrences[id]
                 # Owner corrections keep authenticated owner authority regardless of reimport order.
                 owners = [o for o in occurrences[id] if o["actor"]["kind"] == "owner"]
@@ -765,17 +773,29 @@ class Store:
                         continue
                     if at < timestamp(a["valid_from"]) or (a.get("valid_to") is not None and at >= timestamp(a["valid_to"])):
                         continue
-                if text and text.casefold() not in canonical({k:a.get(k) for k in ("value", "predicate", "reason", "provenance")}).casefold():
+                if not a["_matches_text"]:
                     continue
                 key = (a["subject"], a["predicate"])
                 a["preferred"] = key in owner_keys and a.get("kind") == "correct" and a["actor"]["kind"] == "owner" and a["id"] not in superseded
-                a["alternatives"] = [other["id"] for other in grouped.get(key, []) if other["id"] != a["id"] and (other.get("value"), other.get("object")) != (a.get("value"), a.get("object"))]
                 a["conflicts"] = sorted({child for pred in a.get("predecessors", []) for child in children.get(pred, []) if child != a["id"]})
                 a["human_verified"] = False
                 result.append(a)
             result.sort(key=lambda a: a["id"])
             total = len(result)
-            return {"assertions": result[offset:offset + limit], "coverage": {"complete": total <= offset + limit and unknown == 0,
+            from functools import lru_cache
+            @lru_cache(maxsize=32)
+            def assertion_value(id):
+                return self.read("assertion", id).get("value")
+            selected = []
+            for metadata in result[offset:offset + limit]:
+                a = self.read("assertion", metadata["id"])
+                for key in ("actor", "operation_id", "known_position", "attributions", "status",
+                            "preferred", "conflicts", "human_verified"):
+                    a[key] = metadata[key]
+                a["alternatives"] = [other["id"] for other in grouped.get((a["subject"], a["predicate"]), [])
+                                     if other["id"] != a["id"] and (assertion_value(other["id"]), other.get("object")) != (a.get("value"), a.get("object"))]
+                selected.append(a)
+            return {"assertions": selected, "coverage": {"complete": total <= offset + limit and unknown == 0,
                     "has_more": total > offset + limit, "next_offset": offset + limit if total > offset + limit else None,
                     "matched": total, "excluded_unknown_time": unknown, "administrative_suppression": bool(deleted),
                     "pending_operations": self.db.execute("SELECT count(*) FROM operations WHERE position IS NULL").fetchone()[0],
