@@ -132,6 +132,7 @@ class Store:
             UNIQUE(origin,seq));
         CREATE INDEX IF NOT EXISTS operations_position ON operations(position);
         CREATE INDEX IF NOT EXISTS operations_attribution ON operations(id,origin,seq,position);
+        CREATE INDEX IF NOT EXISTS operations_metadata ON operations(position,rejected,origin,seq,id);
         CREATE TABLE IF NOT EXISTS records(
             kind TEXT NOT NULL,id TEXT NOT NULL,body TEXT NOT NULL,
             operation_id TEXT NOT NULL,subject TEXT,predicate TEXT,object TEXT,
@@ -318,7 +319,7 @@ class Store:
             self.db.execute("UPDATE grants SET active=0 WHERE digest=?", (hashlib.sha256(token.encode()).hexdigest(),))
 
     def _frontier(self, position=None):
-        sql = "SELECT origin,MAX(seq) AS seq FROM operations WHERE position IS NOT NULL"
+        sql = "SELECT origin,MAX(seq) AS seq FROM operations INDEXED BY operations_metadata WHERE position IS NOT NULL"
         args = []
         if position is not None:
             sql += " AND position<=?"
@@ -419,7 +420,7 @@ class Store:
             return json.loads(row[0]) if row else None
 
     def _reference_visible(self, kind, id, frontier):
-        rows = self.db.execute("SELECT o.origin,o.seq FROM record_events e JOIN operations o ON o.id=e.operation_id WHERE e.kind=? AND e.id=? AND o.position IS NOT NULL", (kind, id))
+        rows = self.db.execute("SELECT o.origin,o.seq FROM record_events e JOIN operations o INDEXED BY operations_attribution ON o.id=e.operation_id WHERE e.kind=? AND e.id=? AND o.position IS NOT NULL", (kind, id))
         return any(row["seq"] <= frontier.get(row["origin"], 0) for row in rows)
 
     def _check_dependencies(self, body):
@@ -543,10 +544,16 @@ class Store:
             found = []
             total_bytes = 0
             more = False
-            for row in self.db.execute("SELECT * FROM operations WHERE position IS NOT NULL ORDER BY position"):
-                if row["seq"] <= frontier.get(row["origin"], 0):
+            # Read small covering metadata first. Acknowledged journals can be
+            # nearly 1 MiB each; copying that prefix on every batch scales badly.
+            for metadata in self.db.execute("SELECT id,origin,seq FROM operations INDEXED BY operations_metadata WHERE position IS NOT NULL ORDER BY position"):
+                if metadata["seq"] <= frontier.get(metadata["origin"], 0):
                     continue
-                if len(found) >= limit or (found and total_bytes + len(row["body"].encode()) > 2 * MAX_OPERATION):
+                if len(found) >= limit:
+                    more = True
+                    break
+                row = self.db.execute("SELECT body,signature FROM operations WHERE id=?", (metadata["id"],)).fetchone()
+                if found and total_bytes + len(row["body"].encode()) > 2 * MAX_OPERATION:
                     more = True
                     break
                 found.append(self._wire(row))
@@ -637,7 +644,7 @@ class Store:
                 self._check_capacity()
             pending_count = self.db.execute("SELECT count(*) FROM operations WHERE position IS NULL").fetchone()[0]
             return {"received": received, "applied": applied, "pending": pending_count,
-                    "rejected": self.db.execute("SELECT count(*) FROM operations WHERE rejected IS NOT NULL").fetchone()[0], "frontier": self._frontier()}
+                    "rejected": self.db.execute("SELECT count(*) FROM operations INDEXED BY operations_metadata WHERE rejected IS NOT NULL").fetchone()[0], "frontier": self._frontier()}
 
     def _view(self, known_at=None, frontier=None):
         current = int(self._meta("position"))
@@ -912,7 +919,7 @@ class Store:
             counts = {r[0]: r[1] for r in self.db.execute("SELECT kind,count(*) FROM records GROUP BY kind")}
             return {"store_id": self.store_id, "peer_id": self.peer_id, "frontier": self._frontier(),
                     "known_position": int(self._meta("position")), "pending": self.db.execute("SELECT count(*) FROM operations WHERE position IS NULL").fetchone()[0],
-                    "rejected": self.db.execute("SELECT count(*) FROM operations WHERE rejected IS NOT NULL").fetchone()[0],
+                    "rejected": self.db.execute("SELECT count(*) FROM operations INDEXED BY operations_metadata WHERE rejected IS NOT NULL").fetchone()[0],
                     "counts": counts, "storage_profile": "personal-plaintext; SQLite WAL synchronous FULL",
                     "deleted_entities": len(self._deleted()), "conflicts": self._delete_edit_conflicts(), "restored_from": json.loads(self._meta("restored_from") or "null")}
 
