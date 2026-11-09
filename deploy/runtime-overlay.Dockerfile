@@ -4,7 +4,8 @@
 # No dependency or root-executed code changes. A new base needs a reviewed recipe.
 FROM refactoredmemory:chainguard-client-app-158b57f
 USER 0:0
-COPY --chown=0:0 --chmod=0755 refactoredmemory /app/refactoredmemory
+# Retain sealed 0444-file/0555-directory modes; supports the actual NAS builder.
+COPY --chown=0:0 refactoredmemory /app/refactoredmemory
 ARG REFMEM_REVISION
 LABEL org.opencontainers.image.revision=${REFMEM_REVISION}
 USER 10001:10001
