@@ -7,6 +7,7 @@ Updated 9 November 2026. The owner's 7 November **“Proceed”** remains in for
 | Decision | Status | Consequence |
 | --- | --- | --- |
 | Product identity | Accepted | RefactoredMemory; reuse this repository and the selected cloud environment. |
+| Shared fields and focused CRUD | Accepted owner clarification, 9 November 2026; catalog/tagged validation in source, rollout/UI pending | A24 and the core field contract put typed fields, missingness, validation and CRUD semantics in RM. AI clients process; the App renders the same contract for search/graph/list editing, with no internal conversation or model/task dashboard. Preserve legacy evidence, grants and history; FC01–FC08 are planned. |
 | V1 purpose | Accepted | One owner's personal knowledge store. People and organizations may be subjects of knowledge without becoming tenants or separate corporate owners. |
 | Two personal peers (Q1) | Accepted | Both accept offline writes, query locally and synchronize. Convergence and recovery are v1 requirements. |
 | First runtime pair (Q2) | Accepted | Owner's Mac plus a Linux workload on the RS822+ NAS. NAS is the normal MCP endpoint; both peers remain independently writable. DSM stays on the main LAN; isolate the workload separately. Actual NAS access/deployment remains pending. |

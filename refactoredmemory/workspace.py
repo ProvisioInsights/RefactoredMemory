@@ -254,6 +254,14 @@ class Workspace:
                        'qualifiers': {'reclassified_from': target_id}}
             if 'object' in new and predicate in knowledge.PREDICATES:
                 profile['category'] = knowledge.PREDICATES[predicate]['category']
+            if knowledge.field_contract.declaration(claim) is not None:
+                import copy
+                profile['qualifiers'] = copy.deepcopy(claim['provenance']['knowledge']['qualifiers'])
+                profile['qualifiers']['reclassified_from'] = target_id
+                try:
+                    profile['qualifiers']['field_contract']['field'] = knowledge.field_contract.matching_field(new)
+                except ValueError as exc:
+                    raise ValidationError(str(exc)) from exc
             new['provenance'] = {'knowledge': profile}
             actions.append(new)
             # Withdrawal names the old meaning; replacement carries the new one.

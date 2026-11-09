@@ -1,5 +1,7 @@
 # Personal v1 implementation contract
 
+**Next core contract:** [A24 and the core field contract](CORE-FIELD-CONTRACT.md) define the accepted standardized-field and focused CRUD direction. The starter catalog, MCP discovery and explicit tagged-write validation now exist in this branch under [the v1 client contract](RM-CLIENT-CONTRACT.md); deployed rollout, universal activation and field-driven UI remain separate. Keep the concrete APIs and time encodings below unchanged until a versioned implementation is qualified. The App will render core definitions; it does not own another schema. Q9's historical UI deferral below is superseded by A23/A24 for the interface direction, not by a new runtime claim.
+
 The accepted NAS deployment extension is defined in [NAS-CONTRACT.md](NAS-CONTRACT.md). Graph semantics remain unchanged; optional OAuth authentication, bounded scheduling, configured capacity guards and separate TLS listeners are implemented. Current executed checks and deployment limits are recorded in [acceptance evidence](ACCEPTANCE-RESULTS.md).
 
 Selected for implementation on 7 November 2026 after the owner answered Q7–Q10 and explicitly said “Proceed”. This authorizes the coordinated build; it does not assert completed qualification or authorize live personal-data ingestion, external deployment, software installation, or credential changes. Linear stays paused.

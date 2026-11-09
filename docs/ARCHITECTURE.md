@@ -34,6 +34,14 @@ World time describes when a claim held. Knowledge time describes when a specific
 
 Correction, retraction, invalidation and reinstatement are distinct semantic operations. Competing sources are not automatically revisions of one claim. Concurrent revisions retain branches until an authorized resolution. Administrative deletion and physical erasure are separate from changing a historical belief. Return evidence, lineage, unresolved alternatives, temporal fidelity and coverage with answers. Derived indexes and summaries never become a second source of truth.
 
+## Core field contract and focused CRUD
+
+[A24](ADRS.md#a24-core-field-contract-and-focused-memory-crud) and [the core field contract](CORE-FIELD-CONTRACT.md) extend the existing type/predicate registry with shared fields, types/cardinality, requiredness, applicability and missing-state semantics. The starter catalog, discovery and explicitly tagged validation are implemented in source under [the client contract](RM-CLIENT-CONTRACT.md), not deployed or universally activated. Every newly governed write path must use core validation; MCP App forms, models, CLI/import adapters and peers cannot define competing semantics. Catalog changes use a controlled versioned rollout on both peers.
+
+Fields remain sourced assertions over immutable identities, with per-value evidence, temporal precision, conflicts and correction history. Not recorded, explicitly unknown and not applicable differ; withheld/partial views do not establish absence. Preserve the existing omitted-end/explicit-null time contract and prevent blank controls from inventing ongoing validity. Retraction, ended validity, archive and permanent erasure retain distinct meanings.
+
+The App is a focused graph/list explorer and CRUD editor over the same authenticated tools. Search-result actions, inline forms and expanded views reuse core definitions. Empty optional-field visibility and themes are presentation only. RM has no internal conversation, assistant/composer, model selector or task dashboard; surrounding chat belongs to the host. See FC01–FC08 for the new, still-planned acceptance evidence.
+
 ## Client-led processing and memory roles
 
 Connected applications and authorized external runners do the model work. RM supplies bounded authorized evidence, validates submitted records and preserves attribution, history and sync. It does not need an embedded model, provider API key or autonomous inference service. Target ChatGPT/Codex, Claude Chat/Cowork/Code, Gemini, Grok, local-model hosts/runners, Praxis and further compatible clients; each actual product connection must be qualified independently.
@@ -56,7 +64,7 @@ The client controls model execution and data submission. A selected graph view s
 
 For each contribution, distinguish requester, authenticated connection/grant, reported product/processor/model, method/job identity, input records/revisions/frontier, output IDs/action, admission/replication outcome and actual review. Trust authority established during admission; mark unknown or client-reported metadata honestly. A display line such as “suggested by this connection” must expand to evidence and history without inventing owner verification. Current provenance is a foundation; A23 defines the additional consistent contract and review experience to implement.
 
-Generated summaries retain their inputs and never overwrite canonical claims. Changed/corrected inputs require visible stale or unassessed freshness. User corrections append semantic actions; comments reference specific identities/claims/revisions. Per-claim review, concurrent branches and current permissions remain effective across clients and peer sync. The ordinary interface stays search/explore, Why?, Comment, Correct this and History; advanced provider machinery is not an end-user setup prerequisite.
+Generated summaries retain their inputs and never overwrite canonical claims. Changed/corrected inputs require visible stale or unassessed freshness. User corrections append semantic actions; existing comments reference specific identities/claims/revisions. Per-claim review, concurrent branches and current permissions remain effective across clients and peer sync. Under A24 the ordinary interface is search, graph/list exploration, evidence, CRUD and history; comments/jobs remain compatible capabilities rather than mandatory navigation. Provider machinery is not an end-user setup prerequisite.
 
 ## Durable operation and personal sync
 

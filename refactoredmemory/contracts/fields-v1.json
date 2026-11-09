@@ -1,0 +1,1863 @@
+{
+  "schema": "refactoredmemory.fields:v1",
+  "revision": 1,
+  "status": "starter-contract",
+  "enforcement": {
+    "explicit_v1_assertions": "core-validated",
+    "untagged_legacy": "existing knowledge-profile rules; not silently field-qualified",
+    "universal_activation": false,
+    "deployment": "publication in source does not deploy or activate this profile on existing peers"
+  },
+  "tag_path": "provenance.knowledge.qualifiers.field_contract",
+  "record_types": [
+    "person",
+    "organization",
+    "project",
+    "location",
+    "occurrence",
+    "topic",
+    "offering",
+    "item",
+    "observation"
+  ],
+  "capture_only_types": [
+    "source-document"
+  ],
+  "fields": {
+    "identity.type": {
+      "label": "Type",
+      "value_type": "entity_type",
+      "applies_to": [
+        "person",
+        "organization",
+        "project",
+        "location",
+        "occurrence",
+        "topic",
+        "offering",
+        "item",
+        "observation"
+      ],
+      "cardinality": "functional",
+      "required_for_create": true,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "rm:canonical-type",
+        "value_path": [],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": false
+      },
+      "classification_resolution_exception": true
+    },
+    "identity.name": {
+      "label": "Name",
+      "value_type": "text",
+      "applies_to": [
+        "person",
+        "organization",
+        "project",
+        "location",
+        "occurrence",
+        "topic",
+        "offering",
+        "item",
+        "observation"
+      ],
+      "cardinality": "functional",
+      "required_for_create": true,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "name",
+        "value_path": [],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": false
+      },
+      "description": "Source-reported display name, possibly a descriptive label; not proof of legal identity."
+    },
+    "identity.aliases": {
+      "label": "Aliases",
+      "value_type": "text_list",
+      "applies_to": [
+        "person",
+        "organization",
+        "project",
+        "location",
+        "occurrence",
+        "topic",
+        "offering",
+        "item",
+        "observation"
+      ],
+      "cardinality": "functional",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "alias",
+        "value_path": [],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "description": "One sourced list under the existing functional alias predicate. Other lists may be alternatives; do not silently union them. Legacy scalar aliases remain unchanged until explicitly corrected."
+    },
+    "identity.description": {
+      "label": "Description",
+      "value_type": "text",
+      "applies_to": [
+        "person",
+        "organization",
+        "project",
+        "location",
+        "occurrence",
+        "topic",
+        "offering",
+        "item",
+        "observation"
+      ],
+      "cardinality": "functional",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "description",
+        "value_path": [],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "identity.status": {
+      "label": "Source-reported status",
+      "value_type": "text",
+      "applies_to": [
+        "person",
+        "organization",
+        "project",
+        "location",
+        "occurrence",
+        "topic",
+        "offering",
+        "item",
+        "observation"
+      ],
+      "cardinality": "functional",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "status",
+        "value_path": [],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "contact.email": {
+      "label": "Email",
+      "value_type": "email",
+      "applies_to": [
+        "person",
+        "organization"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "rm:contact-point",
+        "value_path": [
+          "address"
+        ],
+        "match": {
+          "kind": "email"
+        }
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "contact.phone": {
+      "label": "Phone",
+      "value_type": "phone_text",
+      "applies_to": [
+        "person",
+        "organization"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "rm:contact-point",
+        "value_path": [
+          "address"
+        ],
+        "match": {
+          "kind": "phone"
+        }
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "contact.url": {
+      "label": "Web or profile URL",
+      "value_type": "http_url",
+      "applies_to": [
+        "person",
+        "organization",
+        "project",
+        "offering",
+        "location",
+        "item"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "rm:contact-point",
+        "value_path": [
+          "address"
+        ],
+        "match": {
+          "kind": "url"
+        }
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "profile.location": {
+      "label": "Reported location",
+      "value_type": "text",
+      "applies_to": [
+        "person",
+        "organization",
+        "project",
+        "location",
+        "occurrence",
+        "topic",
+        "offering",
+        "item",
+        "observation"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "rm:profile-property",
+        "value_path": [
+          "reported_value"
+        ],
+        "match": {
+          "property": "location"
+        }
+      },
+      "legacy_properties": [
+        "location",
+        "current-location"
+      ],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "profile.organization": {
+      "label": "Reported organization",
+      "value_type": "text",
+      "applies_to": [
+        "person",
+        "organization",
+        "project"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "rm:profile-property",
+        "value_path": [
+          "reported_value"
+        ],
+        "match": {
+          "property": "org"
+        }
+      },
+      "legacy_properties": [
+        "org",
+        "employer-current",
+        "employer-historical"
+      ],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "profile.role": {
+      "label": "Reported role",
+      "value_type": "text",
+      "applies_to": [
+        "person",
+        "organization"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "rm:profile-property",
+        "value_path": [
+          "reported_value"
+        ],
+        "match": {
+          "property": "role"
+        }
+      },
+      "legacy_properties": [
+        "role",
+        "role-current",
+        "role-historical"
+      ],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "profile.headquarters": {
+      "label": "Reported headquarters",
+      "value_type": "text",
+      "applies_to": [
+        "organization"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "rm:profile-property",
+        "value_path": [
+          "reported_value"
+        ],
+        "match": {
+          "property": "headquarters"
+        }
+      },
+      "legacy_properties": [
+        "headquarters"
+      ],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "profile.preferred_channel": {
+      "label": "Preferred contact channel",
+      "value_type": "text",
+      "applies_to": [
+        "person",
+        "organization"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "rm:profile-property",
+        "value_path": [
+          "reported_value"
+        ],
+        "match": {
+          "property": "preferred-channel"
+        }
+      },
+      "legacy_properties": [
+        "preferred-channel"
+      ],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "profile.relationship_to_owner": {
+      "label": "Relationship to owner",
+      "value_type": "text",
+      "applies_to": [
+        "person",
+        "organization"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "rm:profile-property",
+        "value_path": [
+          "reported_value"
+        ],
+        "match": {
+          "property": "john-relationship"
+        }
+      },
+      "legacy_properties": [
+        "john-relationship"
+      ],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "profile.relationship_origin": {
+      "label": "Relationship origin",
+      "value_type": "text",
+      "applies_to": [
+        "person",
+        "organization",
+        "project"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "rm:profile-property",
+        "value_path": [
+          "reported_value"
+        ],
+        "match": {
+          "property": "relationship-origin"
+        }
+      },
+      "legacy_properties": [
+        "relationship-origin"
+      ],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "profile.contact_status": {
+      "label": "Source-reported contact status",
+      "value_type": "text",
+      "applies_to": [
+        "person",
+        "organization"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "rm:profile-property",
+        "value_path": [
+          "reported_value"
+        ],
+        "match": {
+          "property": "source-contact-status"
+        }
+      },
+      "legacy_properties": [
+        "source-contact-status"
+      ],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "profile.website_reference": {
+      "label": "Website reference or research note",
+      "value_type": "text",
+      "applies_to": [
+        "person",
+        "organization",
+        "project",
+        "location",
+        "occurrence",
+        "topic",
+        "offering",
+        "item",
+        "observation"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "rm:profile-property",
+        "value_path": [
+          "reported_value"
+        ],
+        "match": {
+          "property": "website-reference"
+        }
+      },
+      "legacy_properties": [
+        "website-reference"
+      ],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "profile.x_reference": {
+      "label": "X reference or research note",
+      "value_type": "text",
+      "applies_to": [
+        "person",
+        "organization",
+        "project",
+        "location",
+        "occurrence",
+        "topic",
+        "offering",
+        "item",
+        "observation"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "rm:profile-property",
+        "value_path": [
+          "reported_value"
+        ],
+        "match": {
+          "property": "x-reference"
+        }
+      },
+      "legacy_properties": [
+        "x-reference"
+      ],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "profile.instagram_reference": {
+      "label": "Instagram reference or research note",
+      "value_type": "text",
+      "applies_to": [
+        "person",
+        "organization",
+        "project",
+        "location",
+        "occurrence",
+        "topic",
+        "offering",
+        "item",
+        "observation"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "rm:profile-property",
+        "value_path": [
+          "reported_value"
+        ],
+        "match": {
+          "property": "instagram-reference"
+        }
+      },
+      "legacy_properties": [
+        "instagram-reference"
+      ],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "date.start": {
+      "label": "Reported start date",
+      "value_type": "calendar_date",
+      "applies_to": [
+        "person",
+        "organization",
+        "project",
+        "location",
+        "occurrence",
+        "topic",
+        "offering",
+        "item",
+        "observation"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "rm:reported-date",
+        "value_path": [
+          "date"
+        ],
+        "match": {
+          "property": "start-date"
+        },
+        "read_paths": [
+          [
+            "date"
+          ],
+          [
+            "calendar_period"
+          ]
+        ]
+      },
+      "legacy_properties": [
+        "start-date"
+      ],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "date.end": {
+      "label": "Reported end date",
+      "value_type": "calendar_date",
+      "applies_to": [
+        "person",
+        "organization",
+        "project",
+        "location",
+        "occurrence",
+        "topic",
+        "offering",
+        "item",
+        "observation"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "rm:reported-date",
+        "value_path": [
+          "date"
+        ],
+        "match": {
+          "property": "end-date"
+        },
+        "read_paths": [
+          [
+            "date"
+          ],
+          [
+            "calendar_period"
+          ]
+        ]
+      },
+      "legacy_properties": [
+        "end-date"
+      ],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "date.founded": {
+      "label": "Reported founding date",
+      "value_type": "calendar_date",
+      "applies_to": [
+        "organization",
+        "project",
+        "offering"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "rm:reported-date",
+        "value_path": [
+          "date"
+        ],
+        "match": {
+          "property": "founded"
+        },
+        "read_paths": [
+          [
+            "date"
+          ],
+          [
+            "calendar_period"
+          ]
+        ]
+      },
+      "legacy_properties": [
+        "founded"
+      ],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "date.launched": {
+      "label": "Reported launch date",
+      "value_type": "calendar_date",
+      "applies_to": [
+        "organization",
+        "project",
+        "offering",
+        "item"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "rm:reported-date",
+        "value_path": [
+          "date"
+        ],
+        "match": {
+          "property": "launched"
+        },
+        "read_paths": [
+          [
+            "date"
+          ],
+          [
+            "calendar_period"
+          ]
+        ]
+      },
+      "legacy_properties": [
+        "launched"
+      ],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "date.last_contacted": {
+      "label": "Reported last contact",
+      "value_type": "calendar_date",
+      "applies_to": [
+        "person",
+        "organization"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "rm:reported-date",
+        "value_path": [
+          "date"
+        ],
+        "match": {
+          "property": "last-contacted"
+        },
+        "read_paths": [
+          [
+            "date"
+          ],
+          [
+            "calendar_period"
+          ]
+        ]
+      },
+      "legacy_properties": [
+        "last-contacted"
+      ],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "date.source_verified": {
+      "label": "Source-reported verification date",
+      "value_type": "calendar_date",
+      "applies_to": [
+        "person",
+        "organization",
+        "project",
+        "location",
+        "occurrence",
+        "topic",
+        "offering",
+        "item",
+        "observation"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "rm:reported-date",
+        "value_path": [
+          "date"
+        ],
+        "match": {
+          "property": "verified-date"
+        },
+        "read_paths": [
+          [
+            "date"
+          ],
+          [
+            "calendar_period"
+          ]
+        ]
+      },
+      "legacy_properties": [
+        "verified-date"
+      ],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "date.reported": {
+      "label": "Reported date",
+      "value_type": "calendar_date",
+      "applies_to": [
+        "person",
+        "organization",
+        "project",
+        "location",
+        "occurrence",
+        "topic",
+        "offering",
+        "item",
+        "observation"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "storage": {
+        "predicate": "rm:reported-date",
+        "value_path": [
+          "date"
+        ],
+        "match": {
+          "property": "date"
+        },
+        "read_paths": [
+          [
+            "date"
+          ],
+          [
+            "calendar_period"
+          ]
+        ]
+      },
+      "legacy_properties": [
+        "date"
+      ],
+      "display": {
+        "hide_when_empty": true
+      }
+    },
+    "relationship.employed-by": {
+      "label": "Employed by",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "person"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "employed-by",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "organization"
+      ],
+      "category": "employment",
+      "direction": "directed",
+      "required_context": [
+        "valid_from"
+      ]
+    },
+    "relationship.member-of": {
+      "label": "Member of",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "person",
+        "organization"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "member-of",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "organization"
+      ],
+      "category": "affiliation",
+      "direction": "directed",
+      "required_context": []
+    },
+    "relationship.part-of": {
+      "label": "Part of",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "occurrence",
+        "project",
+        "observation"
+      ],
+      "cardinality": "functional",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "part-of",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "occurrence",
+        "project",
+        "observation"
+      ],
+      "category": "structural",
+      "direction": "directed",
+      "required_context": []
+    },
+    "relationship.contained-in": {
+      "label": "Contained in",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "location"
+      ],
+      "cardinality": "functional",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "contained-in",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "location"
+      ],
+      "category": "geography",
+      "direction": "directed",
+      "required_context": []
+    },
+    "relationship.has-type": {
+      "label": "Has type",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "person",
+        "organization",
+        "project",
+        "location",
+        "occurrence",
+        "topic",
+        "offering",
+        "item",
+        "observation"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "has-type",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "topic"
+      ],
+      "category": "taxonomy",
+      "direction": "directed",
+      "required_context": []
+    },
+    "relationship.operated-by": {
+      "label": "Operated by",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "location"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "operated-by",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "organization"
+      ],
+      "category": "structural",
+      "direction": "directed",
+      "required_context": []
+    },
+    "relationship.based-in": {
+      "label": "Based in",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "person",
+        "organization"
+      ],
+      "cardinality": "functional",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "based-in",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "location"
+      ],
+      "category": "geography",
+      "direction": "directed",
+      "required_context": []
+    },
+    "relationship.occurred-at": {
+      "label": "Occurred at",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "occurrence"
+      ],
+      "cardinality": "functional",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "occurred-at",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "location"
+      ],
+      "category": "occurrence",
+      "direction": "directed",
+      "required_context": []
+    },
+    "relationship.participant-in": {
+      "label": "Participant in",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "person",
+        "organization"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "participant-in",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "occurrence",
+        "project"
+      ],
+      "category": "occurrence",
+      "direction": "directed",
+      "required_context": []
+    },
+    "relationship.connects": {
+      "label": "Connects",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "person",
+        "organization"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "connects",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "person",
+        "organization"
+      ],
+      "category": "network",
+      "direction": "symmetric",
+      "required_context": []
+    },
+    "relationship.owns": {
+      "label": "Owns",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "person",
+        "organization"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "owns",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "item",
+        "offering",
+        "organization"
+      ],
+      "category": "commerce",
+      "direction": "directed",
+      "required_context": []
+    },
+    "relationship.offered-by": {
+      "label": "Offered by",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "offering",
+        "occurrence"
+      ],
+      "cardinality": "functional",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "offered-by",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "organization"
+      ],
+      "category": "commerce",
+      "direction": "directed",
+      "required_context": []
+    },
+    "relationship.sold-by": {
+      "label": "Sold by",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "item",
+        "offering",
+        "occurrence"
+      ],
+      "cardinality": "functional",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "sold-by",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "organization"
+      ],
+      "category": "commerce",
+      "direction": "directed",
+      "required_context": []
+    },
+    "relationship.purchased": {
+      "label": "Purchased",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "person"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "purchased",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "item",
+        "offering",
+        "occurrence"
+      ],
+      "category": "commerce",
+      "direction": "directed",
+      "required_context": []
+    },
+    "relationship.customer-of": {
+      "label": "Customer of",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "person",
+        "organization"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "customer-of",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "organization"
+      ],
+      "category": "customer",
+      "direction": "directed",
+      "required_context": []
+    },
+    "relationship.founder-of": {
+      "label": "Founder of",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "person"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "founder-of",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "organization"
+      ],
+      "category": "employment",
+      "direction": "directed",
+      "required_context": [
+        "valid_from"
+      ]
+    },
+    "relationship.acquired-by": {
+      "label": "Acquired by",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "organization"
+      ],
+      "cardinality": "functional",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "acquired-by",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "organization"
+      ],
+      "category": "structural",
+      "direction": "directed",
+      "required_context": [
+        "valid_from"
+      ]
+    },
+    "relationship.invests-in": {
+      "label": "Invests in",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "person",
+        "organization"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "invests-in",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "organization"
+      ],
+      "category": "capital",
+      "direction": "directed",
+      "required_context": [
+        "amount",
+        "investment_status"
+      ]
+    },
+    "relationship.about": {
+      "label": "About",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "person",
+        "organization",
+        "project",
+        "location",
+        "occurrence",
+        "topic",
+        "offering",
+        "item",
+        "observation"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "about",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "topic",
+        "project"
+      ],
+      "category": "taxonomy",
+      "direction": "directed",
+      "required_context": []
+    },
+    "relationship.parent-of": {
+      "label": "Parent of",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "person"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "parent-of",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "person"
+      ],
+      "category": "personal",
+      "direction": "directed",
+      "required_context": []
+    },
+    "relationship.spouse-of": {
+      "label": "Spouse of",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "person"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "spouse-of",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "person"
+      ],
+      "category": "personal",
+      "direction": "symmetric",
+      "required_context": []
+    },
+    "relationship.sibling-of": {
+      "label": "Sibling of",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "person"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "sibling-of",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "person"
+      ],
+      "category": "personal",
+      "direction": "symmetric",
+      "required_context": []
+    },
+    "relationship.estranged-from": {
+      "label": "Estranged from",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "person"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "estranged-from",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "person"
+      ],
+      "category": "personal",
+      "direction": "symmetric",
+      "required_context": []
+    },
+    "relationship.introduced-by": {
+      "label": "Introduced by",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "person"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "introduced-by",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "person"
+      ],
+      "category": "network",
+      "direction": "directed",
+      "required_context": []
+    },
+    "relationship.created": {
+      "label": "Created",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "person",
+        "organization"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "created",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "item",
+        "offering"
+      ],
+      "category": "creation",
+      "direction": "directed",
+      "required_context": []
+    },
+    "relationship.mentions": {
+      "label": "Mentions",
+      "value_type": "entity_reference",
+      "applies_to": [
+        "observation"
+      ],
+      "cardinality": "multi-valued",
+      "required_for_create": false,
+      "states": [
+        "known"
+      ],
+      "storage": {
+        "predicate": "mentions",
+        "value_path": [
+          "object"
+        ],
+        "match": {}
+      },
+      "legacy_properties": [],
+      "display": {
+        "hide_when_empty": true
+      },
+      "range": [
+        "person",
+        "organization",
+        "project",
+        "location",
+        "occurrence",
+        "topic",
+        "offering",
+        "item",
+        "observation"
+      ],
+      "category": "taxonomy",
+      "direction": "directed",
+      "required_context": []
+    }
+  },
+  "read_only_metadata": [
+    "identity_id",
+    "assertion_id",
+    "actor",
+    "human_verified",
+    "known_position",
+    "frontier",
+    "conflicts",
+    "alternatives",
+    "replication_state"
+  ],
+  "missingness": {
+    "not_recorded": "Read projection only; do not submit a placeholder or unknown claim.",
+    "unknown": "Explicit sourced unknown; null payload at the mapped value path.",
+    "not_applicable": "Explicit sourced non-applicability; null payload at the mapped value path.",
+    "coverage": [
+      "withheld",
+      "unavailable",
+      "conflicted",
+      "temporally-unresolved",
+      "partial"
+    ]
+  },
+  "validity_end": {
+    "unknown": "valid_to must be explicitly null",
+    "known": "valid_to must be a supported world timestamp/date",
+    "ongoing": "valid_to must be omitted; this explicit declaration is required"
+  },
+  "normalization": "Validation only; no inferred identities, country codes, dates, current validity, profile ownership or factual verification.",
+  "compatibility": "Original records and provenance are immutable; aliases are read/migration mappings, not automatic rewriting or identity merging.",
+  "value_types": {
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 65536
+    },
+    "text_list": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1024
+      }
+    },
+    "entity_type": {
+      "enum": [
+        "person",
+        "organization",
+        "project",
+        "location",
+        "occurrence",
+        "topic",
+        "offering",
+        "item",
+        "observation"
+      ]
+    },
+    "entity_reference": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "email": {
+      "type": "string",
+      "maxLength": 320,
+      "pattern": "^[^@\\s]+@[^@\\s]+$"
+    },
+    "phone_text": {
+      "type": "string",
+      "maxLength": 128,
+      "pattern": "^[+0-9() .\\-xXeEtT#;/]+$",
+      "description": "3 to 32 digits; source-reported formatting, no inferred country or reachability"
+    },
+    "http_url": {
+      "type": "string",
+      "maxLength": 65536,
+      "format": "uri",
+      "pattern": "^https?://",
+      "description": "Core also requires a hostname, no credentials and no whitespace; storage never fetches this URL"
+    },
+    "calendar_date": {
+      "type": "string",
+      "maxLength": 10,
+      "pattern": "^\\d{4}(-\\d{2}(-\\d{2})?)?$",
+      "description": "Real calendar year/month/day with matching precision; does not set world validity"
+    }
+  },
+  "investment_context": {
+    "amount": "null for explicitly unknown, otherwise {value: nonnegative finite number, currency: explicit three-letter uppercase code}; no currency inferred",
+    "investment_status": [
+      "proposed",
+      "discussed",
+      "committed",
+      "completed",
+      "declined",
+      "withdrawn",
+      "unknown"
+    ],
+    "meaning": "An investment claim must display its source-reported status; proposed/discussed is not completed funding."
+  },
+  "creation": "A group with any v1 field tag and entity creation includes known identity.type and identity.name assertions agreeing with entity_type and label. Existing source records remain immutable.",
+  "group_scope": "Typed ordinary entities require identity name/type in the group; capture-only source-document identities retain the existing observation/import contract.",
+  "operations": {
+    "create": "Atomic group containing identity plus sourced known type/name; contacts optional",
+    "read": "Existing scoped query/entity/source/history/traversal tools",
+    "update": "Existing submit/correct with retained field declaration and predecessor lineage",
+    "relationship_reclassification": "Explicit withdrawal plus newly tagged replacement through existing correction tool",
+    "remove": "Scoped retraction or explicit validity ending; evidence/history retained",
+    "consumer_entity_archive": false,
+    "permanent_erasure": false
+  },
+  "applicability": {
+    "new_substantive_fields": "dependency frontier plus all type actions in the same atomic group; independent of wire order and respecting owner preference",
+    "identity_type": "establish or resolve classification to a supported type; unresolved current classification does not block repair",
+    "withdrawal": "Retain predecessor value/target, start, precision, uncertainty, value state and semantic qualifiers; retraction retains interval, invalidation only supplies supported end. A legacy ending cannot infer v1 qualification.",
+    "reinstate": "normal current/resulting-type applicability applies"
+  }
+}

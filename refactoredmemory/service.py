@@ -67,7 +67,7 @@ TOOLS = [
      "inputSchema": obj({"entity_id": STRING}, ["entity_id"])},
     {"name": "memory_search_entities", "description": "Find named entity candidates and their canonical types. Matching names never authorize merging identities.",
      "inputSchema": obj({"text": {"type": "string", "minLength": 1, "maxLength": 256}, "limit": {"type": "integer", "minimum": 1, "maximum": 100}}, ["text"])},
-    {"name": "memory_schema", "description": "Read the versioned knowledge kinds, categories, predicate cardinality and endpoint rules used for annotated claims. Legacy claims remain distinguishable.",
+    {"name": "memory_schema", "description": "Read the versioned knowledge contract and core field catalog, including typed values, missing states, storage mappings and explicit tagged-write rules. Legacy claims remain distinguishable; discovery does not enable universal enforcement or grant authority.",
      "inputSchema": obj()},
     {"name": "memory_status", "description": "Inspect local knowledge frontier, pending replication and declared plaintext storage profile. Does not reveal grants, signing keys or bearer credentials.", "inputSchema": obj()},
 ]

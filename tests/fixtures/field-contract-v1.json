@@ -1,0 +1,193 @@
+{
+  "schema": "refactoredmemory.field-fixtures:v1",
+  "valid": [
+    {
+      "id": "name",
+      "field": "identity.name",
+      "value": "Avery Chen",
+      "state": "known"
+    },
+    {
+      "id": "aliases",
+      "field": "identity.aliases",
+      "value": [
+        "A. Chen",
+        "Avery"
+      ],
+      "state": "known"
+    },
+    {
+      "id": "email",
+      "field": "contact.email",
+      "value": {
+        "kind": "email",
+        "address": "avery@example.org"
+      },
+      "state": "known"
+    },
+    {
+      "id": "unknown-email",
+      "field": "contact.email",
+      "value": {
+        "kind": "email",
+        "address": null
+      },
+      "state": "unknown"
+    },
+    {
+      "id": "no-profile",
+      "field": "contact.url",
+      "value": {
+        "kind": "url",
+        "address": null
+      },
+      "state": "not_applicable"
+    },
+    {
+      "id": "phone",
+      "field": "contact.phone",
+      "value": {
+        "kind": "phone",
+        "address": "+49 (30) 555 0100",
+        "country_code": null
+      },
+      "state": "known"
+    },
+    {
+      "id": "organization-note",
+      "field": "profile.organization",
+      "value": {
+        "property": "employer-historical",
+        "reported_value": "Grove Ventures"
+      },
+      "state": "known"
+    },
+    {
+      "id": "profile-research-note",
+      "field": "profile.website_reference",
+      "value": {
+        "property": "website-reference",
+        "reported_value": "No confidently identified website in captured note."
+      },
+      "state": "known"
+    },
+    {
+      "id": "month",
+      "field": "date.start",
+      "value": {
+        "property": "start-date",
+        "date": "2026-05",
+        "precision": "month",
+        "reported_value": "May 2026"
+      },
+      "state": "known"
+    },
+    {
+      "id": "year",
+      "field": "date.founded",
+      "value": {
+        "property": "founded",
+        "date": "2020",
+        "precision": "year"
+      },
+      "state": "known",
+      "subject": "organization"
+    },
+    {
+      "id": "unknown-date",
+      "field": "date.end",
+      "value": {
+        "property": "end-date",
+        "date": null,
+        "precision": "unknown"
+      },
+      "state": "unknown"
+    }
+  ],
+  "invalid": [
+    {
+      "id": "placeholder-email",
+      "field": "contact.email",
+      "value": {
+        "kind": "email",
+        "address": "not recorded"
+      },
+      "state": "known"
+    },
+    {
+      "id": "bad-url",
+      "field": "contact.url",
+      "value": {
+        "kind": "url",
+        "address": "javascript:alert(1)"
+      },
+      "state": "known"
+    },
+    {
+      "id": "credential-url",
+      "field": "contact.url",
+      "value": {
+        "kind": "url",
+        "address": "https://user:password@example.org/"
+      },
+      "state": "known"
+    },
+    {
+      "id": "fake-month-day",
+      "field": "date.start",
+      "value": {
+        "property": "start-date",
+        "date": "2026-05-01",
+        "precision": "month"
+      },
+      "state": "known"
+    },
+    {
+      "id": "bad-month",
+      "field": "date.start",
+      "value": {
+        "property": "start-date",
+        "date": "2026-13",
+        "precision": "month"
+      },
+      "state": "known"
+    },
+    {
+      "id": "wrong-contact",
+      "field": "contact.email",
+      "value": {
+        "kind": "phone",
+        "address": "avery@example.org"
+      },
+      "state": "known"
+    },
+    {
+      "id": "unknown-placeholder",
+      "field": "profile.role",
+      "value": {
+        "property": "role",
+        "reported_value": "unknown"
+      },
+      "state": "unknown"
+    },
+    {
+      "id": "empty-means-missing",
+      "field": "profile.role",
+      "value": {
+        "property": "role",
+        "reported_value": null
+      },
+      "state": "not_recorded"
+    },
+    {
+      "id": "derived-authority",
+      "field": "contact.email",
+      "value": {
+        "kind": "email",
+        "address": "avery@example.org",
+        "eligible_for_unique_identity_binding": true
+      },
+      "state": "known"
+    }
+  ]
+}

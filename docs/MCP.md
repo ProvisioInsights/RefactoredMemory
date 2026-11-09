@@ -1,5 +1,11 @@
 # Required MCP integration
 
+## Accepted core field extension
+
+[A24 and the core field contract](CORE-FIELD-CONTRACT.md) require shared schema discovery and core-enforced field/relationship CRUD across model, CLI, importer, peer and optional App paths. Extend existing MCP tools and semantic admission rather than invent a UI-owned data API. Publish bounded catalog revisions, supported input schemas, requiredness/cardinality and explicit missing-state/time mappings before enabling new form writes. This branch publishes `memory_schema.field_catalog` and validates explicit v1 tags under [the client contract](RM-CLIENT-CONTRACT.md). The current personal peers are not upgraded by this source change; universal activation and field-driven UI remain pending.
+
+Search results, inline forms and expanded graph/detail views must use the same meanings and current grants. RM owns no conversation UI; host messages/composers and direct-launch options stay outside the App. Preserve useful text/structured tools, read-only fallback, immutable evidence, guarded corrections and stable retries. Opening a view must not automatically disclose its complete results or source bodies to a model. FC01–FC08 qualification does not follow from older MCP or App-reference-host tests.
+
 **Client-led implementation, 9 November 2026:** The journal-backed workspace tools, pinned briefs, client task checkpoints and optional graph App are implemented in this branch. See [the workspace guide](CLIENT-LED-WORKSPACE.md) and [executed qualification](CLIENT-LED-VALIDATION.md). Historical requirements-only notes below describe their earlier documentation revision; named provider products still require separate live qualification.
 
 The NAS extension implements a maintained-AS OAuth resource profile, independent whole-store agent grants, separate public MCP/private sync TLS listeners and explicit legacy HTTP compatibility. See [NAS-CONTRACT.md](NAS-CONTRACT.md), the [conformance details](MCP-CONFORMANCE.md) and [current executed evidence](ACCEPTANCE-RESULTS.md).

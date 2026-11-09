@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:refactoredmemory:field-tag:v1",
+  "title": "RM field contract tag v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "revision",
+    "field",
+    "state",
+    "validity_end"
+  ],
+  "properties": {
+    "schema": {
+      "const": "refactoredmemory.fields:v1"
+    },
+    "revision": {
+      "const": 1,
+      "type": "integer"
+    },
+    "field": {
+      "enum": [
+        "identity.type",
+        "identity.name",
+        "identity.aliases",
+        "identity.description",
+        "identity.status",
+        "contact.email",
+        "contact.phone",
+        "contact.url",
+        "profile.location",
+        "profile.organization",
+        "profile.role",
+        "profile.headquarters",
+        "profile.preferred_channel",
+        "profile.relationship_to_owner",
+        "profile.relationship_origin",
+        "profile.contact_status",
+        "profile.website_reference",
+        "profile.x_reference",
+        "profile.instagram_reference",
+        "date.start",
+        "date.end",
+        "date.founded",
+        "date.launched",
+        "date.last_contacted",
+        "date.source_verified",
+        "date.reported",
+        "relationship.employed-by",
+        "relationship.member-of",
+        "relationship.part-of",
+        "relationship.contained-in",
+        "relationship.has-type",
+        "relationship.operated-by",
+        "relationship.based-in",
+        "relationship.occurred-at",
+        "relationship.participant-in",
+        "relationship.connects",
+        "relationship.owns",
+        "relationship.offered-by",
+        "relationship.sold-by",
+        "relationship.purchased",
+        "relationship.customer-of",
+        "relationship.founder-of",
+        "relationship.acquired-by",
+        "relationship.invests-in",
+        "relationship.about",
+        "relationship.parent-of",
+        "relationship.spouse-of",
+        "relationship.sibling-of",
+        "relationship.estranged-from",
+        "relationship.introduced-by",
+        "relationship.created",
+        "relationship.mentions"
+      ]
+    },
+    "state": {
+      "enum": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ]
+    },
+    "validity_end": {
+      "enum": [
+        "known",
+        "unknown",
+        "ongoing"
+      ]
+    }
+  }
+}

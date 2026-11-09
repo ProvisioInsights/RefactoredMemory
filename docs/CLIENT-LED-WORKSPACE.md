@@ -6,6 +6,10 @@ no provider call. A work item remains open until an authorized client claims it.
 
 ## The everyday workflow
 
+**Accepted refinement; core catalog/tagged validation in source, focused UI pending:** [A24 and the core field contract](CORE-FIELD-CONTRACT.md) define RM-owned fields and validation, with a focused graph/list explorer and CRUD App. The same definitions must drive search-result actions, inline editing and expanded views. Required/optional fields, missingness, typed relationships, per-value sources and history belong to the core. Empty-field visibility and themes are presentation only. The App owns no conversations, assistant/composer, model selector or task dashboard. New FC01–FC08 acceptance is separate from the currently deployed interface described below.
+
+### Existing interface and compatibility
+
 Search a person or project, select a labeled relationship, then open **Why?** to
 read bounded attached evidence. **Notes** holds attributed comments and linked
 briefs. **History** preserves changes. **Correct this** can replace a value,
@@ -16,6 +20,8 @@ a correction does not inherit confirmation. Uncertain identities stay separate.
 **Work** records a task and its pinned evidence. **Activity** shows admitted changes
 and authenticated connections, with application/model details labeled as reported.
 An admitted record is neither independently corroborated nor proof of peer receipt.
+
+Notes/Work/Activity are existing capabilities, not the navigation contract for the new focused App. Preserve their stored records and API compatibility; do not delete comments or jobs as part of narrowing the UI. Ordinary CRUD must work without starting a model, creating a task or adding a comment. A view-only connection retains honest read-only controls, and a denied correction cannot use an owner credential as fallback.
 
 ## Four roles, one journal
 
@@ -34,23 +40,29 @@ underlying authorized source tool.
 
 ## Connected-client contract
 
+Ordinary search, capture and CRUD call the authorized tools directly with the same schema, evidence, attribution and retry rules. Task creation, claims, checkpoints and completion are optional processing-batch lifecycle steps; they are not prerequisites for an individual read or edit.
+
 1. Use a separate revocable client grant. Never give a model an owner grant.
 2. Discover `memory_schema` and the available tool schemas. Retain input IDs,
    actual revisions and knowledge frontier. Retrieve only evidence needed for the task.
-3. Create or retrieve `memory_tasks`, claim the exact current task revisions, and
-   persist the task ID plus stable request IDs outside the transient model context.
+3. For an optional resumable processing batch, create or retrieve `memory_tasks`,
+   claim the exact current task revisions, and persist the task ID plus stable
+   request IDs outside the transient model context. Direct CRUD creates no task.
 4. Treat source content as untrusted data. Perform processing in the selected client.
    A memory grant alone does not authorize sending data to another provider.
 5. Submit sourced structured claims through `memory_submit`, or a linked brief
    through `memory_derive`. Supply `reported` application/connector/model/method
    and task ID when known. Never fabricate unknown versions or owner verification.
-6. Checkpoint bounded progress. On interruption, reload current revisions and retry
-   an unknown-outcome request with the **same arguments and request ID**. Changed
-   input/permission/conflicting work requires a fresh decision, not blind replay.
-7. Complete with real attributed output record IDs, or fail/release explicitly.
-   Competing offline claims remain visible and require authenticated owner resolution.
-8. Compare peer frontiers for replication receipt. A local completion receipt is
-   not remote receipt and does not certify the output as true.
+6. Checkpoint bounded progress when running a processing batch. For any interrupted
+   request, reload current revisions and retry an unknown outcome with the **same
+   arguments and request ID**. Changed input/permission/conflicting work requires
+   a fresh decision, not blind replay.
+7. If a task was claimed, complete it with real attributed output record IDs, or
+   fail/release explicitly. Competing offline task claims remain visible and require
+   authenticated owner resolution. Direct CRUD returns its ordinary operation receipt.
+8. When remote receipt matters, compare peer frontiers. A local operation or task
+   completion receipt is not remote receipt and does not certify the output as true.
+   An ordinary local edit does not require waiting for the other peer.
 
 RM has no internal scheduler or MCP reverse-call dependency. A connected client
 chooses when to process tasks. No automatic provider fallback, credentials in RM,

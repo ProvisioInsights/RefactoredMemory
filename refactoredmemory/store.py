@@ -350,6 +350,10 @@ class Store:
         if not isinstance(actions, list) or not 1 <= len(actions) <= MAX_ACTIONS:
             raise ValidationError("Operation needs 1–500 actions")
         bounded_json(actions)
+        try:
+            knowledge.field_contract.validate_group(actions)
+        except ValueError as exc:
+            raise ValidationError(str(exc)) from exc
         if len(canonical(actions).encode()) > MAX_OPERATION - 4096:
             raise ValidationError("Operation exceeds 1 MiB")
         seen = set()
@@ -480,10 +484,12 @@ class Store:
         cutoff = json.loads(self._meta("knowledge_profile_cutoff") or "null")
         strict = cutoff is not None and body["seq"] > cutoff.get(body["origin"], 0)
         canonical_type_cache = {}
-        def canonical_types(entity_id):
-            if entity_id not in canonical_type_cache:
-                canonical_type_cache[entity_id] = self._canonical_types(entity_id, body["dependencies"])
-            return canonical_type_cache[entity_id]
+        def canonical_types(entity_id, post_group=False):
+            key = (entity_id, post_group)
+            if key not in canonical_type_cache:
+                canonical_type_cache[key] = self._canonical_types(entity_id, body["dependencies"],
+                    actions if post_group else (), body["actor"] if post_group else None)
+            return canonical_type_cache[key]
         for action in ordered:
             kind, id = action["type"], action["id"]
             old = self.read(kind, id)
@@ -509,10 +515,17 @@ class Store:
                         raise ValidationError("Missing assertion predecessor")
                     if (previous["subject"], previous["predicate"]) != (action["subject"], action["predicate"]):
                         raise ValidationError("A correction cannot move a claim to another subject or predicate")
-                if knowledge.annotation(action) is not None and "object" in action:
                     try:
+                        knowledge.field_contract.validate_predecessor(action, previous)
+                    except ValueError as exc:
+                        raise ValidationError(str(exc)) from exc
+                if knowledge.annotation(action) is not None and ("object" in action or
+                        knowledge.field_contract.declaration(action) is not None):
+                    try:
+                        tagged = knowledge.field_contract.declaration(action) is not None
                         knowledge.validate_endpoints(action,
-                            canonical_types(action["subject"]), canonical_types(action["object"]))
+                            canonical_types(action["subject"], tagged),
+                            canonical_types(action["object"], tagged) if "object" in action else set())
                     except ValueError as exc:
                         raise ValidationError(str(exc)) from exc
             elif kind in {"delete", "restore"}:
@@ -886,7 +899,7 @@ class Store:
                     "inherited_history": json.loads(self._meta("restored_from") or "null")},
                     "frontier": view, "known_position": position}
 
-    def _canonical_types(self, entity_id, frontier=None):
+    def _canonical_types(self, entity_id, frontier=None, extra_actions=(), group_actor=None):
         entity = self.read("entity", entity_id)
         if entity is None:
             return set()
@@ -903,6 +916,12 @@ class Store:
             actor = self.db.execute("SELECT json_extract(body,'$.actor.kind') FROM operations WHERE id=?", (row["operation_id"],)).fetchone()[0]
             if actor == "owner" and claim.get("kind") == "correct":
                 owners.add(claim["id"])
+        for claim in extra_actions:
+            if (claim.get("type") == "assertion" and claim.get("subject") == entity_id
+                    and claim.get("predicate") == knowledge.TYPE_PREDICATE):
+                claims[claim["id"]] = claim
+                if isinstance(group_actor, dict) and group_actor.get("kind") == "owner" and claim.get("kind") == "correct":
+                    owners.add(claim["id"])
         superseded = {pred for claim in claims.values() for pred in claim.get("predecessors", [])
                       if pred not in owners or claim["id"] in owners}
         heads = [claim for id, claim in claims.items() if id not in superseded

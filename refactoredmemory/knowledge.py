@@ -1,6 +1,8 @@
 """Versioned knowledge annotations; evidence and actor authority remain separate."""
 from __future__ import annotations
 
+from . import field_contract
+
 PROFILE = "refactoredmemory.knowledge:v1"
 TYPE_PREDICATE = "rm:canonical-type"
 ATLAS_REVISION = "e36ebe821eafb3fc00093b6afcc2c4c6e0c4c30d"
@@ -394,6 +396,7 @@ def annotation(action):
 
 
 def validate_annotation(action):
+    field_contract.validate_action(action)
     value = annotation(action)
     if value is None:
         return
@@ -426,6 +429,9 @@ def validate_annotation(action):
 
 
 def validate_endpoints(action, source_types, target_types):
+    field_contract.validate_subject(action, source_types)
+    if field_contract.is_withdrawal(action):
+        return
     if annotation(action) is None or "object" not in action:
         return
     definition = PREDICATES[action["predicate"]]
@@ -482,6 +488,7 @@ def contract():
             "categories": list(CATEGORIES), "predicates": PREDICATES,
             "fact_predicates": FACT_DEFINITIONS,
             "type_predicate": TYPE_PREDICATE,
+            "field_catalog": field_contract.catalog(),
             "limits": ["An annotation is not owner verification.",
                        "Unknown dates are not definite as-of matches.",
                        "Classification and subject matter are distinct.",
