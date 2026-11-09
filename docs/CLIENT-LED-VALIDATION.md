@@ -15,8 +15,8 @@ The implementation remains provider-independent and makes no internal model call
 Validation commands:
 
 - `operator/mcp-test-venv/bin/python -m unittest discover -s tests -v`:
-  227 tests, 224 passed, three Linux address-space tests skipped on macOS.
-- `python3 -m unittest tests.test_workspace -v`: 18 passed, including activity
+  228 tests, 225 passed, three Linux address-space tests skipped on macOS.
+- `python3 -m unittest tests.test_workspace -v`: 19 passed, including activity
   pagination without skipped operations and modern/legacy fixed resource checks.
 - `python3 -m unittest tests.test_review_host -v`: six passed for key/session,
   origin/host/cross-site boundary, read-only/revoked grants, bounded requests,
@@ -47,3 +47,10 @@ Those require separate actual host/account tests and authorized data boundaries.
 No personal-data rewrite, re-import or synthetic test insertion into personal
 stores is part of qualification. Private deployment receipts record live peer
 versions, backup consistency, unchanged record digests and operational checks.
+
+A private consistent copy of the 1,253,227-record personal store retained the
+identical immutable-record SHA-256 before and after the new index/runtime open.
+Three targeted graph/inspector reads took 0.087–0.188 seconds in that warm Mac
+run. This is a bounded observation, not a general latency guarantee. The full-size
+check exposed repeated journal decoding during review decoration; the fixed
+current-frontier fast path and bounded historical-view cache passed the suite.

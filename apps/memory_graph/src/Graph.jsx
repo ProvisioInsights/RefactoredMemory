@@ -10,7 +10,6 @@ export default function Graph({ data, selected, onSelect, fitSignal }) {
   const svg = useRef(null), drag = useRef(null);
   const [pan, setPan] = useState({ x: 0, y: 0, zoom: 1 });
   const [positions, setPositions] = useState({});
-  React.useEffect(() => setPan({ x: 0, y: 0, zoom: 1 }), [fitSignal, data?.start]);
   const layout = useMemo(() => {
     if (!data) return { nodes: [], edges: [] };
     const direct = [...new Set(data.edges.flatMap(e => e.subject === data.start ? [e.object] : e.object === data.start ? [e.subject] : []))];
@@ -30,6 +29,14 @@ export default function Graph({ data, selected, onSelect, fitSignal }) {
     return { nodes, edges: links };
   }, [data]);
   const point = node => positions[data?.start + ':' + node.id] || node;
+  React.useEffect(() => {
+    if (!layout.nodes.length) return;
+    const points = layout.nodes.map(point);
+    const left = Math.min(...points.map(p => p.x)) - 125, right = Math.max(...points.map(p => p.x)) + 125;
+    const top = Math.min(...points.map(p => p.y)) - 80, bottom = Math.max(...points.map(p => p.y)) + 80;
+    const zoom = Math.min(1, 860 / (right - left), 690 / (bottom - top));
+    setPan({x: zoom * (450 - (left + right) / 2), y: zoom * (365 - (top + bottom) / 2), zoom});
+  }, [fitSignal, data]);
   const down = (event, node) => {
     if (event.button !== 0) return;
     event.currentTarget.setPointerCapture(event.pointerId);
@@ -53,7 +60,7 @@ export default function Graph({ data, selected, onSelect, fitSignal }) {
       <g transform={`translate(${pan.x} ${pan.y}) translate(450 365) scale(${pan.zoom}) translate(-450 -365)`}>
         {layout.edges.map(edge => {
           const a = point(edge.source), b = point(edge.target), dx = b.x - a.x, dy = b.y - a.y, distance = Math.hypot(dx, dy) || 1;
-          const radius = node => (node.canonical_types?.[0] || node.entity_type) === 'project'
+          const radius = node => (node.classification?.canonical_types?.[0] || node.canonical_types?.[0] || node.entity_type) === 'project'
             ? Math.min(118 / Math.max(.001, Math.abs(dx)), 42 / Math.max(.001, Math.abs(dy))) : 63 / distance;
           const from = radius(edge.source), to = radius(edge.target);
           const center = (from + 1 - to) / 2;
@@ -69,7 +76,7 @@ export default function Graph({ data, selected, onSelect, fitSignal }) {
           </g>;
         })}
         {layout.nodes.map(node => {
-          const p = point(node), type = node.canonical_types?.[0] || node.entity_type;
+          const p = point(node), type = node.classification?.canonical_types?.[0] || node.canonical_types?.[0] || node.entity_type;
           const project = type === 'project';
           return <g key={node.id} transform={`translate(${p.x},${p.y})`} className={`node ${type} ${selected === node.id ? 'selected' : ''}`}
             role="button" tabIndex="0" aria-label={`Explore ${node.label}`} onPointerDown={e => { e.stopPropagation(); down(e, node); }}

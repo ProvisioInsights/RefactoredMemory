@@ -163,6 +163,19 @@ class WorkspaceTests(unittest.TestCase):
         self.assertEqual(graph['edges'][0]['id'], 'claim')
         self.assertFalse(self.call('memory_graph', start='project', limit=1)['coverage']['complete'])
 
+    def test_current_frontier_review_does_not_decode_entire_journal(self):
+        import sqlite3
+        frontier = self.store.status()['frontier']
+        def guard(action, table, column, *_):
+            if action == sqlite3.SQLITE_READ and table == 'operations' and column == 'body':
+                return sqlite3.SQLITE_DENY
+            return sqlite3.SQLITE_OK
+        self.store.db.set_authorizer(guard)
+        try:
+            self.assertEqual(self.store._view(frontier=frontier)[1], frontier)
+        finally:
+            self.store.db.set_authorizer(None)
+
     def test_attribution_and_activity_keep_reported_model_separate(self):
         before = self.store.status()['known_position']
         self.call('memory_comment', target_id='claim', text='Synthetic note', request_id='attributed', reported={'application': 'Synthetic connector', 'model': 'reported-model'})

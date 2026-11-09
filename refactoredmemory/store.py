@@ -705,11 +705,23 @@ class Store:
             have = self._frontier()
             if any(seq > have.get(origin, 0) for origin, seq in frontier.items()):
                 raise ValidationError("Requested frontier is not available")
+            # Applied current knowledge is causally closed by admission. Review
+            # decoration must not decode the entire source journal per claim.
+            if frontier == have:
+                return current, dict(frontier)
+            cache_key = (tuple(sorted(frontier.items())), tuple(sorted(have.items())))
+            cache = getattr(self, '_closed_view_cache', {})
+            if cache_key in cache:
+                return current, dict(frontier)
             for row in self.db.execute("SELECT origin,seq,body FROM operations WHERE position IS NOT NULL"):
                 if row["seq"] <= frontier.get(row["origin"], 0):
                     deps = json.loads(row["body"])["dependencies"]
                     if any(frontier.get(k, 0) < v for k, v in deps.items()):
                         raise ValidationError("Requested frontier is not causally closed")
+            if len(cache) >= 16:
+                cache.pop(next(iter(cache)))
+            cache[cache_key] = True
+            self._closed_view_cache = cache
             return current, dict(frontier)
         position = current if known_at is None else known_at
         return position, self._frontier(position)

@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1
 # Refresh both pins together and validate before promotion.
 FROM cgr.dev/chainguard/python:latest-dev@sha256:898360ca56a2a65c3facdd36a4e6151133a580aa367195261554e82948921ff1 AS builder
+USER 0:0
 WORKDIR /app
 RUN python -m venv /app/venv
 ENV PATH="/app/venv/bin:$PATH"
