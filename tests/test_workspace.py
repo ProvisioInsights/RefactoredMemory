@@ -280,6 +280,7 @@ class WorkspaceTests(unittest.TestCase):
         from refactoredmemory.workspace import readable
         self.assertEqual(readable('<html><script>never execute</script><p>Safe text</p></html>'), 'Safe text')
         self.assertNotIn('synthetic-secret', readable('Authorization: synthetic-secret\nSource text'))
+
         result = self.call('memory_evidence', target_id='claim', source_id='evidence', chars=100)
         self.assertIn('Alex expressed interest', result['excerpt'])
         with self.assertRaises(ValidationError):
@@ -288,6 +289,26 @@ class WorkspaceTests(unittest.TestCase):
             'value': {'restricted': True, 'classification': 'restricted-control-record'}, 'source_ids': ['evidence'],
             'provenance': {'knowledge': {'schema': 'refactoredmemory.knowledge:v1', 'kind': 'fact'}}}])
         self.assertTrue(self.call('memory_evidence', target_id='claim', source_id='evidence')['withheld'])
+
+    def test_import_envelopes_display_body_without_altering_original(self):
+        import json
+        from refactoredmemory.workspace import readable
+        header = {'part': 0, 'parts': 1, 'source_identity': 'synthetic-mail', 'version_sha256': 'a' * 64}
+        envelope = {'untrusted_source_content': True, 'fidelity': 'source text',
+            'source_identity': 'synthetic-mail', 'title': 'Synthetic meeting',
+            'metadata': {'receivedDateTime': '2026-11-07T12:00:00Z'}}
+        original = json.dumps(header) + '\n\n' + json.dumps(envelope) + '\n\nActual synthetic message body.'
+        self.store.submit([{'type': 'source', 'id': 'wrapped-evidence', 'uri': 'synthetic://wrapped', 'content': original},
+            {'type':'assertion','id':'wrapped-claim','subject':'alex','predicate':'participant-in','object':'project',
+             'source_ids':['wrapped-evidence'],'provenance':{'knowledge':{'schema':'refactoredmemory.knowledge:v1','kind':'relationship','category':'occurrence','qualifiers':{}}}}])
+        shown = self.call('memory_evidence', target_id='wrapped-claim', source_id='wrapped-evidence')
+        self.assertEqual(shown['title'], 'Synthetic meeting')
+        self.assertEqual(shown['date'], '2026-11-07T12:00:00Z')
+        self.assertEqual(shown['excerpt'], 'Actual synthetic message body.')
+        # Parser behavior is display-only and does not rewrite immutable capture.
+        self.assertEqual(readable(original), 'Actual synthetic message body.')
+        self.assertEqual(self.store.get_source('wrapped-evidence')['content'], original)
+        self.assertEqual(readable('{"domain":"record"}\n\nUnrelated source content.'), '{"domain":"record"}\n\nUnrelated source content.')
 
     def test_offline_competing_claims_converge_and_owner_resolution_can_be_claimed(self):
         job = self.create_job()

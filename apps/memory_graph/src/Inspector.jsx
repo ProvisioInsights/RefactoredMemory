@@ -13,6 +13,7 @@ function Source({ id, target, call, auto }) {
     try { setSource(await call('memory_evidence', { target_id: target, source_id: id, chars: 4096, offset })); setExpanded(true); } catch (e) { setError(e.message); }
   };
   return <div className="source-row">{source?.withheld ? <p className="muted">{source.reason}</p> : <>
+    {source?.title && <strong>{source.title}</strong>}
     {source?.excerpt && <blockquote>{source.excerpt}</blockquote>}
     {source?.date && <span className="muted">Captured source · {source.date}</span>}
     <button onClick={() => read()}>Read source</button>{expanded && source?.has_more && <button onClick={() => read(source.next_offset)}>Next excerpt</button>}

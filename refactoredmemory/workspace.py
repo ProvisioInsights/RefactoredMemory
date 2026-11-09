@@ -16,7 +16,27 @@ PROFILE = 'refactoredmemory.workspace:v1'
 MISSING = object()
 
 
+def captured_text(text):
+    """Remove only known import envelopes; retain the unchanged source record."""
+    original, details = text, {}
+    decoder = json.JSONDecoder()
+    try:
+        value, end = decoder.raw_decode(text.lstrip())
+        if (isinstance(value, dict) and {'part', 'parts', 'source_identity', 'version_sha256'} <= value.keys()
+                and set(value) <= {'part', 'parts', 'source_identity', 'version_sha256'}):
+            text = text.lstrip()[end:].lstrip()
+            value, end = decoder.raw_decode(text)
+        if (isinstance(value, dict) and value.get('untrusted_source_content') is True
+                and value.get('fidelity') == 'source text' and 'source_identity' in value):
+            details = dict(value.get('metadata') or {}, title=value.get('title'))
+            return text.lstrip()[end:].lstrip(), details
+    except (ValueError, TypeError):
+        pass
+    return original, details
+
+
 def readable(text):
+    text, _ = captured_text(text)
     try:
         value = json.loads(text)
         if isinstance(value, dict):
@@ -422,9 +442,12 @@ class Workspace:
         source = self.store.get_source(source_id)
         if source is None:
             raise ValidationError('Source is unavailable')
-        text = readable(source['content'])
+        captured, details = captured_text(source['content'])
+        text = readable(captured)
+        title = next((v[:256] for v in (details.get('title'), source.get('metadata', {}).get('title')) if isinstance(v, str)), None)
+        date = next((v[:128] for v in (details.get('receivedDateTime'), details.get('date'), source.get('metadata', {}).get('date')) if isinstance(v, str)), None)
         return {'source_id': source_id, 'uri': source['uri'], 'excerpt': text[offset:offset + chars],
-                'date': source.get('metadata', {}).get('date'), 'offset': offset,
+                'title': title, 'date': date, 'offset': offset,
                 'total_characters': len(text), 'has_more': len(text) > offset + chars,
                 'next_offset': offset + chars, 'withheld': False,
                 'meaning': 'Captured source record text; unresolved original evidence remains unresolved.'}

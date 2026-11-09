@@ -54,3 +54,10 @@ Three targeted graph/inspector reads took 0.087–0.188 seconds in that warm Mac
 run. This is a bounded observation, not a general latency guarantee. The full-size
 check exposed repeated journal decoding during review decoration; the fixed
 current-frontier fast path and bounded historical-view cache passed the suite.
+
+NAS container qualification at the fed0197 runtime: 228 tests, 221 passed,
+seven skips for absent SDK/OpenSSL test tools. All three Linux address-space
+cases passed. Initial test scratch mounts were too small or lacked a dedicated
+SELinux label; the final isolated disk fixture used its own label and passed.
+The live index sort also required one-time private disk scratch; normal runtime
+temporary-space and privilege limits remain retained.

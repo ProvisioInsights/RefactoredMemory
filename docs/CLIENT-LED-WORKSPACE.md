@@ -107,7 +107,14 @@ engineering checkout. Do not expose this local host through a public tunnel.
 Back up both peers consistently before opening them with the new runtime. A new
 local predicate index is derived; signed records and record digests are unchanged.
 Upgrade both peer runtimes before admitting managed workspace records so typed
-multi-value semantics match. No real-data re-import or automatic semantic rewrite
+multi-value semantics match. For an existing large NAS store, prebuild `records_predicate_subject` using the
+sealed operator image, runtime UID and a dedicated private disk scratch mount
+(`SQLITE_TMPDIR`). Stop only memory during this one-time preparation. The normal
+16 MiB runtime `/tmp` is intentionally too small for a large SQLite index sort;
+keep that limit and never use an engineering-writable root helper. Check free
+headroom and retained backups first, then start memory and confirm the listener.
+
+No real-data re-import or automatic semantic rewrite
 is part of this release. Use synthetic stores for write qualification.
 
 Keep previous release/image identities and private launch configuration for
