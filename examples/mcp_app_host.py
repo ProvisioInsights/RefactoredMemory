@@ -39,7 +39,7 @@ def main():
                 self.send_header('Cache-Control', 'no-store')
                 self.send_header('Referrer-Policy', 'no-referrer')
                 self.send_header('X-Content-Type-Options', 'nosniff')
-                self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline'; frame-src 'self'; connect-src 'self'; frame-ancestors 'self'")
+                self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; frame-src 'self'; connect-src 'self'; frame-ancestors 'self'")
                 self.end_headers()
                 self.wfile.write(body)
 
@@ -69,7 +69,8 @@ def main():
                     return self.reply(400, {'error': 'Bounded JSON required'})
                 try:
                     data = decode_message(self.rfile.read(int(size)))
-                    if not isinstance(data, dict) or data.get('name') in ('memory_submit',):
+                    from refactoredmemory.field_contract import is_typed_capture
+                    if not isinstance(data, dict) or (data.get('name') == 'memory_submit' and not is_typed_capture(data.get('arguments'))):
                         raise ValueError('Narrow synthetic workspace tools only')
                     self.reply(200, service.call(data['name'], data.get('arguments', {}), token))
                 except (ValueError, TypeError, KeyError, PermissionError):

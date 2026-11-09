@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Icon from './Icon';
-import { compact, human, requestId } from './client';
+import { compact, human, requestId, displayName } from './client';
+import Fields from './Fields.jsx';
 
 function Source({ id, target, call, auto }) {
   const [source, setSource] = useState(null), [error, setError] = useState('');
@@ -21,16 +22,16 @@ function Source({ id, target, call, auto }) {
     <details><summary>Source reference</summary><p className="muted">{id}</p><p className="muted">{source?.meaning}</p></details>
     </>}{error && <p role="alert">{error}</p>}</div>;
 }
-export default function Inspector({ data, target, graph, call, available, onSelect, onSaved, schema }) {
-  const [tab, setTab] = useState('Why?'), [form, setForm] = useState(null), [text, setText] = useState('');
+export default function Inspector({ data, target, graph, call, available, onSelect, onSaved, schema, expanded, onExpand, pending, message, appError }) {
+  const [tab, setTab] = useState('Fields'), [form, setForm] = useState(null), [text, setText] = useState('');
   const [history, setHistory] = useState(null), [error, setError] = useState(''), [saving, setSaving] = useState(false);
   const [operation, setOperation] = useState('correct'), [newPredicate, setNewPredicate] = useState(''), [newValue, setNewValue] = useState('');
   const saveRequest = useRef(null);
-  useEffect(() => { setForm(null); setText(''); setError(''); setHistory(null); setTab('Why?'); }, [target]);
+  useEffect(() => { setForm(null); setText(''); setError(''); setHistory(null); setTab(graph?.entities.some(e => e.id === target) ? 'Fields' : 'Why?'); }, [target]);
   const claim = data?.claims.assertions.find(a => a.id === target);
   const entities = graph?.entities || [];
-  const label = id => entities.find(e => e.id === id)?.label || id;
-  const display = claim ? `${label(claim.subject)} → ${claim.object ? label(claim.object) : human(claim.predicate)}` : data?.entity.label;
+  const label = id => { const entity = entities.find(e => e.id === id); return entity ? displayName(entity) : id; };
+  const display = claim ? `${label(claim.subject)} → ${claim.object ? label(claim.object) : human(claim.predicate)}` : displayName(data?.entity);
   const contribution = claim?.provenance?.contribution;
   const refreshHistory = async () => {
     setTab('History');
@@ -57,16 +58,17 @@ export default function Inspector({ data, target, graph, call, available, onSele
         if (operation === 'reclassify') args.predicate = newPredicate;
         await call('memory_correct', args);
       }
-      setForm(null); setText(''); await onSaved(form === 'correct');
+      setForm(null); setText(''); await onSaved(true);
       if (form === 'comment') setTab('Notes');
     } catch (e) { setError(e.message); } finally { setSaving(false); }
   };
   if (!data) return <aside className="inspector"><h2>Follow a connection.</h2><p>Select a node or a labeled line to inspect its evidence, notes and history.</p></aside>;
   return <aside className="inspector">
-    <header><h2>{display}</h2><p className="muted">{claim?.review?.human_verified ? 'Owner reviewed · this revision only' : 'Source reported · current status unverified'}</p></header>
-    <div className="tabs" role="tablist" aria-label="Evidence view">{['Why?', 'Notes', 'History'].map(t => <button key={t} role="tab" aria-selected={tab === t} onClick={() => t === 'History' ? refreshHistory() : setTab(t)}>{t}</button>)}</div>
+    <header><button className="text-action expand-record" disabled={pending} onClick={onExpand}>{expanded ? 'Return to graph' : 'Expand record'}</button><h2>{display}</h2><p className="muted">{claim?.review?.human_verified ? 'Owner reviewed · this revision only' : 'Source reported · current status unverified'}</p>{expanded && message && <p role="status">{message}</p>}{appError && <p role="alert" className="error">{appError}</p>}</header>
+    <div className="tabs" role="tablist" aria-label="Record view">{['Fields', 'Why?', 'Notes', 'History'].map(t => <button key={t} role="tab" disabled={pending} aria-selected={tab === t} onClick={() => t === 'History' ? refreshHistory() : setTab(t)}>{t}</button>)}</div>
     <div className="inspector-body">
       {error && <p role="alert" className="error">{error}</p>}
+      {tab === 'Fields' && <Fields key={data.entity.id + target} data={data} schema={schema} call={call} available={available} onSaved={onSaved} onSelect={onSelect}/>}
       {tab === 'Why?' && <>
         <h3>Evidence</h3>
         {claim ? <>
@@ -105,7 +107,7 @@ export default function Inspector({ data, target, graph, call, available, onSele
         <div className="actions"><button type="button" onClick={() => setForm(null)}>Cancel</button><button className="primary" disabled={saving}>{saving ? 'Saving…' : 'Save'}</button></div>
       </form>}
     </div>
-    <footer className="inspector-actions"><button disabled={!available || !data.permissions.write} onClick={() => showForm('comment')}><Icon name="Comment"/>Comment</button><button className="primary" disabled={!available || !claim || !data.permissions.correct} onClick={() => showForm('correct')}><Icon name="Edit"/>Correct this</button>
-      {claim && data.permissions.owner_review && <button disabled={!available} onClick={() => { showForm('review'); setOperation('confirmed'); }}>Owner review</button>}</footer>
+    <footer className="inspector-actions"><button disabled={pending || !available || !data.permissions.write} onClick={() => showForm('comment')}><Icon name="Comment"/>Add note</button>
+      {claim && data.permissions.owner_review && <button disabled={pending || !available} onClick={() => { showForm('review'); setOperation('confirmed'); }}>Owner review</button>}</footer>
   </aside>;
 }

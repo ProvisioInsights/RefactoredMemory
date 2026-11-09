@@ -112,6 +112,26 @@ class ReviewHostTests(unittest.TestCase):
             self.assertEqual(self.request('/api/tool', {}, auth, method)[0], 405)
         self.assertEqual(self.request('/api/session', {}, {'Content-Length': '9999999999999'})[0], 400)
 
+    def test_typed_capture_keeps_current_grants_and_blocks_generic_groups(self):
+        from refactoredmemory.field_contract import catalog
+        from test_field_editor import field
+        auth = self.unlock()
+        action = field('identity.description', 'Synthetic typed field', 'typed-description', 'alex')
+        action['source_ids'] = ['meeting']
+        # Use an actual fixture source without reading or exposing its content.
+        action['source_ids'] = self.store.query(subject='alex')['assertions'][0]['source_ids']
+        args = {'name': 'memory_submit', 'arguments': {'actions': [action],
+            'catalog_digest': catalog()['digest_sha256'], 'request_id': 'typed-create'}}
+        self.assertEqual(self.request('/api/tool', args, auth)[0], 200)
+        self.assertEqual(self.request('/api/tool', args, auth)[0], 200)
+        args['arguments']['actions'][0]['provenance'] = {}
+        args['arguments']['request_id'] = 'untyped'
+        self.assertEqual(self.request('/api/tool', args, auth)[0], 403)
+        self.stop(); self.start(self.reader); auth = self.unlock()
+        args['arguments']['actions'][0] = field('identity.description', 'Denied typed field', 'denied-description', 'alex')
+        self.assertEqual(self.request('/api/tool', args, auth)[0], 403)
+        self.assertIsNone(self.store.read('assertion', 'denied-description'))
+
 
 if __name__ == '__main__':
     unittest.main()

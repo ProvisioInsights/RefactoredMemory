@@ -138,10 +138,13 @@ def handler(service, token, access_key, *, start=None):
             name, arguments = data.get('name'), data.get('arguments', {})
             if not isinstance(name, str) or name not in allowed or not isinstance(arguments, dict):
                 return self.reply(400, {'error': 'Unknown memory operation.'})
-            # Generic capture is for connected clients; this UI uses only the
-            # narrow, validated review/work mutations, never owner administration.
-            if name == 'memory_submit' or name.startswith('memory_') and name not in allowed:
-                return self.reply(403, {'error': 'Use a scoped memory client for generic capture.'})
+            # New field forms use the ordinary core tool, with a narrow v1-only
+            # capture boundary. Generic/legacy capture and administration remain
+            # unavailable here; this never changes the underlying grant.
+            if name == 'memory_submit':
+                from .field_contract import is_typed_capture
+                if not is_typed_capture(arguments):
+                    return self.reply(403, {'error': 'This editor permits catalog-matched typed fields only; generic capture is unavailable.'})
             try:
                 result = service.call(name, arguments, token)
                 self.reply(200, result)

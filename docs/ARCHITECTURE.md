@@ -1,5 +1,7 @@
 # Personal v1 architecture
 
+**Current implementation boundary:** [A25](ADRS.md#a25-contract-driven-editor-and-controlled-two-peer-rollout) and [the editor/rollout plan](FIELD-EDITOR-ROLLOUT.md) specify a bounded core field projection, a discovered extension of existing correction semantics, shared catalog-driven controls and a coordinated two-peer rollout. These reuse the current journal, grants and tools. No second data service, internal model or production bypass is introduced.
+
 **Client-led implementation, 9 November 2026:** The journal-backed workspace tools, pinned briefs, client task checkpoints and optional graph App are implemented in this branch. See [the workspace guide](CLIENT-LED-WORKSPACE.md) and [executed qualification](CLIENT-LED-VALIDATION.md). Historical requirements-only notes below describe their earlier documentation revision; named provider products still require separate live qualification.
 
 **Design clarification, 9 November 2026:** [A22/A23](ADRS.md#a22-client-led-processing-and-provider-independent-memory-roles) and [L01–L08](PRD.md#client-led-processing-and-review-direction) select client-led model processing, four memory roles, contributor attribution and the next graph-review interface. This requirements-only update does not refresh the historical deployment/qualification statements below or claim the new features are running.
@@ -40,7 +42,7 @@ Correction, retraction, invalidation and reinstatement are distinct semantic ope
 
 Fields remain sourced assertions over immutable identities, with per-value evidence, temporal precision, conflicts and correction history. Not recorded, explicitly unknown and not applicable differ; withheld/partial views do not establish absence. Preserve the existing omitted-end/explicit-null time contract and prevent blank controls from inventing ongoing validity. Retraction, ended validity, archive and permanent erasure retain distinct meanings.
 
-The App is a focused graph/list explorer and CRUD editor over the same authenticated tools. Search-result actions, inline forms and expanded views reuse core definitions. Empty optional-field visibility and themes are presentation only. RM has no internal conversation, assistant/composer, model selector or task dashboard; surrounding chat belongs to the host. See FC01–FC08 for the new, still-planned acceptance evidence.
+The App is a focused graph/list explorer and CRUD editor over the same authenticated tools. Search-result actions, inline forms and expanded views reuse core definitions. Empty optional-field visibility and themes are presentation only. RM has no internal conversation, assistant/composer, model selector or task dashboard; surrounding chat belongs to the host. See [editor qualification](FIELD-EDITOR-VALIDATION.md) for focused implemented checks; the complete FC01–FC08 matrix and named hosts remain separate.
 
 ## Client-led processing and memory roles
 

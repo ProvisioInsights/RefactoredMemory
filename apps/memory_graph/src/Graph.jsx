@@ -21,7 +21,7 @@ export default function Graph({ data, selected, onSelect, fitSignal }) {
       let anchor = n.id === data.start ? [450, 400] : direct.includes(n.id) && direct.length <= 5 ? anchors[direct.indexOf(n.id)] : null;
       if (!anchor && direct.length <= 3) anchor = [outer++ % 2 ? 760 : 140, 520];
       if (!anchor) anchor = [450 + Math.cos(i * 2.4) * 310, 370 + Math.sin(i * 2.4) * 270];
-      return { ...n, x: anchor[0], y: anchor[1], ax: anchor[0], ay: anchor[1], ...(n.id === data.start ? { fx: 450, fy: 400 } : {}) };
+      return { ...n, label: n.display_label || n.label, x: anchor[0], y: anchor[1], ax: anchor[0], ay: anchor[1], ...(n.id === data.start ? { fx: 450, fy: 400 } : {}) };
     });
     const links = data.edges.map(e => ({ ...e, source: e.subject, target: e.object }));
     const simulation = forceSimulation(nodes).force('link', forceLink(links).id(n => n.id).distance(300).strength(.08))

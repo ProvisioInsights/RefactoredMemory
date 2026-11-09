@@ -112,6 +112,13 @@ def bounded_json(value, depth=0):
     canonical(value)
 
 
+def _name_at(row, at):
+    """Eligible current knowledge with no known temporal contradiction."""
+    return (row.get('status') in {'active', 'ended'}
+            and not (row.get('valid_from') and timestamp(row['valid_from']) > at)
+            and not (row.get('valid_to') and timestamp(row['valid_to']) <= at))
+
+
 class Store:
     def __init__(self, path, *, store_id=None, peer_id=None):
         self.path = str(path)
@@ -955,13 +962,26 @@ class Store:
                 "legacy_history": "retained; not silently reclassified",
                 "raw_document_capture": "observation; no inferred relationships"}}
 
-    def get_entity(self, entity_id):
+    def get_entity(self, entity_id, *, frontier=None, valid_at=None):
         with self._lock:
             entity = None if entity_id in self._deleted() else self.read("entity", entity_id)
             if entity is not None:
-                types = sorted(self._canonical_types(entity_id))
+                types = sorted(self._canonical_types(entity_id, frontier))
                 entity["classification"] = {"canonical_types": types, "ambiguous": len(types) > 1,
                     "original_entity_type": entity["entity_type"]}
+                names = self.query(subject=entity_id, predicate="name", limit=100, frontier=frontier, valid_at=valid_at)
+                at = timestamp(valid_at or utcnow())
+                candidates = [r for r in names['assertions'] if _name_at(r, at)]
+                preferred = [r for r in candidates if r.get('preferred')]
+                candidates = preferred or candidates
+                labels = {r['value'] for r in candidates if isinstance(r.get('value'), str) and r['value'].strip()}
+                unresolved = any(not isinstance(r.get('value'), str) or not r['value'].strip() for r in candidates)
+                complete = names['coverage']['complete'] and not names['coverage'].get('administrative_suppression')
+                entity['display_label'] = next(iter(labels)) if len(labels) == 1 and complete and not unresolved else entity['label']
+                entity['display_name'] = {'assertion_ids': [r['id'] for r in candidates],
+                    'conflicted': len(labels) > 1 or unresolved and len(candidates) > 1,
+                    'unresolved': unresolved, 'complete': bool(complete),
+                    'meaning': 'Source-reported display name; original label retained, not verified legal identity.'}
             return entity
 
     def search_entities(self, text, *, limit=25):
@@ -969,16 +989,29 @@ class Store:
             raise ValidationError("Invalid entity search")
         with self._lock:
             deleted = self._deleted()
+            name_matches, names_complete = set(), True
+            at = timestamp(utcnow())
+            for predicate in ('name', 'alias'):
+                page = self.query(predicate=predicate, text=text, limit=1000)
+                names_complete &= page['coverage']['complete'] and not page['coverage'].get('administrative_suppression')
+                for row in page['assertions']:
+                    if not _name_at(row, at):
+                        continue
+                    values = row.get('value') if isinstance(row.get('value'), list) else [row.get('value')]
+                    if any(isinstance(value, str) and text.casefold() in value.casefold() for value in values):
+                        name_matches.add(row['subject'])
             # Names find candidates; they never establish shared identity.
             matches, total = [], 0
             for row in self.db.execute("SELECT id,body FROM records WHERE kind='entity' ORDER BY id"):
                 entity = json.loads(row["body"])
-                if entity["id"] not in deleted and text.casefold() in entity["label"].casefold():
+                if entity["id"] not in deleted and (text.casefold() in entity["label"].casefold() or entity['id'] in name_matches):
                     total += 1
                     if len(matches) < limit:
                         matches.append(entity)
             return {"entities": [self.get_entity(e["id"]) for e in matches],
-                    "matched": total, "has_more": total > limit,
+                    "matched": total, "has_more": total > limit or not names_complete,
+                    "coverage": {"name_claims_complete": bool(names_complete),
+                        "meaning": "Bounded current name/alias claims plus retained original labels; counts may be a lower bound."},
                     "identity_warning": "Matching names are candidates, not a merge decision."}
 
     def get_source(self, source_id):
@@ -1033,7 +1066,7 @@ class Store:
             raise ValidationError("Traversal bounds exceeded")
         with self._lock:
             position, view = self._view(known_at, frontier)
-            entity = self.get_entity(start)
+            entity = self.get_entity(start, frontier=view, valid_at=valid_at)
             if entity:
                 events = self.db.execute("SELECT o.origin,o.seq FROM record_events e JOIN operations o ON o.id=e.operation_id WHERE e.kind='entity' AND e.id=?", (start,))
                 if not any(row["seq"] <= view.get(row["origin"], 0) for row in events):
@@ -1064,7 +1097,7 @@ class Store:
                             seen.add(target)
                             next_level.append(target)
                 queue = next_level
-            return {"entities": [self.get_entity(x) for x in sorted(seen)], "edges": list(edges.values()),
+            return {"entities": [self.get_entity(x, frontier=view, valid_at=valid_at) for x in sorted(seen)], "edges": list(edges.values()),
                     "coverage": {"complete": bool(complete), "depth": depth, "excluded_unknown_time": unknown},
                     "frontier": view, "known_position": position}
 

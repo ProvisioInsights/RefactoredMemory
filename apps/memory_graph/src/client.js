@@ -1,4 +1,4 @@
-import { App } from '@modelcontextprotocol/ext-apps';
+import { App, applyDocumentTheme } from '@modelcontextprotocol/ext-apps';
 
 export function unwrap(result) {
   if (result.isError) throw new Error(result.structuredContent?.error === 'conflict'
@@ -13,7 +13,7 @@ export async function connect(onGraph) {
       const response = await fetch(path, { method: body ? 'POST' : 'GET', credentials: 'same-origin',
         headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined });
       const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'Could not complete the request.');
+      if (!response.ok) { const error = new Error(result.error || 'Could not complete the request.'); error.status = response.status; throw error; }
       return result;
     };
     if (location.hash.startsWith('#key=')) {
@@ -27,8 +27,11 @@ export async function connect(onGraph) {
       call: (name, args = {}) => request('/api/tool', { name, arguments: args }) };
   }
   const app = new App({ name: 'RefactoredMemory graph', version: '1.0.0' });
+  const theme = context => { if (context?.theme) applyDocumentTheme(context.theme); };
+  app.onhostcontextchanged = theme;
   app.ontoolresult = result => { if (result.structuredContent?.entities) onGraph(result.structuredContent); };
   await app.connect();
+  theme(app.getHostContext());
   const available = !!app.getHostCapabilities()?.serverTools;
   return { authenticated: true, local: false, available,
     call: async (name, args = {}) => {
@@ -38,6 +41,7 @@ export async function connect(onGraph) {
 }
 
 export function requestId() { return crypto.randomUUID(); }
+export const displayName = entity => entity?.display_label || entity?.label || 'Unavailable identity';
 export const human = text => String(text || '').replace(/^rm:/, '').replaceAll('-', ' ');
 export function compact(value) {
   if (typeof value === 'string') return value;

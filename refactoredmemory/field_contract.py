@@ -268,6 +268,110 @@ def matching_field(action):
     return matches[0]
 
 
+def project(entity, assertions, *, complete, selection_only=False, administrative_suppression=False):
+    """Map bounded readable claims without qualifying or rewriting legacy data."""
+    complete = bool(complete and not administrative_suppression)
+    definitions = _catalog()["fields"]
+    types = entity.get("classification", {}).get("canonical_types", [])
+    fields, mapped, unmapped = {}, {}, []
+    for name, definition in definitions.items():
+        applicable = len(types) == 1 and types[0] in definition["applies_to"]
+        if applicable or name in {"identity.type", "identity.name"}:
+            fields[name] = {"claim_ids": [], "applicable": applicable,
+                "empty_state": "not_recorded" if complete and not selection_only else "not_in_selection"}
+    for assertion in assertions:
+        tag = declaration(assertion)
+        try:
+            if _present(assertion):
+                if (not isinstance(tag, dict) or set(tag) != {"schema", "revision", "field", "state", "validity_end"}
+                        or tag.get("schema") != SCHEMA or type(tag.get("revision")) is not int
+                        or tag["revision"] != REVISION or not isinstance(tag.get("field"), str)):
+                    raise ValueError("Unrecognized historical declaration")
+            name = tag["field"] if isinstance(tag, dict) else matching_field(assertion)
+            if name not in definitions:
+                raise ValueError("Unsupported field")
+            if tag is not None and (tag.get("state") not in definitions[name]["states"]
+                                    or tag.get("validity_end") not in {"unknown", "ongoing", "known"}):
+                raise ValueError("Unrecognized historical field state")
+        except (ValueError, KeyError, TypeError):
+            unmapped.append(assertion["id"])
+            continue
+        entry = fields.setdefault(name, {"claim_ids": [], "applicable": False,
+                                        "empty_state": "not_in_selection"})
+        entry["claim_ids"].append(assertion["id"])
+        mapped[assertion["id"]] = {"field": name,
+            "qualification": "explicit_v1" if tag is not None else "legacy_unqualified",
+            "state": tag["state"] if tag is not None else "legacy_unspecified",
+            "editable_value_loaded": "object" in assertion or "value" in assertion}
+    return {"schema": SCHEMA, "revision": REVISION,
+            "digest_sha256": catalog()["digest_sha256"],
+            "fields": fields, "claims": mapped, "unmapped_claim_ids": unmapped,
+            "coverage": {"complete": bool(complete and not selection_only),
+                         "selection_only": selection_only,
+                         "administrative_suppression": administrative_suppression,
+                         "meaning": "Mapping is not qualification. A declaration is not proof of historical validation. Absent claims in a partial selection are not proof of absence."}}
+
+
+def apply_update(action, update):
+    """Explicit correction metadata; normal core validation remains authoritative."""
+    if update["catalog_digest"] != catalog()["digest_sha256"]:
+        raise ValueError("Field catalog changed; reload before editing")
+    definition = _catalog()["fields"].get(update["field"])
+    if definition is None:
+        raise ValueError("Unsupported field")
+    context = update.get("context", {})
+    if set(context) - (set(definition.get("required_context", [])) - {"valid_from"}):
+        raise ValueError("Only registered relationship context can be edited")
+    profile = action.setdefault("provenance", {}).get("knowledge")
+    if not isinstance(profile, dict):
+        profile = {"schema": "refactoredmemory.knowledge:v1",
+                   "kind": "relationship" if "object" in action else "fact"}
+        action["provenance"]["knowledge"] = profile
+    qualifiers = dict(profile.get("qualifiers") or {})
+    qualifiers.update(context)
+    qualifiers[TAG] = {"schema": SCHEMA, "revision": REVISION,
+        "field": update["field"], "state": update["state"],
+        "validity_end": update["validity_end"]}
+    profile["qualifiers"] = qualifiers
+    if "category" in definition:
+        profile["category"] = definition["category"]
+    action.update(valid_from=update["valid_from"], time_precision=update["time_precision"])
+    action.pop("valid_to", None)
+    if "valid_to" in update:
+        action["valid_to"] = update["valid_to"]
+    validate_action(action)
+
+
+def is_typed_capture(arguments):
+    """Private App capture boundary, not a replacement for core admission.
+
+    A prior catalog digest can reach the core only to recover an exact committed
+    retry; new stale writes are rejected there under the current consumer grant.
+    """
+    if not isinstance(arguments, dict):
+        return False
+    digest = arguments.get("catalog_digest")
+    actions = arguments.get("actions")
+    if not isinstance(digest, str) or not re.fullmatch(r"[a-f0-9]{64}", digest) or not isinstance(actions, list):
+        return False
+    if any(not isinstance(a, dict) or a.get("type") not in ("assertion", "source", "entity") for a in actions):
+        return False
+    assertions = [a for a in actions if a["type"] == "assertion"]
+    if not assertions or any(not isinstance(declaration(a), dict) or a.get("kind", "assert") != "assert" for a in assertions):
+        return False
+    source_ids = [sid for a in assertions
+                  for sid in (a.get("source_ids") if isinstance(a.get("source_ids"), list) else [])
+                  if isinstance(sid, str)]
+    references = [a.get(key) for a in assertions for key in ("subject", "object")]
+    for action in actions:
+        if action["type"] == "source" and action.get("id") not in source_ids:
+            return False
+        if action["type"] == "entity" and (action.get("entity_type") not in _catalog()["record_types"]
+                                           or action.get("id") not in references):
+            return False
+    return True
+
+
 def validate_group(actions):
     """A group declaring typed creation includes sourced type and display name."""
     tagged = [a for a in actions if isinstance(a, dict) and _present(a)]

@@ -225,11 +225,14 @@ class Workspace:
                 'human_verified': states == {'confirmed'} and result['coverage']['complete'], 'review_ids': [r['id'] for r in rows],
                 'meaning': 'Applies only to this assertion revision.'}
 
-    def correct(self, target_id, expected_heads, reason, request_id, value=MISSING, object=MISSING, reported=None, operation='correct', predicate=None):
+    def correct(self, target_id, expected_heads, reason, request_id, value=MISSING, object=MISSING, reported=None, operation='correct', predicate=None, field_update=None, valid_to=None):
+        import copy
+        if operation not in {'correct', 'retract', 'reclassify', 'invalidate'}:
+            raise ValidationError('Unsupported correction operation')
         subject, claim = self.locate(target_id)
         if claim is None or claim['predicate'] in MANAGED:
             raise ValidationError('Use the corresponding workspace operation for managed records')
-        if operation == 'retract':
+        if operation in ('retract', 'invalidate'):
             value, object = (claim['value'], MISSING) if 'value' in claim else (MISSING, claim['object'])
         if (value is MISSING) == (object is MISSING):
             raise ValidationError('Supply one corrected value or relationship target')
@@ -241,9 +244,26 @@ class Workspace:
         rid = self.identity('correct', request_id)
         source = self.interaction(rid, reason)
         action = {k: claim[k] for k in ('subject', 'predicate', 'valid_from', 'valid_to', 'time_precision', 'uncertainty') if k in claim}
-        action.update(type='assertion', id=rid, kind='retract' if operation in ('retract', 'reclassify') else 'correct', predecessors=expected_heads, reason=reason,
-                      source_ids=sorted(set(claim['source_ids'] + [source['id']])), provenance=claim.get('provenance', {}))
+        action.update(type='assertion', id=rid, kind='retract' if operation in ('retract', 'reclassify') else 'invalidate' if operation == 'invalidate' else 'correct', predecessors=expected_heads, reason=reason,
+                      source_ids=sorted(set(claim['source_ids'] + [source['id']])), provenance=copy.deepcopy(claim.get('provenance', {})))
         action.update({'object': object} if object is not MISSING else {'value': value})
+        if field_update is not None:
+            if operation not in ('correct', 'reclassify'):
+                raise ValidationError('Field state/time updates require a correction or replacement, not withdrawal')
+            if operation == 'correct':
+                try:
+                    knowledge.field_contract.apply_update(action, field_update)
+                except ValueError as exc:
+                    raise ValidationError(str(exc)) from exc
+        if operation == 'invalidate':
+            if not isinstance(valid_to, str) or not valid_to:
+                raise ValidationError('Ending a claim requires an explicit supported end date')
+            action['valid_to'] = valid_to
+            tag = knowledge.field_contract.declaration(action)
+            if tag is not None:
+                tag['validity_end'] = 'known'
+        elif valid_to is not None:
+            raise ValidationError('Use field_update for a correction or explicit invalidation to end a claim')
         actions = [source, action]
         if operation == 'reclassify':
             if not predicate or predicate == claim['predicate'] or predicate in MANAGED:
@@ -255,7 +275,6 @@ class Workspace:
             if 'object' in new and predicate in knowledge.PREDICATES:
                 profile['category'] = knowledge.PREDICATES[predicate]['category']
             if knowledge.field_contract.declaration(claim) is not None:
-                import copy
                 profile['qualifiers'] = copy.deepcopy(claim['provenance']['knowledge']['qualifiers'])
                 profile['qualifiers']['reclassified_from'] = target_id
                 try:
@@ -263,6 +282,11 @@ class Workspace:
                 except ValueError as exc:
                     raise ValidationError(str(exc)) from exc
             new['provenance'] = {'knowledge': profile}
+            if field_update is not None:
+                try:
+                    knowledge.field_contract.apply_update(new, field_update)
+                except ValueError as exc:
+                    raise ValidationError(str(exc)) from exc
             actions.append(new)
             # Withdrawal names the old meaning; replacement carries the new one.
             action.pop('object', None)
@@ -407,7 +431,11 @@ class Workspace:
         selected = [claim] if claim else claims['assertions']
         claims['assertions'] = [{**r, 'review': self.review_state(r)} for r in selected]
         notes = self.heads(subject, 'rm:comment')
-        return {'entity': self.store.get_entity(subject), 'claims': claims,
+        entity = self.store.get_entity(subject)
+        return {'entity': entity, 'claims': claims,
+                'field_view': knowledge.field_contract.project(entity, claims['assertions'],
+                    complete=claims['coverage']['complete'], selection_only=claim is not None,
+                    administrative_suppression=claims['coverage'].get('administrative_suppression', False)),
                 'comments': [r for r in notes if r['value']['target_id'] == target_id],
                 'artifacts': self.artifacts(subject), 'permissions': {'owner_review': self.actor['kind'] == 'owner',
                 'write': 'write' in self.actor.get('scopes', []), 'correct': 'correct' in self.actor.get('scopes', [])}}

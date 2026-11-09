@@ -1,5 +1,6 @@
 import React from 'react';
 const shapes = {
+  Records: <><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></>,
   Graph: <><path d="M5 17 11 5 19 17M6 17h12"/><circle cx="11" cy="4" r="2.5"/><circle cx="4" cy="18" r="2.5"/><circle cx="20" cy="18" r="2.5"/></>,
   Review: <><path d="m3 5 2 2 3-4m-5 9 2 2 3-4m-5 9 2 2 3-4M12 5h9M12 12h9M12 19h9"/></>,
   Work: <><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V4h8v3M3 12h18"/></>,

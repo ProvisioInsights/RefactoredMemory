@@ -1,6 +1,6 @@
 # Core field contract and focused CRUD
 
-**Status:** Accepted owner direction, 9 November 2026. The [v1 catalog](FIELD-CATALOG-V1.md), [client contract](RM-CLIENT-CONTRACT.md), packaged definitions and opt-in core validation for explicitly tagged assertions are implemented in this branch. Deployment, universal activation, field-driven UI and the complete FC01–FC08 matrix remain pending. [A24](ADRS.md#a24-core-field-contract-and-focused-memory-crud) records the decision. The UI concepts are illustrative, with synthetic data; this source update does not change the personal peers' advertised capabilities.
+**Status:** Accepted owner direction, 9 November 2026. The [v1 catalog](FIELD-CATALOG-V1.md), [client contract](RM-CLIENT-CONTRACT.md), core projection/edit support and shared field-driven UI are implemented in source. [A24/A25](ADRS.md#a24-core-field-contract-and-focused-memory-crud) record the decisions; [editor qualification](FIELD-EDITOR-VALIDATION.md) records executed synthetic/core/browser evidence. Deployment needs private operator receipts; universal activation and complete FC01–FC08 remain separate. Synthetic concepts and reference-host results do not qualify a named AI product.
 
 ## Responsibilities
 
@@ -72,7 +72,7 @@ Test a synthetic store first, then obtain a consistent backup before any separat
 
 ## Acceptance before implementation is called complete
 
-| Case | Required evidence; all new cases are planned |
+| Case | Required evidence; focused implementation results are recorded separately |
 | --- | --- |
 | FC01 Shared catalog | Two independent clients and the App discover the same revision and field meanings. Invalid types/cardinality/endpoints and attempts to mutate the catalog through a data grant fail in the core. |
 | FC02 Minimal records | Create a useful person without optional contacts; reject missing required input without partial commits. Reject duplicate retry changes; name matches stay separate unless explicitly resolved. |

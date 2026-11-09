@@ -1,6 +1,6 @@
 # RM client contract for core fields version 1
 
-**Status:** Implemented contract publication and explicit tagged-write validation in this branch; not deployed to the personal peers. Universal field enforcement, a field-driven UI and the remaining FC acceptance are not claimed. The [field catalog](FIELD-CATALOG-V1.md) and packaged [catalog](../refactoredmemory/contracts/fields-v1.json) / [tag schema](../refactoredmemory/contracts/field-tag-v1.schema.json) are the v1 definitions. Synthetic [shared fixtures](../tests/fixtures/field-contract-v1.json) exercise valid and invalid values through the core.
+**Status:** Implemented contract publication, explicit tagged-write validation and the shared editor in this branch. [The rollout plan](FIELD-EDITOR-ROLLOUT.md) separates source/browser qualification from installed-peer receipts. Universal field enforcement, all named hosts and the remaining FC acceptance are not implied. The [field catalog](FIELD-CATALOG-V1.md) and packaged [catalog](../refactoredmemory/contracts/fields-v1.json) / [tag schema](../refactoredmemory/contracts/field-tag-v1.schema.json) are the v1 definitions. Synthetic [value fixtures](../tests/fixtures/field-contract-v1.json) and [actual JavaScript client payloads](../tests/fixtures/field-editor-client.mjs) exercise the core without a second schema.
 
 ## Responsibilities and discovery
 
@@ -87,12 +87,41 @@ A withdrawal retains each named predecessor's value/target, start, precision, un
 
 ## UI and processing boundary
 
+### Shared editor capability
+
+Discover `memory_schema.field_editor.schema == "refactoredmemory.field-editor:v1"` separately from the immutable catalog. `memory_schema.permissions` describes this authenticated connection's observed write/correct/owner-review capabilities, not a promise that a later request remains authorized. Every write rechecks current permission.
+
+`memory_inspect.field_view` maps the bounded returned claims to catalog field IDs and marks `explicit_v1` declarations versus `legacy_unqualified` mappings. The declaration is not proof that an older runtime validated historical input. `unmapped_claim_ids` remain inspectable. `not_recorded` is emitted only for a complete, unsuppressed entity selection; a partial/claim-only/suppressed view uses `not_in_selection`. Coverage and source uncertainty must remain visible.
+
+For a newly composed typed capture, include `memory_submit.catalog_digest` equal to the discovered digest. The private loopback and synthetic reference hosts permit only typed assertions and their source/ordinary-entity dependency closure, with ordinary core admission afterward. Generic capture, capture-only padding and administrative operations stay unavailable on those hosts. This never broadens another client's grant.
+
+`memory_correct.field_update` explicitly qualifies or updates a fact/relationship through the current correction scope:
+
+```json
+{
+  "catalog_digest": "<discovered digest>",
+  "field": "contact.email",
+  "state": "unknown",
+  "valid_from": null,
+  "time_precision": "unknown",
+  "validity_end": "unknown",
+  "valid_to": null,
+  "context": {}
+}
+```
+
+The ordinary correction arguments still supply `target_id`, `expected_heads`, `reason`, stable `request_id` and exactly one mapped `value`/`object`. Core constructs and validates the declaration; it retains predecessor sources and adds an attributed interaction source. `context` edits only the selected relationship's registered required context. Reclassification applies the update to its new replacement, never the withdrawal of the original meaning. A mistaken claim uses `operation: "retract"`; a supported ending uses `operation: "invalidate"` with explicit `valid_to` and no field update. Both retain original claim meaning and history.
+
+New stale-catalog edits fail; an identical committed retry can recover its original receipt after a catalog change, under current authorization. Capture records the submitted digest in server-controlled contribution metadata so altered retry arguments cannot recover a different request. Forms retain frozen arguments after an uncertain save and block navigation until an identical retry or explicit close/reload/reconciliation.
+
+Entity reads retain immutable `label` and add `display_label`/`display_name` as a derived projection. Apply knowledge/world selectors in historical traversal, owner preference before value selection, and the original-label fallback for unresolved/conflicting/incomplete names. Present search includes eligible name/alias claims plus original labels; it reports bounded coverage and never merges matching identities. A source-reported display name is not verified legal identity.
+
 Use the same field definitions in search results, inline forms and expanded graph/list views. Required missing fields remain visible; empty optional fields can be hidden. Explicit unknown/N/A, conflicts and restricted coverage are meaningful states, not empty values to hide. Field layout, localization and host dark/light themes are presentation only. Do not populate a huge mandatory profile or expose internal protocol details to ordinary users.
 
 Keep surrounding chat in the host. The App has no conversation list, assistant or composer. Unsupported/display-only hosts remain honestly read-only; a connection's current tool permissions govern actions. Opening a record must not automatically send all fields, results or source bodies into model context. External AI processing remains client-led and destination-authorized; RM makes no provider call or paid fallback. Sources are untrusted data, never tool instructions.
 
 ## Qualification and rollout
 
-The current implementation publishes and validates explicitly tagged v1 assertions. Untagged legacy records and writes remain under their existing profile and MUST NOT be labelled field-v1-qualified. There is no universal activation switch or automatic personal-data migration in this change. The new field-driven UI and full FC01–FC08 matrix require their own evidence.
+The current implementation publishes and validates explicitly tagged v1 assertions and provides shared field-driven controls. Untagged legacy records and writes retain their existing profile and MUST NOT be labelled field-v1-qualified. There is no universal activation switch or automatic personal-data migration. Source/browser results, private deployment and the full FC01–FC08 matrix require their own evidence.
 
 Before deployment, back up consistently, upgrade both peers and prove compatible tagged writes, incompatible-writer handling, restart, sync and fresh-identity recovery on synthetic data. A prior runtime may accept unknown qualifier metadata without validating it; never claim strict v1 semantics while any writing peer runs such a runtime. Changing the catalog is operator-controlled; a model grant cannot modify the schema. No new deployment, client enrollment, data cleanup, permission change or real-data rewrite follows from publishing these contracts.

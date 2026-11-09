@@ -54,6 +54,7 @@ Versioned repository documentation is authoritative; the companion historical pl
 | A22 | Client-led processing and provider-independent memory roles | Accepted design, 9 November; no internal LLM required; per-client and lifecycle qualification remains open |
 | A23 | Attributed contributions and portable graph review | Accepted interface direction, 9 November; uniform activity model, comments and MCP App implementation remain open |
 | A24 | Core field contract and focused memory CRUD | Accepted owner clarification, 9 November; core schema drives every client; catalog/tagged validation in source, rollout/UI and complete FC acceptance pending |
+| A25 | Contract-driven editor and controlled two-peer rollout | Authorized implementation, 9 November; docs precede core/UI work; FE01–FE08 require separate executed evidence |
 
 V1 is one person's useful knowledge store. It may contain knowledge about organizations and other people without implementing corporate ownership domains or multiple tenants. Retain stable IDs, provenance, clear local authority and versioned exports where useful; do not build enterprise abstractions solely to reserve a future feature. Later protection/deployment profiles need their own evidence and are not prerequisites for personal-v1 completion.
 
@@ -598,7 +599,7 @@ LM03/LM05 must trace a synthetic client contribution to its evidence and process
 
 # A24 Core field contract and focused memory CRUD
 
-**Status:** Accepted owner direction, 9 November 2026. The [starter catalog](FIELD-CATALOG-V1.md), [client contract](RM-CLIENT-CONTRACT.md), schema discovery and opt-in validation of explicitly tagged v1 writes are implemented in this branch. No deployment, universal activation, field-driven UI or full FC acceptance is implied. **Related:** A02, A05/A06, A16/A22/A23; PRD L06 and L09–L12; [Core field contract](CORE-FIELD-CONTRACT.md), FC01–FC08.
+**Status:** Accepted owner direction, 9 November 2026. The [starter catalog](FIELD-CATALOG-V1.md), [client contract](RM-CLIENT-CONTRACT.md), schema discovery and opt-in validation of explicitly tagged v1 writes are implemented in this branch. Shared field-driven source/UI checks are recorded under A25; no deployment, universal activation or full FC acceptance is implied. **Related:** A02, A05/A06, A16/A22/A23; PRD L06 and L09–L12; [Core field contract](CORE-FIELD-CONTRACT.md), FC01–FC08.
 
 ## Decision and KISS boundary
 
@@ -629,6 +630,24 @@ Publish bounded schema discovery and supported input schemas, upgrade both peers
 # Next work
 
 Implement A24/L09–L12 and the core field contract before calling the standardized editor complete. Keep the App a focused visual client of that contract. FC01–FC08 are planned and must be reported separately from historical runtime and LM results; existing client-led processing continues without an internal model.
+
+# A25 Contract-driven editor and controlled two-peer rollout
+
+**Status:** Authorized 9 November 2026 and documented before code changes; core/shared editor implemented with [executed qualification](FIELD-EDITOR-VALIDATION.md). Private deployment and real-data results require separate receipts. **Related:** A02/A05/A06/A20/A21/A23/A24, PRD L06/L09–L12, [editor and rollout acceptance](FIELD-EDITOR-ROLLOUT.md).
+
+## Decision
+
+Make the core field contract usable end to end: discover definitions/digest, project sourced current fields through existing inspection, and reuse typed controls in search-result and graph/detail editing. Existing submit performs atomic typed creation/additions. Extend existing correction with discovered, digest-checked field state/time/context updates and current-head guards, preserving evidence/lineage and identical-request retries. Keep unqualified legacy mappings visibly distinct. A UI click or source statement grants no extra authority.
+
+Remove work/model management from primary App navigation while keeping those tools compatible. The App explores and edits memory; surrounding conversation belongs to the host. Opening or editing does not send record/source contents into model context.
+
+Derive display names and search candidates from sourced active name/alias claims while retaining immutable labels and unresolved alternatives. A display label is not verified legal identity. Do not collapse conditional investment interest, bounded amounts, existing equity ownership and completed funding during the investor pilot; unsupported terms remain explicit legacy/review cases.
+
+Qualify synthetic lifecycle behavior, preserve fresh consistent snapshots and the original immutable records, then upgrade both private writing peers using sealed operator-controlled releases. Keep public ingress off and preserve independent recovery. Complete a scoped evidence-backed Forgence investor pilot through the authorized client; flag ambiguity and retain denied changes as pending rather than using a different identity to force them through.
+
+## Acceptance and evidence boundary
+
+FE01–FE08 define discovery/projection, minimal creation, typed edits, failures, focused UI, offline/restart/restore, exact private deployment and the real-data pilot. Historical tests and a passing build do not pass these cases. Record source, test artifact, deployed identity and actual client outcome separately. This decision authorizes the implementation sequence; it is not evidence that any new code is deployed or any real data has been changed.
 
 Carry A22/A23 and PRD L01–L08 into the next integration work: external client processing, four memory roles, portable tools, attribution and simple graph/evidence/review. Record LM01–LM06 outcomes separately from earlier tests. Internal intelligence remains optional future work. Existing implementation/deployment evidence retains its original scope; this documentation update creates no runtime, provider, host-trust or permission changes.
 
