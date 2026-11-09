@@ -1,0 +1,9 @@
+flowchart TB
+    U["User in an approved client"] --> H["Connected LLM or external runner - interpretation and synthesis"]
+    U --> V["Optional graph App - explore, evidence, comment, correct"]
+    V <-->|"Host-mediated authorized tools"| B["RM - grants, validation, attribution, history and sync"]
+    H <-->|"Bounded retrieval and attributed contributions"| B
+    B --> S["Sources - captured evidence and versions"]
+    B --> K["Structured knowledge - entities, facts, relationships and observations"]
+    B --> D["Derived memory - linked summaries and freshness metadata"]
+    B --> W["Working context - bounded task selection"]

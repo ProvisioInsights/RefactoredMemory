@@ -17,6 +17,14 @@ This matrix defines qualification requirements. Actual executed results are reco
 
 M08 third-hop mesh is later; direct two-peer sync is required now. C22/M17 multi-organization fixtures and P01–P06 cryptographic/enterprise profiles are later. M10/M18 do not silently import corporate policy-epoch or encryption requirements into v1. The detailed PRD and ADRs govern the preserved legacy IDs.
 
+## Client-led memory and review qualification
+
+The 9 November owner direction adds [L01–L08 and LM01–LM06](PRD.md#acceptance-for-this-direction), with [A22/A23](ADRS.md#a22-client-led-processing-and-provider-independent-memory-roles) as the design record. Preserve C01–C30/M01–M25 and their executed evidence; the new cases are planned, not passes inherited from those tests.
+
+Qualify client processing without an internal RM model; independent client/text fallback and fixed-frontier correction parity; trusted versus reported contributor attribution; linked-summary freshness after correction; graph evidence/comment/correction/history with permission denial and concurrent edits; and interrupted/retried client batches with authorization/input rechecks. Use synthetic sources and claims. Do not require per-item human review for Q6-authorized inferred additions, label admission as verification, or infer one client's readiness from another client's success.
+
+For each named product in [the MCP target matrix](MCP.md#client-compatibility-and-qualification), record version, account/path, transport, permission scope and actually exercised capabilities. Core read/write, App rendering, host-mediated calls, comments/corrections and background/client-runner availability are separate observations. Explicitly record unavailable and untested paths. A mock-host App test does not establish installed Praxis or hosted-provider acceptance.
+
 ## Import accounting and approval boundary
 
 Inventory prior source artifacts read-only before selecting adapters. Test every claimed supported generation with isolated synthetic fixtures, including lossless opaque preservation when structured conversion is unsupported. Report missing/corrupt inputs, unknown fidelity and fields not represented by the new schema. An import is not complete merely because counts match.

@@ -1,5 +1,7 @@
 # Personal v1 architecture
 
+**Design clarification, 9 November 2026:** [A22/A23](ADRS.md#a22-client-led-processing-and-provider-independent-memory-roles) and [L01–L08](PRD.md#client-led-processing-and-review-direction) select client-led model processing, four memory roles, contributor attribution and the next graph-review interface. This requirements-only update does not refresh the historical deployment/qualification statements below or claim the new features are running.
+
 **Accepted deployment direction, 7 November 2026:** a normally available NAS-hosted Linux peer plus an independently writable Mac peer. The graph engine and NAS/OAuth/automatic-sync extension are implemented under [NAS-CONTRACT.md](NAS-CONTRACT.md). [Acceptance evidence](ACCEPTANCE-RESULTS.md) separates executed local checks from earlier baseline results and untested owner-device/provider deployment.
 
 DSM and existing NAS services remain on the main LAN. The workload gets a separate identity and isolated VLAN, preferably in a small Linux VM with hardened containers. Public MCP and private synchronization use separate TLS listeners over the same local Store. Cloudflare is an optional outbound tunnel only. It does not hold the knowledge database, and there is no Workers/Durable Objects data port in this release. Primary endpoint does not confer sole-writer or owner authority.
@@ -30,6 +32,30 @@ World time describes when a claim held. Knowledge time describes when a specific
 
 Correction, retraction, invalidation and reinstatement are distinct semantic operations. Competing sources are not automatically revisions of one claim. Concurrent revisions retain branches until an authorized resolution. Administrative deletion and physical erasure are separate from changing a historical belief. Return evidence, lineage, unresolved alternatives, temporal fidelity and coverage with answers. Derived indexes and summaries never become a second source of truth.
 
+## Client-led processing and memory roles
+
+Connected applications and authorized external runners do the model work. RM supplies bounded authorized evidence, validates submitted records and preserves attribution, history and sync. It does not need an embedded model, provider API key or autonomous inference service. Target ChatGPT/Codex, Claude Chat/Cowork/Code, Gemini, Grok, local-model hosts/runners, Praxis and further compatible clients; each actual product connection must be qualified independently.
+
+```mermaid
+flowchart TB
+    U["User in an approved client"] --> H["Connected LLM or external runner - interpretation and synthesis"]
+    U --> V["Optional graph App - explore, evidence, comment, correct"]
+    V <-->|"Host-mediated authorized tools"| B["RM - grants, validation, attribution, history and sync"]
+    H <-->|"Bounded retrieval and attributed contributions"| B
+    B --> S["Sources - captured evidence and versions"]
+    B --> K["Structured knowledge - entities, facts, relationships and observations"]
+    B --> D["Derived memory - linked summaries and freshness metadata"]
+    B --> W["Working context - bounded task selection"]
+```
+
+The [editable processing diagram](diagrams/client-led-memory.mmd) is a responsibility plan, separate from the deployment diagram above. Source/graph storage and bounded retrieval are implemented foundations. A portable graph App, durable comments, consistent contributor activity, maintained-summary freshness and richer context assembly still need implementation/qualification; drawing them does not establish them. The four roles share the graph/evidence contract and do not require separate databases or define confidence levels.
+
+The client controls model execution and data submission. A selected graph view should expose only the task-relevant context to its host model, not transmit the whole corpus. All clients and the App use the same authoritative tools; UI code has no direct database, owner, peer or maintenance authority. When no approved client/runner is active, work remains explicitly incomplete. Do not depend on deprecated MCP sampling or assume an existing connection permits unattended jobs.
+
+For each contribution, distinguish requester, authenticated connection/grant, reported product/processor/model, method/job identity, input records/revisions/frontier, output IDs/action, admission/replication outcome and actual review. Trust authority established during admission; mark unknown or client-reported metadata honestly. A display line such as “suggested by this connection” must expand to evidence and history without inventing owner verification. Current provenance is a foundation; A23 defines the additional consistent contract and review experience to implement.
+
+Generated summaries retain their inputs and never overwrite canonical claims. Changed/corrected inputs require visible stale or unassessed freshness. User corrections append semantic actions; comments reference specific identities/claims/revisions. Per-claim review, concurrent branches and current permissions remain effective across clients and peer sync. The ordinary interface stays search/explore, Why?, Comment, Correct this and History; advanced provider machinery is not an end-user setup prerequisite.
+
 ## Durable operation and personal sync
 
 An admitted semantic operation group and its required local metadata become durable before acknowledgment and visible atomically. Received operations wait for required dependencies. Use stable operation identities and safe retries. Clock skew, duplicate delivery and delivery order must not silently discard a correction.
@@ -46,6 +72,6 @@ Legacy decryption support is an import compatibility concern when an existing so
 
 ## Personal protection and later evolution
 
-V1 requires local access controls, scoped MCP client/agent grants, authenticated peers, HTTPS/TLS for remote transport, bounded inputs/queries, and safe logs. Source text cannot grant permissions or execute tools. Current authority applies to historical queries. Model-inferred additions are automatically accepted within configured client/agent grants, without per-item human review. Preserve evidence, actor/model/derivation attribution, uncertainty, conflicts and correction history; acceptance is not human verification or established truth. Q7 authorizes proactive client capture within grants. Q8 prefers explicit authenticated owner corrections while retaining contradictory claims and evidence. Q9 selects MCP and CLI first. Q10 requires the project-decision, relationship-evidence and recent-changes journeys.
+V1 requires local access controls, scoped MCP client/agent grants, authenticated peers, HTTPS/TLS for remote transport, bounded inputs/queries, and safe logs. Source text cannot grant permissions or execute tools. Current authority applies to historical queries. Model-inferred additions are automatically accepted within configured client/agent grants, without per-item human review. Preserve evidence, actor/model/derivation attribution, uncertainty, conflicts and correction history; acceptance is not human verification or established truth. Q7 authorizes proactive client capture within grants. Q8 prefers explicit authenticated owner corrections while retaining contradictory claims and evidence. Q9 established MCP and CLI first; A23 adds the graph-review direction. Q10 requires the project-decision, relationship-evidence and recent-changes journeys.
 
 Product content encryption, corporate ownership boundaries and multitenancy are deferred. Stable IDs, versioned semantic contracts, provenance and portable export preserve a practical migration path. Future tenancy/custody must not introduce a prerequisite enterprise framework into personal v1.

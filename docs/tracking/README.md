@@ -1,5 +1,7 @@
 # Repository tracking and paused Linear setup
 
+**9 November 2026 requirements update:** [L01–L08/LM01–LM06](../PRD.md#client-led-processing-and-review-direction) and [A22/A23](../ADRS.md#a22-client-led-processing-and-provider-independent-memory-roles) add client-led processing, expanded clients, four memory roles, contributor attribution and graph/evidence/review direction. The 51-item prepared backlog below retains its historical mapping; the new acceptance cases have not been added as completed backlog items or external issues. Linear remains paused. Q9's earlier UI deferral below is historical; A23 is the next interface direction. Internal intelligence remains optional future work.
+
 **Status: Linear setup is paused at the owner's request.** No Linear team, projects or issues were created in this work. No manual team-creation step is currently needed. Resume external setup only when the owner asks.
 
 The repository keeps the work breakdown available while coordinated implementation proceeds. Linear availability is not a readiness gate. The owner answered Q7–Q10 and explicitly said **“Proceed” on 7 November 2026**. R09 records that authorization; remaining detailed-contract, evidence and qualification work stays open.
