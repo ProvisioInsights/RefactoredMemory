@@ -1,5 +1,9 @@
 # RefactoredMemory Architecture Decisions
 
+**9 November 2026 clarification:** A22 accepts client-led processing and four memory roles; A23 accepts contributor attribution and the next graph/evidence/review interface direction. These decisions supplement the implemented personal-v1 baseline. They do not certify new UI, processing-job, lifecycle or hosted-client functionality.
+
+The existing deployment/test status paragraphs retain their recorded evidence scope. This design update does not refresh those operational observations or change either Praxis repository.
+
 **Status:** Personal-v1 NAS-first scope approved; local NAS/OAuth/sync implementation available, release qualification incomplete. **Revised:** 7 November 2026. The owner has confirmed that **RefactoredMemory v1 is his personal knowledge store**, with two offline-writable personal peers, synchronization, mandatory MCP integration, Markdown/Logseq import, migration of data from previous LivingAtlas runs, and automatic acceptance of inferred additions within configured client/agent grants. Per-item human review is not required for those authorized additions; acceptance does not mean human-verified truth. Multi-tenancy, corporate ownership, product content encryption and custody/recovery machinery are later phases. Temporal semantics, evidence, attribution, uncertainty and correction lineage remain core; Q7–Q10 confirm proactive capture within grants, explicit-owner correction preference with conflicts/history retained, MCP+CLI first without a v1 browser UI, and all three day-one tasks. The owner explicitly said **“Proceed”**; the authorized implementation now exists on `codex/personal-memory-v1`. A17 records the baseline engineering stack; A18–A21 record the authorized NAS-first extension. The NAS OAuth resource adapter, dual-listener command, sync scheduler, capacity guards and deployment artifacts now exist locally. Actual NAS access/deployment comes later; the evidence summary separates implemented code from incomplete environment/client qualification.
 
 **Confirmed MCP target and repository boundary:** The owner uses **Praxis2** and targets OpenAI Pro 500 and Claude Max 5x apps and APIs. Plan labels identify the owner's intended accounts, not verified connector entitlement or API billing. RefactoredMemory must provide standards-conformant MCP 2026-07-28 stdio and Streamable HTTP connections, with the latest published stable revision rechecked for future upgrades. No changes to either the Praxis or Praxis2 repository—including client code, provider endpoints or approval paths—are authorized or required by this task. Installed Praxis2 and the targeted OpenAI/Claude app/API connections remain unverified until usable account-specific connections are available; any hardcoded-provider or account-entitlement limitation is an external interoperability evidence gap, not work to change the Praxis repositories.
@@ -45,6 +49,8 @@ Versioned repository documentation is authoritative; the companion historical pl
 | A19 | OAuth resource validation and current per-client grants | OAuth resource adapter and real Keycloak/PostgreSQL Docker workflow passed locally; actual providers/NAS unverified |
 | A20 | Automatic bounded resumable sync | Bounded persistent scheduler/capacity guards implemented locally; actual Mac/NAS unverified |
 | A21 | Private session-scoped workload operations | Scoped access runbook prepared; actual VPN/SSH/NAS access not configured |
+| A22 | Client-led processing and provider-independent memory roles | Accepted design, 9 November; no internal LLM required; per-client and lifecycle qualification remains open |
+| A23 | Attributed contributions and portable graph review | Accepted interface direction, 9 November; uniform activity model, comments and MCP App implementation remain open |
 
 V1 is one person's useful knowledge store. It may contain knowledge about organizations and other people without implementing corporate ownership domains or multiple tenants. Retain stable IDs, provenance, clear local authority and versioned exports where useful; do not build enterprise abstractions solely to reserve a future feature. Later protection/deployment profiles need their own evidence and are not prerequisites for personal-v1 completion.
 
@@ -228,7 +234,7 @@ Add this later module through a complete useful personal scenario. It does not g
 
 # A08 Research guided retrieval and consolidation
 
-**Status:** Proposed staged experiments. **V1:** Useful source-linked retrieval, bounded context and automatic acceptance of inferred additions within configured client/agent grants. Q7 confirms proactive useful-knowledge capture within configured grants; Q8 confirms explicit-owner correction preference with alternatives/history retained. Q9 selects MCP+CLI, and Q10 selects all three day-one tasks. An embedded extraction runtime, background consolidation, vectors, linked summaries and distributed workers are separately scoped modules. Corporate/protected-processing requirements in A11–A14 remain later.
+**Status:** Proposed staged experiments; A22 selects connected clients as the current model-processing executors. **V1:** Useful source-linked retrieval, bounded context and automatic acceptance of inferred additions within configured client/agent grants. Q7 confirms proactive useful-knowledge capture within grants; Q8 confirms explicit-owner correction preference with alternatives/history retained. Q9 established the MCP+CLI baseline; A23 adds the next graph-review direction. Internal extraction/consolidation, vectors and distributed workers remain future modules. Client-generated derived artifacts do not require those internal services; maintained freshness and richer context still need implementation. Corporate/protected-processing requirements in A11–A14 remain later.
 
 ## Context and proposed mechanisms
 
@@ -426,7 +432,7 @@ The personal subset of M18 checks current client authority across history, autho
 
 # A15 Inspectable knowledge and memory controls
 
-**Status:** Q6–Q10 personal behavior confirmed and exercised in synthetic workflows; actual-host/client qualification remains incomplete. **V1:** Proactive useful-knowledge capture and automatic acceptance within configured grants, explicit-owner correction preference with alternatives/evidence/history retained, MCP+CLI inspection with no browser UI, and all three day-one tasks. **Later:** Enterprise ownership, full forgetting/consolidation systems and protected lifecycle qualification.
+**Status:** Q6–Q10 personal behavior confirmed and exercised in synthetic workflows; actual-host/client qualification remains incomplete. **V1 baseline:** Proactive capture and automatic acceptance within grants, explicit-owner correction preference with alternatives/evidence/history retained, MCP+CLI inspection and all three day-one tasks. **9 November extension:** A23 adds graph/evidence/review and consistent contributor-attribution requirements; it does not establish that comments, edits or a portable MCP App are delivered. **Later:** Enterprise ownership, full forgetting/consolidation systems and protected lifecycle qualification.
 
 ## Context and proposed behavior
 
@@ -524,7 +530,72 @@ The requested continuous availability means the service and permitted operationa
 
 M24 must exercise host-key mismatch and out-of-scope command/path rejection, secret/log hygiene, least-privilege account configuration and separation from public MCP/sync routing. Local tests are not evidence that the actual NAS account, VPN or firewall has been configured.
 
+# A22 Client-led processing and provider-independent memory roles
+
+**Status:** Accepted owner direction, 9 November 2026. **Related:** A01, A03, A08, A15–A17, A23; PRD L01–L03/L08 and LM01/LM02/LM04/LM06. This records a design decision, not a deployed processing service or a completed client integration.
+
+## Decision and responsibilities
+
+Connected LLM applications and separately authorized external runners perform extraction, interpretation, classification, summarization and reasoning. RM owns deterministic schema/reference/authority checks, durable graph and evidence storage, bounded retrieval, correction/conflict history, attribution and synchronization. Basic validation, indexes, source accounting and progress bookkeeping do not require a model. No embedded model, provider API credential, autonomous model scheduler, broker or model-routing platform is a prerequisite for current RM.
+
+Target OpenAI ChatGPT and Codex; Anthropic Claude Chat, Cowork and Claude Code; Google Gemini; Grok; local-model hosts/runners; Praxis; and future compatible clients. A bare model is not an MCP host. Discover and qualify each product's transport, authentication, read/write/correction tools, context limits, UI and execution capabilities independently. One product's API support, subscription or connector does not prove another product's support or entitlement. Preserve structured/text tools and current grants when UI is absent.
+
+Clients retrieve a bounded, authorized input set, perform model work externally and submit source-linked contributions through the same graph contract. Model output is an attributed contribution, not an instruction to execute arbitrary commands, widen permissions or assign itself owner authority. Retain Q6 automatic acceptance inside configured grants without introducing mandatory review of every contribution. Q8 explicit owner corrections remain preferred with competing evidence/history retained.
+
+## Four roles in one memory system
+
+1. **Sources:** permitted captured records with identity, version and capture metadata.
+2. **Structured knowledge:** canonical entities, facts, relationships and unresolved observations, with time, uncertainty and semantic lineage.
+3. **Derived memory:** client-generated linked notes, summaries, briefs and topic views, with input record/revision references, knowledge frontier, generator/method version and freshness state.
+4. **Working context:** bounded evidence selected for the present task, with coverage, temporal scope and alternatives; reusable results enter through normal attributed writes.
+
+These roles neither require four databases nor imply a hierarchy of truth. They differ from `fact`/`relationship`/`observation` and from knowledge categories. Canonical graph records and source evidence remain authoritative. Corrections must expose stale or unassessed derived representations rather than let an old summary silently redefine a current claim. Reading an artifact must not grant access to otherwise unauthorized inputs. Maintained summaries, automated freshness tracking and richer context assembly remain implementation work.
+
+## Processing continuity and future options
+
+An active client or authorized runner must perform processing. RM cannot assume that an MCP connection lets it wake a consumer chat or reuse a subscription for unattended work. A future client-led task/checkpoint convention can record job ID, requester/connection, input IDs/frontier, method version, bounds, progress, intended outputs and safe retry keys. Recheck current authority and relevant input revisions before publication; preserve conflicts and partial completion. Do not require a distributed queue to establish these conventions.
+
+The official [sampling specification](https://modelcontextprotocol.io/specification/2026-07-28/client/sampling), checked 9 November 2026, marks sampling deprecated and says new implementations should not adopt it. Do not make client-led RM depend on server-initiated sampling or a host UI extension. If later evidence justifies internal intelligence, add a separately scoped executor using the same contribution/permission contract, with explicit data/cost controls and qualification. Direct provider APIs or an MCP-exposed model runner are possible future arrangements, not current requirements or integrations.
+
+## Alternatives, consequences and qualification
+
+An internal inference fleet was considered and deferred: it adds credentials, cost, routing and operations before it is necessary. A passive unvalidated dump is also insufficient: external model work still needs consistent semantics, evidence, conflict handling and attribution. Client availability and capability differences are explicit limitations; show work as incomplete when no approved processor is active.
+
+LM01/LM02/LM04/LM06 must demonstrate processing with no model configured in RM, portable fixed-frontier answers and corrections, summary freshness/retained source lookup, and interrupted/retried client work without duplicate contributions or unapproved provider fallback. These cases are planned, not passed by this ADR update.
+
+# A23 Attributed contributions and portable graph review
+
+**Status:** Accepted owner direction, 9 November 2026; implementation and host qualification remain open. **Related:** A02, A05/A06, A15/A16, A19/A22; PRD L04–L07 and LM03/LM05. The 7 November Q9 MCP+CLI baseline remains available; its earlier deferral of richer review is superseded for the next interface direction, not retroactively added to old test results.
+
+## Attribution decision
+
+Every admitted contribution must be traceable through distinct roles: initiator/requester; authenticated connection/grant; connector/product and processor/model when known; input source/assertion IDs and revisions/frontier; job/request and derivation method/version; affected output IDs; semantic action and predecessors/reason; admitting peer/local knowledge position; replication state; and actual human review/correction events. Preserve existing immutable operation attribution. New uniform fields, activity queries and display projections need a versioned contract and compatibility work; this document does not claim those fields are already enforced on every path.
+
+Derive effective actor and grant authority from authenticated admission, never from supplied text. Connection identity can be established by its grant while product/model/version remains client-reported or unknown. Store that distinction. An agent quoting an owner's instruction is not itself an authenticated owner-review event. Repeating a claim through several models or replicas does not create independent corroboration.
+
+Expose “What did this connector add?”, “Which processor suggested this?” and “What did I correct?” using authoritative records, not a lossy UI-only log. Distinguish requested, admitted, rejected, synchronized and reviewed outcomes. Keep failed attempts in appropriately bounded operational records rather than fabricate graph mutations. Do not store tokens, private keys, raw credential-bearing configurations or unnecessary full prompts in activity history. Historical provenance does not override current access controls.
+
+## Simple review and the graph App
+
+The ordinary workflow is search/explore, **Why?**, **Comment**, **Correct this** and **History**. Show a short attribution line, with details available on demand. Users should not select a model for every action, configure processing pipelines or understand the internal memory roles. They still control connected clients, permissions and any external processing destination. Do not silently route private data to another provider.
+
+Provide a focused graph neighborhood with people, organizations, projects and events, typed/labeled relationships, dates, and visibly distinct source-reported, inferred, disputed and owner-reviewed claims. Mentions, evidence links, hypotheses and business relationships are different meanings. Keep document chunks in the evidence panel rather than rendering every chunk as a peer identity. A selected edge opens its source passages, context, dates and uncertainty; graph connectivity alone is not proof.
+
+Use an optional portable [MCP App](https://modelcontextprotocol.io/extensions/apps/overview), checked 9 November 2026, served by RM and rendered in a capable host. The host must negotiate support, isolate the interface and mediate allowed tool calls. Keep useful structured/text tools without UI. Display-only hosts must not pretend to save edits or fetch additional neighborhoods. Embedding the App neither publishes RM nor makes it a new storage peer. Public transport, private sync and administration boundaries remain unchanged; local/private use is possible where the host's trust requirements are met.
+
+The App renders authoritative tool results and retains only temporary interaction state. Save comments to stable entity/assertion/revision references; exact predicates and comment schema require implementation review. Save corrections through normal append-only semantic actions and current permissions. Keep previous claims/sources and handle concurrent edits through guarded updates or retained branches. A reviewer confirms only specified claims/revisions; accepting a contribution, reviewing one claim or viewing the graph never verifies an entire document or connector.
+
+Send only the context needed for the selected task through the host's model-context channel; do not automatically transmit the entire graph or source corpus when opening a view. A denied grant must produce a clear refusal, not a direct database-write fallback. Frontend scripts receive neither production credentials nor administrative/peer authority. The portable App and host bridge need independent implementation and end-to-end tests; this decision changes neither Praxis repository.
+
+## Qualification and alternatives
+
+A standalone read-only explorer supports inspection but does not satisfy the requested comment/correction workflow. A vendor-only widget would restrict reuse; an unrestricted embedded browser would weaken isolation and authority. Start with the graph/evidence/review use case in one qualified host and synthetic data, preserve the non-UI tools, then qualify the other named clients separately.
+
+LM03/LM05 must trace a synthetic client contribution to its evidence and processor, retain unknown/reported attribution, reject spoofed owner authority, inspect a bounded graph, save a comment and correction, show history and peer convergence, and refuse unauthorized or unavailable host capabilities. The list of target clients is a requirement, not a support matrix of passed integrations.
+
 # Next work
+
+Carry A22/A23 and PRD L01–L08 into the next integration work: external client processing, four memory roles, portable tools, attribution and simple graph/evidence/review. Record LM01–LM06 outcomes separately from earlier tests. Internal intelligence remains optional future work. Existing implementation/deployment evidence retains its original scope; this documentation update creates no runtime, provider, host-trust or permission changes.
 
 Maintain the accepted NAS-first Q11–Q15 scope with Q1/Q2/Q5–Q10 and the locally implemented A18–A21 code/artifacts in the repository and Pages. Preserve proactive capture, explicit-owner correction preference, MCP+CLI and the three day-one tasks. Qualify the prepared workload/Tunnel configuration, OAuth resource adapter, per-client current grants, automatic bounded sync/capacity guards and session-scoped operational instructions. Run available Linux/Docker tests and macOS CI, while recording actual Mac/NAS, installed Praxis2, OpenAI/Claude account/API and original-archive qualification as unverified. Actual NAS access/deployment, real-data ingestion and original-key use come later. Linear remains paused.
 

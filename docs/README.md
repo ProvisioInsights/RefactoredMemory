@@ -1,5 +1,7 @@
 # Documentation index
 
+**9 November 2026 design update:** [L01–L08/LM01–LM06](PRD.md#client-led-processing-and-review-direction) and [A22/A23](ADRS.md#a22-client-led-processing-and-provider-independent-memory-roles) make connected LLMs the current processing executors, define four memory roles and require portable tools, contributor attribution and a simple graph-review direction. Internal intelligence is optional future work. This requirements update does not refresh the historical qualification baseline below or claim new functionality/client passes.
+
 **Current stage:** personal-v1 and the NAS/OAuth/automatic-sync extension are implemented and under qualification. The owner's 7 November 2026 **“Proceed”** and subsequent NAS build instruction remain in force. The [implementation contract](CONTRACT.md) and [NAS contract](NAS-CONTRACT.md) define the implemented boundaries; [acceptance evidence](ACCEPTANCE-RESULTS.md) records what actually ran. Actual owner Mac/NAS and hosted-client qualification remain separate.
 
 **Tracking:** Linear setup is paused at the owner's request. Use the [repository tracking plan](tracking/README.md) meanwhile. No action to create a Linear team is currently needed, and Linear availability is not a product or documentation gate.
@@ -11,7 +13,7 @@
 | [Decisions](DECISIONS.md) | Accepted scope, open owner questions and deferred work. | Start here to avoid reopening settled choices. |
 | [Product requirements](PRD.md) | Personal-v1 behavior, requirements and acceptance cases. | Canonical requirements; preserved C/M identifiers distinguish v1 and later scope. |
 | [Architecture decisions](ADRS.md) | Evidence, alternatives, rationale and decision status. | Each ADR carries its own accepted/proposed/deferred status. |
-| [Architecture](ARCHITECTURE.md) | Personal Mac/Linux topology, temporal model, import and recovery boundaries. | Implemented personal-v1 topology, under qualification. [Editable diagram](diagrams/personal-v1.mmd). |
+| [Architecture](ARCHITECTURE.md) | Personal Mac/Linux topology, client-led processing, four memory roles, temporal model, import and recovery boundaries. | Personal-v1 implementation plus A22/A23 planned extensions; qualification remains separate. [Deployment diagram](diagrams/personal-v1.mmd), [processing diagram](diagrams/client-led-memory.mmd). |
 | [MCP integration](MCP.md) | Required protocol/client contract and interoperability evidence. | Latest-stable server implemented; actual installed Praxis2 connection unverified. No changes to either Praxis repository. |
 | [Validation](VALIDATION.md) | Synthetic fixtures, failure cases, import/migration and release evidence. | Requirement-to-test plan; executed results are in the acceptance report. |
 | [Research](RESEARCH.md) | Source ledger, supplied measurements, limitations and outstanding research. | Public-safe summary; full historical private evidence remains in its authorized sources. |
@@ -31,6 +33,7 @@
 ## Organization and maintenance
 
 - Keep product requirements in the PRD, decisions and rationale in the ADRs/decision register, and supporting evidence in the research ledger. Update the affected documents together when an accepted decision changes.
+- A22/A23 and L01–L08 are the current processing/review direction. Preserve Q6 automatic admission and Q8 owner-correction preference. Q9's earlier MCP+CLI-only scope is the historical baseline; the graph MCP App is now the next interface direction. Mark the new LM acceptance cases planned until executed.
 - Keep architecture source in `diagrams/`; show a readable view in the architecture document. Avoid creating competing diagram versions with different scope.
 - Keep tracking artifacts in `tracking/`. The structured plan is the maintained backlog source; its Markdown view is a readable export. These are prepared items, not actual Linear issue IDs or live statuses.
 - Preserve C01–C30/M01–M25 and ADR identifiers when changing scope; classify later work explicitly. Corporate tenancy, product encryption and transitive mesh must not become accidental personal-v1 gates.
