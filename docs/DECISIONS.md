@@ -1,5 +1,7 @@
 # Personal v1 decisions
 
+**Client-led implementation, 9 November 2026:** The journal-backed workspace tools, pinned briefs, client task checkpoints and optional graph App are implemented in this branch. See [the workspace guide](CLIENT-LED-WORKSPACE.md) and [executed qualification](CLIENT-LED-VALIDATION.md). Historical requirements-only notes below describe their earlier documentation revision; named provider products still require separate live qualification.
+
 Updated 9 November 2026. The owner's 7 November **“Proceed”** remains in force. The 9 November clarification selects client-led LLM processing, cross-provider access, simple graph review and contributor attribution under A22/A23. This records requirements and design direction; it does not claim that the new interfaces, lifecycle controls or client qualification are implemented.
 
 | Decision | Status | Consequence |

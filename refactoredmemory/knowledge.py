@@ -380,6 +380,10 @@ FACT_DEFINITIONS = {
         "rm:contact-record": "A dated interaction observation within a scoped engagement.",
         "rm:prospect-record": "A source-reported prospect within a project; not an established conversation.",
         "rm:review-flag": "An independent source-linked quality review record.",
+        "rm:comment": "An attributed comment on an entity or specific assertion revision; not world evidence.",
+        "rm:review": "A revision-specific owner review; effective authority comes from authenticated admission.",
+        "rm:derived-memory": "A client-generated artifact with pinned evidence inputs and computed freshness.",
+        "rm:task-state": "A client-led work state with guarded updates and retained concurrent branches.",
     }.items()
 }
 

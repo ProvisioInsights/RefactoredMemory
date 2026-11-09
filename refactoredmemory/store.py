@@ -152,6 +152,7 @@ class Store:
             PRIMARY KEY(kind,id,operation_id));
         INSERT OR IGNORE INTO record_events SELECT kind,id,operation_id FROM records;
         CREATE INDEX IF NOT EXISTS records_lookup ON records(kind,subject,predicate);
+        CREATE INDEX IF NOT EXISTS records_predicate_subject ON records(kind,predicate,subject);
         CREATE INDEX IF NOT EXISTS records_object ON records(kind,object);
         CREATE TABLE IF NOT EXISTS requests(
             actor TEXT NOT NULL,id TEXT NOT NULL,digest TEXT NOT NULL,operation_id TEXT NOT NULL,
@@ -529,13 +530,15 @@ class Store:
         self.db.execute("UPDATE operations SET position=?,applied_at=? WHERE id=?", (position, utcnow(), body["id"]))
         self._setmeta("position", position)
 
-    def submit(self, actions, *, actor=None, request_id=None):
+    def submit(self, actions, *, actor=None, request_id=None, expected_heads=None, authorize=None):
         self._validate_actions(actions)
         actor = self._actor(actor)
         if request_id is not None:
             identifier(request_id, "request ID")
         digest = hashlib.sha256(canonical(actions).encode()).hexdigest()
         with self._transaction():
+            if authorize is not None and self._actor(authorize()) != actor:
+                raise AuthorizationError('Submitting authority changed')
             if request_id:
                 old = self.db.execute("SELECT * FROM requests WHERE actor=? AND id=?", (actor["id"], request_id)).fetchone()
                 if old:
@@ -544,6 +547,18 @@ class Store:
                     row = self.db.execute("SELECT position FROM operations WHERE id=?", (old["operation_id"],)).fetchone()
                     return {"operation_id": old["operation_id"], "known_position": row[0],
                             "action_ids": [a["id"] for a in actions], "duplicate": True}
+            # Check the current heads inside the write transaction, after retry
+            # lookup. Another connection cannot race a guarded workspace edit.
+            for condition in expected_heads or []:
+                if condition.get('kind') == 'source':
+                    source = self.get_source(condition['id'])
+                    if source is None or hashlib.sha256(canonical(source).encode()).hexdigest() != condition['sha256']:
+                        raise ConflictError('Input source changed or became unavailable')
+                    continue
+                current = self.query(subject=condition['subject'], predicate=condition['predicate'], limit=1000)
+                if (not current['coverage']['complete'] or
+                        sorted(a['id'] for a in current['assertions']) != sorted(condition['ids'])):
+                    raise ConflictError('Memory changed; reload before editing')
             frontier = self._frontier()
             seq = frontier.get(self.peer_id, 0) + 1
             body = {"schema": SCHEMA, "id": f"{self.peer_id}:{seq}", "store_id": self.store_id,
@@ -794,12 +809,12 @@ class Store:
                     children.setdefault(predecessor, []).append(a["id"])
                     previous = visible.get(predecessor)
                     # An inferred update cannot override the explicitly corrected owner belief.
-                    if previous and previous.get("kind") == "correct" and previous["actor"]["kind"] == "owner" and a["actor"]["kind"] != "owner":
+                    if previous and previous.get("kind") == "correct" and previous["actor"]["kind"] == "owner" and a["actor"]["kind"] != "owner" and a['predicate'] != 'rm:task-state':
                         continue
                     superseded.add(predecessor)
             heads = [a for a in visible.values() if a["id"] not in superseded and a.get("kind", "assert") != "retract"
                      and a["subject"] not in deleted and a.get("object") not in deleted]
-            owner_keys = {(a["subject"], a["predicate"]) for a in heads if a.get("kind") == "correct" and a["actor"]["kind"] == "owner"}
+            owner_keys = {(a["subject"], a["predicate"]) for a in heads if a.get("kind") == "correct" and a["actor"]["kind"] == "owner" and a['predicate'] != 'rm:task-state'}
             grouped = {}
             for a in heads:
                 grouped.setdefault((a["subject"], a["predicate"]), []).append(a)
@@ -841,6 +856,10 @@ class Store:
                 a["alternatives"] = [other["id"] for other in grouped.get((a["subject"], a["predicate"]), [])
                                      if not knowledge.multi_valued(a["predicate"]) and other["id"] != a["id"] and (assertion_value(other["id"]), other.get("object")) != (a.get("value"), a.get("object"))]
                 a["knowledge"] = knowledge.describe(a)
+                if a['predicate'] != 'rm:review':
+                    from .workspace import Workspace
+                    a['review'] = Workspace(self, {'id': 'projection', 'kind': 'agent'}).review_state(a, view)
+                    a['human_verified'] = a['review']['human_verified']
                 if excerpt_chars is not None and a["predicate"] == "content" and isinstance(a.get("value"), str):
                     content = a.pop("value")
                     start, matched = knowledge.excerpt_offset(content, folded_text, excerpt_chars)

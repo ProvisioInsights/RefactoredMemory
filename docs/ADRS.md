@@ -1,5 +1,7 @@
 # RefactoredMemory Architecture Decisions
 
+**Client-led implementation, 9 November 2026:** The journal-backed workspace tools, pinned briefs, client task checkpoints and optional graph App are implemented in this branch. See [the workspace guide](CLIENT-LED-WORKSPACE.md) and [executed qualification](CLIENT-LED-VALIDATION.md). Historical requirements-only notes below describe their earlier documentation revision; named provider products still require separate live qualification.
+
 **9 November 2026 clarification:** A22 accepts client-led processing and four memory roles; A23 accepts contributor attribution and the next graph/evidence/review interface direction. These decisions supplement the implemented personal-v1 baseline. They do not certify new UI, processing-job, lifecycle or hosted-client functionality.
 
 The existing deployment/test status paragraphs retain their recorded evidence scope. This design update does not refresh those operational observations or change either Praxis repository.

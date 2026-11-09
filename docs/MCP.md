@@ -1,5 +1,7 @@
 # Required MCP integration
 
+**Client-led implementation, 9 November 2026:** The journal-backed workspace tools, pinned briefs, client task checkpoints and optional graph App are implemented in this branch. See [the workspace guide](CLIENT-LED-WORKSPACE.md) and [executed qualification](CLIENT-LED-VALIDATION.md). Historical requirements-only notes below describe their earlier documentation revision; named provider products still require separate live qualification.
+
 The NAS extension implements a maintained-AS OAuth resource profile, independent whole-store agent grants, separate public MCP/private sync TLS listeners and explicit legacy HTTP compatibility. See [NAS-CONTRACT.md](NAS-CONTRACT.md), the [conformance details](MCP-CONFORMANCE.md) and [current executed evidence](ACCEPTANCE-RESULTS.md).
 
 MCP is a v1 release requirement for Praxis2 and other MCP-capable LLM applications. An LLM uses the store through its host/client/runtime; a bare model is not assumed to implement MCP.

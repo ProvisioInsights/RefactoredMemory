@@ -1,5 +1,7 @@
 # Documentation index
 
+**Client-led implementation, 9 November 2026:** The journal-backed workspace tools, pinned briefs, client task checkpoints and optional graph App are implemented in this branch. See [the workspace guide](CLIENT-LED-WORKSPACE.md) and [executed qualification](CLIENT-LED-VALIDATION.md). Historical requirements-only notes below describe their earlier documentation revision; named provider products still require separate live qualification.
+
 **9 November 2026 design update:** [L01–L08/LM01–LM06](PRD.md#client-led-processing-and-review-direction) and [A22/A23](ADRS.md#a22-client-led-processing-and-provider-independent-memory-roles) make connected LLMs the current processing executors, define four memory roles and require portable tools, contributor attribution and a simple graph-review direction. Internal intelligence is optional future work. This requirements update does not refresh the historical qualification baseline below or claim new functionality/client passes.
 
 **Current stage:** personal-v1 and the NAS/OAuth/automatic-sync extension are implemented and under qualification. The owner's 7 November 2026 **“Proceed”** and subsequent NAS build instruction remain in force. The [implementation contract](CONTRACT.md) and [NAS contract](NAS-CONTRACT.md) define the implemented boundaries; [acceptance evidence](ACCEPTANCE-RESULTS.md) records what actually ran. Actual owner Mac/NAS and hosted-client qualification remain separate.
