@@ -137,8 +137,8 @@ class Explorer:
     def evidence(self,rid,limit=30,offset=0):
         ids=sorted(self.doc_links.get(rid,set()));rows=[]
         with contextlib.closing(connection(self.index)) as i:
-            for offset in range(0,len(ids),400):
-                group=ids[offset:offset+400]
+            for batch_offset in range(0,len(ids),400):
+                group=ids[batch_offset:batch_offset+400]
                 if group:rows.extend(dict(x) for x in i.execute('SELECT id,entity_id,namespace,title,date,source_identity,version,part,parts FROM documents WHERE entity_id IN ('+','.join('?' for _ in group)+')',group))
         rows.sort(key=lambda x:x['date'] or '',reverse=True)
         rows.sort(key=lambda x:(not x['namespace'].startswith('owner-approved-logseq'),-(int(x['part']==0))))

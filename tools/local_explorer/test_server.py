@@ -33,6 +33,19 @@ class ExplorerSecurityTests(unittest.TestCase):
         with sqlite3.connect(index) as c:c.execute('CREATE TABLE documents(id TEXT)')
         app=object.__new__(Explorer);app.index=index
         with self.assertRaises(KeyError):app.source('/etc/passwd')
+    def test_evidence_pages_stay_distinct_across_document_query_batches(self):
+        index=self.root/'documents.sqlite3'
+        with sqlite3.connect(index) as c:
+            c.execute('CREATE TABLE documents(id TEXT,entity_id TEXT,namespace TEXT,title TEXT,date TEXT,source_identity TEXT,version TEXT,part INTEGER,parts INTEGER)')
+            c.executemany('INSERT INTO documents VALUES (?,?,?,?,?,?,?,?,?)',[(f'doc-{n:03}',f'entity-{n:03}','owner-approved-logseq',f'Note {n}',None,f'note-{n}', '1',0,1) for n in range(445)])
+        app=object.__new__(Explorer);app.index=index
+        app.doc_links={'person':{f'entity-{n:03}' for n in range(445)}}
+        app.source=lambda rid:{'text':'Synthetic captured passage'}
+        first=app.evidence('person');second=app.evidence('person',offset=30);last=app.evidence('person',offset=440)
+        self.assertEqual((first['offset'],second['offset'],last['offset']),(0,30,440))
+        self.assertEqual((len(first['documents']),len(second['documents']),len(last['documents'])),(30,30,5))
+        self.assertFalse({x['id'] for x in first['documents']} & {x['id'] for x in second['documents']})
+        self.assertTrue(second['has_more']);self.assertFalse(last['has_more'])
 
 
 class HttpBoundaryTests(unittest.TestCase):
