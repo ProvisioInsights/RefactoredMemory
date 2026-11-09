@@ -633,7 +633,7 @@ Implement A24/L09–L12 and the core field contract before calling the standardi
 
 # A25 Contract-driven editor and controlled two-peer rollout
 
-**Status:** Authorized 9 November 2026 and documented before code changes; core/shared editor implemented with [executed qualification](FIELD-EDITOR-VALIDATION.md). Private deployment and real-data results require separate receipts. **Related:** A02/A05/A06/A20/A21/A23/A24, PRD L06/L09–L12, [editor and rollout acceptance](FIELD-EDITOR-ROLLOUT.md).
+**Status:** Authorized 9 November 2026 and documented before code changes; core/shared editor implemented with [executed qualification](FIELD-EDITOR-VALIDATION.md). The private two-peer rollout is separately observed there; the real-data pilot remains partial and correction authority is pending. **Related:** A02/A05/A06/A20/A21/A23/A24, PRD L06/L09–L12, [editor and rollout acceptance](FIELD-EDITOR-ROLLOUT.md).
 
 ## Decision
 
