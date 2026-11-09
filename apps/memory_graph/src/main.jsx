@@ -18,7 +18,7 @@ function App() {
       setClient(c);
       if (c.authenticated && c.available) {
         setSchema(await c.call('memory_schema'));
-        if (c.start) { const g = await c.call('memory_graph', { start: c.start }); setGraph(g); setSelected(c.start); }
+        if (c.start) { const g = await c.call('memory_graph', { start: c.start, limit: 12 }); setGraph(g); setSelected(c.start); }
       }
     }).catch(e => setError(e.message));
   }, []);
@@ -34,12 +34,12 @@ function App() {
     const timer = setTimeout(() => client.call('memory_search_entities', { text: query, limit: 12 }).then(data => { if (!stale) setMatches(data); }).catch(e => { if (!stale) setError(e.message); }), 180);
     return () => { stale = true; clearTimeout(timer); };
   }, [query, client]);
-  const open = async (id, depth = 1) => {
+  const open = async (id, budget = 12) => {
     if (!client?.available) return;
     setBusy(true); setError(''); setMessage(''); setMatches(null); setView('Graph');
     try {
       const inspected = await client.call('memory_inspect', { target_id: id });
-      const g = await client.call('memory_graph', { start: inspected.entity.id, depth, limit: 60 });
+      const g = await client.call('memory_graph', { start: inspected.entity.id, depth: 1, limit: budget });
       setGraph(g); setSelected(id); setDetail(inspected);
     } catch (e) { setError(e.message); } finally { setBusy(false); }
   };
@@ -56,7 +56,7 @@ function App() {
       {view === 'Graph' ? <>
         <header className="toolbar"><h1>Explore connections</h1><div className="tools"><div className="search-wrap"><Icon name="Search"/><input aria-label="Find a person, project or topic" placeholder="Find a person, project or topic" value={query} disabled={!client.available} onChange={e => setQuery(e.target.value)} />
           {matches && <div className="search-results" role="listbox" aria-label="Matching identities">{matches.entities.length ? matches.entities.map(entity => <button key={entity.id} onClick={() => { setQuery(''); open(entity.id); }}><strong>{entity.label}</strong><small>{entity.classification?.canonical_types?.join(', ') || entity.canonical_types?.join(', ') || entity.entity_type}</small></button>) : <p>No matching identities.</p>}</div>}</div>
-          <button disabled={!graph || busy || !client.available} onClick={() => open(graph.start, 2)}><Icon name="Expand"/>Expand</button><button onClick={() => setFit(fit + 1)}><Icon name="Fit"/>Fit</button></div>
+          <button disabled={!graph || busy || !client.available} onClick={() => { const focus = graph.entities.some(e => e.id === selected) ? selected : graph.start; open(focus, focus === graph.start ? Math.min(60, graph.coverage.limit * 2) : 12); }}><Icon name="Expand"/>Expand</button><button onClick={() => setFit(fit + 1)}><Icon name="Fit"/>Fit</button></div>
           {!client.available && <p className="warning">This host can display the graph. Additional reads and changes are unavailable here.</p>}
           {error && <p role="alert" className="error">{error}</p>}{busy && <p role="status">Reading connections…</p>}{message && <p role="status">{message}</p>}</header>
         <Graph data={graph} selected={selected} fitSignal={fit} onSelect={id => { setSelected(id); setMessage(''); }}/>

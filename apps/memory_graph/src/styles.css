@@ -7,3 +7,5 @@
 .source-row blockquote{width:100%;margin:4px 0 10px;padding:15px;border:1px solid var(--line);border-radius:7px;background:#f6f8fa;font-size:16px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}.source-row details{flex-basis:100%;font-size:12px}
 
 @media(min-width:1400px){.app-shell{grid-template-columns:230px minmax(400px,1fr) 440px}.nav-items button{font-size:19px}.inspector header h2{font-size:27px}.toolbar h1{font-size:46px}.tabs button{font-size:18px}.inspector header p{font-size:16px}.node text{font-size:21px}}
+
+.graph.dense .edge:not(.selected):not(:hover):not(:focus-within)>g{opacity:0}.graph.dense .edge:hover line,.graph.dense .edge:focus-within line{stroke:var(--teal);stroke-width:2.5}

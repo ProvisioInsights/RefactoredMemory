@@ -2,6 +2,8 @@ import React, { useMemo, useRef, useState } from 'react';
 import { forceSimulation, forceLink, forceManyBody, forceX, forceY, forceCollide } from 'd3-force';
 import { human } from './client';
 
+const typeOf = node => node.classification?.canonical_types?.[0] || node.canonical_types?.[0] || node.entity_type;
+
 function lines(label) {
   const words = label.split(' '); if (label.length < 19) return [label];
   const middle = Math.ceil(words.length / 2); return [words.slice(0, middle).join(' '), words.slice(middle).join(' ')];
@@ -24,7 +26,7 @@ export default function Graph({ data, selected, onSelect, fitSignal }) {
     const links = data.edges.map(e => ({ ...e, source: e.subject, target: e.object }));
     const simulation = forceSimulation(nodes).force('link', forceLink(links).id(n => n.id).distance(300).strength(.08))
       .force('charge', forceManyBody().strength(-300)).force('x', forceX(n => n.ax).strength(.9)).force('y', forceY(n => n.ay).strength(.9))
-      .force('collide', forceCollide().radius(n => n.id === data.start ? 125 : 75)).stop();
+      .force('collide', forceCollide().radius(n => n.id === data.start || typeOf(n) === 'project' ? 136 : 80)).stop();
     for (let n = 0; n < 180; n++) simulation.tick();
     return { nodes, edges: links };
   }, [data]);
@@ -52,7 +54,7 @@ export default function Graph({ data, selected, onSelect, fitSignal }) {
   };
   return <div className="canvas-wrap">
     {!data && <div className="canvas-empty"><h2>Start with a person or project.</h2><p>Search above to explore their connections and evidence.</p></div>}
-    <svg ref={svg} className="graph" viewBox="0 0 900 730" role="group" aria-label="Knowledge graph"
+    <svg ref={svg} className={'graph ' + (layout.edges.length > 10 ? 'dense' : '')} viewBox="0 0 900 730" role="group" aria-label="Knowledge graph"
       onPointerDown={e => { if (e.target === svg.current) down(e, null); }} onPointerMove={move}
       onPointerUp={() => { drag.current = null; }} onPointerCancel={() => { drag.current = null; }}
       onWheel={e => setPan(p => ({ ...p, zoom: Math.max(.45, Math.min(2.5, p.zoom * (e.deltaY > 0 ? .9 : 1.1))) }))}>
@@ -60,10 +62,10 @@ export default function Graph({ data, selected, onSelect, fitSignal }) {
       <g transform={`translate(${pan.x} ${pan.y}) translate(450 365) scale(${pan.zoom}) translate(-450 -365)`}>
         {layout.edges.map(edge => {
           const a = point(edge.source), b = point(edge.target), dx = b.x - a.x, dy = b.y - a.y, distance = Math.hypot(dx, dy) || 1;
-          const radius = node => (node.classification?.canonical_types?.[0] || node.canonical_types?.[0] || node.entity_type) === 'project'
+          const radius = node => typeOf(node) === 'project'
             ? Math.min(118 / Math.max(.001, Math.abs(dx)), 42 / Math.max(.001, Math.abs(dy))) : 63 / distance;
           const from = radius(edge.source), to = radius(edge.target);
-          const center = (from + 1 - to) / 2;
+          const center = layout.edges.length > 10 ? from + (1 - from - to) * (edge.target.id === data.start ? .25 : .75) : (from + 1 - to) / 2;
           const active = selected === edge.id, label = human(edge.predicate);
           return <g key={edge.id} className={'edge ' + (active ? 'selected' : '')} onClick={() => onSelect(edge.id)}>
             <line x1={a.x + dx * from} y1={a.y + dy * from} x2={b.x - dx * to} y2={b.y - dy * to}
@@ -76,7 +78,7 @@ export default function Graph({ data, selected, onSelect, fitSignal }) {
           </g>;
         })}
         {layout.nodes.map(node => {
-          const p = point(node), type = node.classification?.canonical_types?.[0] || node.canonical_types?.[0] || node.entity_type;
+          const p = point(node), type = typeOf(node);
           const project = type === 'project';
           return <g key={node.id} transform={`translate(${p.x},${p.y})`} className={`node ${type} ${selected === node.id ? 'selected' : ''}`}
             role="button" tabIndex="0" aria-label={`Explore ${node.label}`} onPointerDown={e => { e.stopPropagation(); down(e, node); }}
@@ -87,6 +89,6 @@ export default function Graph({ data, selected, onSelect, fitSignal }) {
         })}
       </g>
     </svg>
-    <p className="graph-caption">Connections show claims. Evidence explains them.{data && !data.coverage.complete ? ' Showing a bounded neighborhood.' : ''}</p>
+    <p className="graph-caption">Connections show claims. Evidence explains them.{layout.edges.length > 10 ? ' Select a line to see its relationship.' : ''}{data && !data.coverage.complete ? ' Showing a bounded neighborhood.' : ''}</p>
   </div>;
 }

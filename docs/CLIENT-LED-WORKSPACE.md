@@ -121,3 +121,10 @@ Keep previous release/image identities and private launch configuration for
 rollback. After workspace writes, prefer the matching runtime; rolling back code
 does not erase the new journal records. Restore into a fresh peer identity using
 the existing runbook, revoke old credentials and verify recovery before pairing.
+
+For an existing large NAS store, the operator must prebuild the derived
+`records_predicate_subject` index using the sealed image, production runtime UID
+and dedicated private disk scratch (`SQLITE_TMPDIR`). Stop only memory for this
+one-time preparation, retain backups and check free headroom first. The normal
+16 MiB runtime `/tmp` is intentionally insufficient for a large index sort. Keep
+that runtime limit; restart memory after preparing the index and verify TLS/sync.
