@@ -17,7 +17,7 @@ export default function App() {
   const [key, setKey] = useState(''), [busy, setBusy] = useState(false), [pending, setPending] = useState(false), [expanded, setExpanded] = useState(false);
   const [tab, setTab] = useState('Fields'), [creating, setCreating] = useState(false), [filters, setFilters] = useState(false), [typeFilter, setTypeFilter] = useState('');
   const [inlineId, setInlineId] = useState(null);
-  const [explanationOpen, setExplanationOpen] = useState(false);
+  const [explanationOpen, setExplanationOpen] = useState(false), [expandedTab, setExpandedTab] = useState(null);
   const [offers, setOffers] = useState([]), [incoming, setIncoming] = useState(false);
   const lockRef = useRef(false), epoch = useRef(0), incomingRef = useRef(null), clientRef = useRef(null), openRef = useRef(null), hasView = useRef(false);
   const lock = useCallback(value => { lockRef.current = value; setPending(value); }, []);
@@ -59,7 +59,7 @@ export default function App() {
       const chosen = briefId === undefined && available.length === 1 ? available[0].id : briefId;
       const g = await connection.call('memory_graph', { start: inspected.entity.id, depth: 1, limit: budget, ...(chosen ? { brief_id: chosen } : {}) });
       if (request !== epoch.current || !navigate()) return false;
-      hasView.current = true; setContext(inspected); setOffers(available); setGraph(g); setView('Explore'); setExpanded(full); setTypeFilter(''); setQuery('');
+      hasView.current = true; setContext(inspected); setOffers(available); setGraph(g); setView('Explore'); setExpanded(full); setExpandedTab(null); setTypeFilter(''); setQuery('');
       setSelected(full ? inspected.entity.id : null); setInlineId(null);
       setTarget(null); setExplanationOpen(false); setTab('Fields');
       return true;
@@ -104,28 +104,32 @@ export default function App() {
     return () => { stale = true; };
   }, [selected, client, call]);
   useEffect(() => {
-    if (!client?.available || !target || !explanationOpen) { setEvidence(null); return; }
+    if (!client?.available || !target || !(explanationOpen || expanded)) { setEvidence(null); return; }
     let stale = false; setEvidence(null);
     call('memory_inspect', { target_id: target }).then(d => { if (!stale) setEvidence(d); }).catch(e => { if (!stale) setError(e.message); });
     return () => { stale = true; };
-  }, [target, explanationOpen, client, call]);
+  }, [target, explanationOpen, expanded, client, call]);
   useEffect(() => {
     if (!client?.available || !query.trim()) { setMatches(null); return; }
     let stale = false; setMatches(null);
     const timer = setTimeout(() => call('memory_search_entities', { text: query, limit: 12 }).then(r => { if (!stale) setMatches(r); }).catch(e => { if (!stale) setError(e.message); }), 180);
     return () => { stale = true; clearTimeout(timer); };
   }, [query, client, call]);
-  const inspectTarget = async id => {
+  const inspectTarget = async (id, { full = false } = {}) => {
     if (!navigate() || !client.available) return;
     const request = ++epoch.current;
     try {
       const d = await call('memory_inspect', { target_id: id });
       if (request !== epoch.current || !navigate()) return;
+      if (full) {
+        setSelected(d.entity.id); setDetail(d); setTarget(d.claims.assertions.some(c => c.id === id) ? id : null); setEvidence(d);
+        setExplanationOpen(false); setExpandedTab('Fields'); setExpanded(true); return;
+      }
       if (d.claims.assertions.some(c => c.id === id)) {
         const linked = briefRows(graph).flatMap(g => g.items).find(r => r.claim_ids.includes(id));
         setTarget(id); setEvidence(d);
-        if (linked) { setSelected(linked.entity_id); setExplanationOpen(true); }
-        else setExpanded(true);
+        if (linked) { setExpandedTab(null); setSelected(linked.entity_id); setExplanationOpen(true); }
+        else { setExpandedTab(null); setExpanded(true); }
       }
       else await open(d.entity.id, { full: true, briefId: null });
     } catch (e) { if (request === epoch.current) setError(e.message); }
@@ -141,7 +145,8 @@ export default function App() {
       if (request !== epoch.current || lockRef.current) return;
       setDetail(d); if (g) setGraph(g); if (freshMatches) setMatches(freshMatches);
       const currentRow = briefRows(g).flatMap(group => group.items).find(item => item.entity_id === selected);
-      setTarget(currentRow?.claim_ids[0] || null); setEvidence(null);
+      setTarget(expanded ? null : currentRow?.claim_ids[0] || null); setEvidence(null);
+      if (expanded) setExpandedTab('Fields');
       if (g?.brief?.freshness?.state === 'stale') setMessage('Saved. This brief needs a client refresh because a supporting input changed. Earlier evidence remains in history.');
       else setMessage(changed ? 'Saved to memory. Earlier evidence and history are retained.' : 'Record refreshed. Inspect history before making a different change.');
     } catch (e) {
@@ -173,7 +178,7 @@ export default function App() {
       <div className="private"><Icon name="Lock"/>Private memory</div>
     </header>
     <div className="app-notices">{error && <p className="error" role="alert">{error}</p>}{message && <p role="status">{message}</p>}{busy && <p role="status">Loading…</p>}{!client.available && <p className="access-caption">Snapshot · changes unavailable</p>}{client.available && schema?.permissions && !schema.permissions.correct && <p className="access-caption">{schema.permissions.write ? 'Can add · corrections unavailable' : 'Read only'}</p>}{incoming && <button disabled={pending} onClick={() => { if (navigate()) apply(incomingRef.current, true); }}>Open updated view</button>}</div>
-    {expanded ? <div className="expanded-record"><Inspector data={target ? evidence : detail} target={target || selected} graph={graph} call={call} available={client.available} onSelect={inspectTarget} onSaved={saved} schema={schema} expanded onExpand={() => { if (navigate()) setExpanded(false); }} pending={pending} message={message} appError={error}/></div>
+    {expanded ? <div className="expanded-record"><Inspector data={target ? evidence : detail} target={target || selected} graph={graph} call={call} available={client.available} onSelect={inspectTarget} onSaved={saved} schema={schema} expanded onExpand={() => { if (navigate()) setExpanded(false); }} pending={pending} message={message} appError={error} initialTab={expandedTab}/></div>
       : <div className={'brief-layout quiet-brief' + (explanationOpen && row && view === 'Explore' ? ' explanation-open' : '') + (view === 'Records' ? ' records-layout' : '')}>
         <main className="brief-main"><header className="brief-header"><p className="breadcrumb">{contextEntity ? contextName : 'Your memory'}{graph?.example_data && <small className="example-label">Example</small>}</p>
           <h1>{view === 'Records' ? 'Explore records' : staleBrief ? 'This brief needs a refresh' : graph?.brief?.title || (contextEntity ? `Connections around ${contextName}` : 'Start with what matters.')}</h1>
@@ -188,7 +193,7 @@ export default function App() {
         {creating && supported && <CreateRecord catalog={catalog} call={call} onCancel={async id => { setCreating(false); if (id) { await open(id, { full: true, briefId: null }); setMessage('Creation is unconfirmed. Inspect matching records and history before creating another identity.'); } }} onSaved={async id => { setCreating(false); await open(id, { full: true, briefId: null }); setMessage('Record created. Optional fields can be added when supported by evidence.'); }}/>}
         {view === 'Records' ? <section className="identity-results"><p className="muted">{query.trim() ? `${filteredResults.length} matching identities shown${matches?.has_more ? ' · refine your search for more' : ''}` : 'Records in the current view. Search to find other identities.'} Names are candidates; identities remain separate.</p>{filteredResults.map(entity => <article className="identity-result" key={entity.id}><header><button disabled={pending} onClick={() => { if (navigate()) { setSelected(entity.id); setTab('Fields'); } }}><strong>{displayName(entity)}</strong><small>{entity.classification?.canonical_types?.join(', ') || entity.entity_type}</small></button><button disabled={pending || !client.available} onClick={() => open(entity.id, { full: true, briefId: null })}>Open record</button></header>{selected === entity.id && <RecordView data={detail} schema={schema} call={call} available={client.available} pending={pending} onSaved={saved} onSelect={inspectTarget} tab={tab} setTab={setTab}/>}</article>)}{!filteredResults.length && <p>No identities match this bounded selection. Change the type filter or refine your search.</p>}</section>
           : staleBrief ? <div className="stale-brief"><p>Ask your connected client to regenerate the brief from current evidence, or browse the current recorded connections.</p><button disabled={pending || !client.available} onClick={() => open(graph.start, { briefId: null })}>Browse current connections</button></div>
-          : mode === 'Connections' ? <NeighborhoodMap graph={graph} call={call} available={client.available} pending={pending} canNavigate={navigate} onOpen={inspectTarget} onFocus={id => open(id, { briefId: null })} onStale={staleMap}/>
+          : mode === 'Connections' ? <NeighborhoodMap graph={graph} call={call} available={client.available} pending={pending} canNavigate={navigate} schema={schema} onOpen={id => inspectTarget(id, { full: true })} onFocus={id => open(id, { briefId: null })} onStale={staleMap}/>
           : <><ResultGroups groups={groups} prepared={!!graph?.brief} selected={selected} inlineId={inlineId} onChoose={choose} pending={pending} detail={detail} schema={schema} call={call} available={client.available} onSaved={saved} onSelect={inspectTarget} tab={tab} setTab={setTab} typeFilter={typeFilter} onConnection={() => { if (navigate()) setExplanationOpen(!explanationOpen); }}/>{graph && !graph.brief && graph.coverage.complete === false && <button className="more-connections" disabled={pending || !client.available} onClick={() => open(graph.start, { briefId: null, budget: Math.min(60, (graph.coverage.limit || 12) * 2) })}>More connections</button>}</>}
         </main>
         {view === 'Explore' && !staleBrief && explanationOpen && row && <div className="optional-explanation"><button className="close-explanation" disabled={pending} onClick={() => { if (navigate()) setExplanationOpen(false); }}>Close connection</button><Explanation graph={graph} row={row} target={target} evidence={evidence} call={call} available={client.available} pending={pending} onSelect={inspectTarget} onTarget={id => { if (navigate()) setTarget(id); }} onOpen={() => { if (navigate()) { setTarget(null); setExpanded(true); } }}/></div>}</div>}

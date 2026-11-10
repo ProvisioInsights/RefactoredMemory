@@ -95,6 +95,8 @@ Inline rows and expanded records use the same catalog, evidence, current correct
 
 ### Shared editor capability
 
+Map inspection reuses these same definitions in a selected-item side panel. Node selections show the entity projection; edge selections retain the exact assertion ID and `selection_only` coverage instead of implying a complete entity record. Read-only field summaries use catalog labels and storage mappings; editing opens the existing shared form. A future client interpretation is separate from these recorded fields and cannot overwrite their meaning.
+
 Discover `memory_schema.field_editor.schema == "refactoredmemory.field-editor:v1"` separately from the immutable catalog. `memory_schema.permissions` describes this authenticated connection's observed write/correct/owner-review capabilities, not a promise that a later request remains authorized. Every write rechecks current permission.
 
 `memory_inspect.field_view` maps the bounded returned claims to catalog field IDs and marks `explicit_v1` declarations versus `legacy_unqualified` mappings. The declaration is not proof that an older runtime validated historical input. `unmapped_claim_ids` remain inspectable. `not_recorded` is emitted only for a complete, unsuppressed entity selection; a partial/claim-only/suppressed view uses `not_in_selection`. Coverage and source uncertainty must remain visible.

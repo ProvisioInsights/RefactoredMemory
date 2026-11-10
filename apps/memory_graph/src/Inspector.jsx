@@ -22,12 +22,12 @@ export function Source({ id, target, call, auto, disabled = false }) {
     <details><summary>Source reference</summary><p className="muted">{id}</p><p className="muted">{source?.meaning}</p></details>
     </>}{error && <p role="alert">{error}</p>}</div>;
 }
-export default function Inspector({ data, target, graph, call, available, onSelect, onSaved, schema, expanded, onExpand, pending, message, appError }) {
+export default function Inspector({ data, target, graph, call, available, onSelect, onSaved, schema, expanded, onExpand, pending, message, appError, initialTab }) {
   const [tab, setTab] = useState('Fields'), [form, setForm] = useState(null), [text, setText] = useState('');
   const [history, setHistory] = useState(null), [error, setError] = useState(''), [saving, setSaving] = useState(false);
   const [operation, setOperation] = useState('correct'), [newPredicate, setNewPredicate] = useState(''), [newValue, setNewValue] = useState('');
   const saveRequest = useRef(null);
-  useEffect(() => { setForm(null); setText(''); setError(''); setHistory(null); setTab(graph?.entities.some(e => e.id === target) ? 'Fields' : 'Why?'); }, [target]);
+  useEffect(() => { setForm(null); setText(''); setError(''); setHistory(null); setTab(initialTab || (graph?.entities.some(e => e.id === target) ? 'Fields' : 'Why?')); }, [target, initialTab]);
   const claim = data?.claims.assertions.find(a => a.id === target);
   const entities = graph?.entities || [];
   const label = id => { const entity = entities.find(e => e.id === id); return entity ? displayName(entity) : id; };

@@ -158,6 +158,23 @@ class RelationshipBriefTests(unittest.TestCase):
             finally:restored.close()
 
     @unittest.skipUnless(shutil.which('node'), 'Node is unavailable for the actual client projection fixture')
+    def test_map_inspector_uses_actual_contracts_selection_and_record_types(self):
+        from examples.relationship_brief_demo import seed as seed_brief
+        with Store(':memory:') as store:
+            seed_brief(store)
+            token = store.create_grant('synthetic inspector reader', ['read'])
+            service = Service(store)
+            payload = {'schema': service.call('memory_schema', {}, token)}
+            for key, target in [('node', 'avery'), ('location', 'place'), ('edge', 'avery-round'), ('legacy', 'avery-robin')]:
+                payload[key] = service.call('memory_inspect', {'target_id': target}, token)
+                self.assertFalse(payload[key]['permissions']['write'])
+                self.assertFalse(payload[key]['permissions']['correct'])
+            payload['history'] = service.call('memory_history', {'entity_id': 'avery', 'limit': 40}, token)
+            fixture = Path(__file__).parent / 'fixtures/map-inspector-client.mjs'
+            result = json.loads(subprocess.check_output(['node', str(fixture)], input=json.dumps(payload), text=True))
+            self.assertEqual(result['result'], 'passed')
+
+    @unittest.skipUnless(shutil.which('node'), 'Node is unavailable for the actual client projection fixture')
     def test_indirect_map_uses_actual_context_without_expanding_the_saved_answer(self):
         from examples.relationship_brief_demo import seed as seed_brief
         with Store(':memory:') as store:
