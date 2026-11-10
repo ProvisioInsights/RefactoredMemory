@@ -2,6 +2,16 @@
 
 **final result: passed**
 
+## Tiered-map refinement, 10 November
+
+The subsequent owner request adds outward context with partial/translucent neighbors. The concise List default remains. Map uses the existing depth1–2 API and at most16 returned nodes/edges; it does not widen a saved brief's selected answer. Solid focus, outlined direct neighbors and smaller/fainter indirect marks encode graph distance. Hover/keyboard focus/tap highlights an actual shortest path, retains edge direction and reveals the literal relationship. Focus here changes the local root; Nearby records provides a named fallback. No similarity-only edges or confidence scores are invented.
+
+Evidence is in private run `tiered-map-20261110T081525Z`: initial/refined map captures01/02 are648×770 at1:1 density, combined in10-map-comparison.png and inspected together. The initial map hid two outer hints below the narrow viewport (P2); reducing chart height and using smaller outer marks fixed it. Desktop captures04/05 are1280×920. Narrow light/dark captures07/08 and final09 are390×914. After inspecting a42-pixel hit region in one scroll state, mobile targets were enlarged and a subsequent DOM read measured47.2pixels. No horizontal overflow was observed. Final09 was inspected at its saved size; its selected two-step path and controls remain readable without a full metadata panel.
+
+Typography retains the existing serif names and high-contrast body/control text. Far labels are suppressed on narrow screens until selected; the named fallback and selected-record line retain full identity and relationship text. Spacing/radial position encode hop distance rather than importance. Existing light/dark tokens remain. These are functional SVG data marks, not image/decorative substitutes; no new assets/dependencies. Copy identifies faded marks as indirect, snapshots as supplied, and partial live results as bounded.
+
+Browser checks: depth1→three direct neighbors; depth2→nine nearby records in the synthetic fixture; outer-node selection→the actual path and employment predicate; refocusing→a new root and its neighborhood; read-only live context; display-only fallback→only the three supplied neighbors. Fresh map loads/tier changes produced zero new uncaught exceptions. The List still contains only the original three selected records. Fifteen focused relationship tests passed, including the actual Node model receiving core graph results, distance/path/direction, no disconnected hints, fresh/stale/mismatched-frontier/subject/revision and budget guards. Twenty field-editor tests passed during the same refinement; builds and scans of all changed code passed. No full-suite rerun or personal deployment is claimed for this source revision. Source and synthetic preview only; personal peers/grants/data unchanged. Current final result remains passed for these compared states, with physical-device/full accessibility/provider-host qualification still separate.
+
 ## Current target and evidence
 
 The owner's 10 November feedback supersedes the original default-open presentation: “too much distracting data” and “verbose mode.” Keep the selected ivory/teal visual language, but show the answer and relevant names first. Fields, evidence, history and the connection explanation open deliberately. The wire contract and stored knowledge remain unchanged.

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { connect, displayName } from './client';
-import Graph from './Graph';
+import NeighborhoodMap from './NeighborhoodMap.jsx';
 import Inspector from './Inspector';
 import { CreateRecord } from './Fields.jsx';
 import { EDITOR_SCHEMA } from './fieldModel.js';
@@ -21,6 +21,10 @@ export default function App() {
   const [offers, setOffers] = useState([]), [incoming, setIncoming] = useState(false);
   const lockRef = useRef(false), epoch = useRef(0), incomingRef = useRef(null), clientRef = useRef(null), openRef = useRef(null), hasView = useRef(false);
   const lock = useCallback(value => { lockRef.current = value; setPending(value); }, []);
+  const staleMap = useCallback(fresh => {
+    if (lockRef.current) return;
+    setGraph(fresh); setTarget(null); setEvidence(null); setExplanationOpen(false);
+  }, []);
   const navigate = () => { if (!lockRef.current) return true; setError('Finish the pending save with an identical retry or close and reload before navigating.'); return false; };
   const call = useCallback((name, args = {}) => client.call(name, args), [client]);
   const choose = (row, toggle = false) => {
@@ -184,7 +188,7 @@ export default function App() {
         {creating && supported && <CreateRecord catalog={catalog} call={call} onCancel={async id => { setCreating(false); if (id) { await open(id, { full: true, briefId: null }); setMessage('Creation is unconfirmed. Inspect matching records and history before creating another identity.'); } }} onSaved={async id => { setCreating(false); await open(id, { full: true, briefId: null }); setMessage('Record created. Optional fields can be added when supported by evidence.'); }}/>}
         {view === 'Records' ? <section className="identity-results"><p className="muted">{query.trim() ? `${filteredResults.length} matching identities shown${matches?.has_more ? ' · refine your search for more' : ''}` : 'Records in the current view. Search to find other identities.'} Names are candidates; identities remain separate.</p>{filteredResults.map(entity => <article className="identity-result" key={entity.id}><header><button disabled={pending} onClick={() => { if (navigate()) { setSelected(entity.id); setTab('Fields'); } }}><strong>{displayName(entity)}</strong><small>{entity.classification?.canonical_types?.join(', ') || entity.entity_type}</small></button><button disabled={pending || !client.available} onClick={() => open(entity.id, { full: true, briefId: null })}>Open record</button></header>{selected === entity.id && <RecordView data={detail} schema={schema} call={call} available={client.available} pending={pending} onSaved={saved} onSelect={inspectTarget} tab={tab} setTab={setTab}/>}</article>)}{!filteredResults.length && <p>No identities match this bounded selection. Change the type filter or refine your search.</p>}</section>
           : staleBrief ? <div className="stale-brief"><p>Ask your connected client to regenerate the brief from current evidence, or browse the current recorded connections.</p><button disabled={pending || !client.available} onClick={() => open(graph.start, { briefId: null })}>Browse current connections</button></div>
-          : mode === 'Connections' ? <Graph data={graph} selected={target || selected} onSelect={inspectTarget}/>
+          : mode === 'Connections' ? <NeighborhoodMap graph={graph} call={call} available={client.available} pending={pending} canNavigate={navigate} onOpen={inspectTarget} onFocus={id => open(id, { briefId: null })} onStale={staleMap}/>
           : <><ResultGroups groups={groups} prepared={!!graph?.brief} selected={selected} inlineId={inlineId} onChoose={choose} pending={pending} detail={detail} schema={schema} call={call} available={client.available} onSaved={saved} onSelect={inspectTarget} tab={tab} setTab={setTab} typeFilter={typeFilter} onConnection={() => { if (navigate()) setExplanationOpen(!explanationOpen); }}/>{graph && !graph.brief && graph.coverage.complete === false && <button className="more-connections" disabled={pending || !client.available} onClick={() => open(graph.start, { briefId: null, budget: Math.min(60, (graph.coverage.limit || 12) * 2) })}>More connections</button>}</>}
         </main>
         {view === 'Explore' && !staleBrief && explanationOpen && row && <div className="optional-explanation"><button className="close-explanation" disabled={pending} onClick={() => { if (navigate()) setExplanationOpen(false); }}>Close connection</button><Explanation graph={graph} row={row} target={target} evidence={evidence} call={call} available={client.available} pending={pending} onSelect={inspectTarget} onTarget={id => { if (navigate()) setTarget(id); }} onOpen={() => { if (navigate()) { setTarget(null); setExpanded(true); } }}/></div>}</div>}

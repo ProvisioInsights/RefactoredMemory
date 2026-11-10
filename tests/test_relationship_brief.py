@@ -158,6 +158,25 @@ class RelationshipBriefTests(unittest.TestCase):
             finally:restored.close()
 
     @unittest.skipUnless(shutil.which('node'), 'Node is unavailable for the actual client projection fixture')
+    def test_indirect_map_uses_actual_context_without_expanding_the_saved_answer(self):
+        from examples.relationship_brief_demo import seed as seed_brief
+        with Store(':memory:') as store:
+            brief = seed_brief(store); token = store.create_grant('synthetic map read', ['read'])
+            service = Service(store)
+            graph = service.call('memory_graph', {'start': 'project', 'depth': 2, 'limit': 16}, token)
+            answer = service.call('memory_graph', {'start': 'project', 'brief_id': brief}, token)
+            self.assertNotIn('riverbend', {e['id'] for e in answer['entities']})
+            fixture = Path(__file__).parent / 'fixtures/neighborhood-client.mjs'
+            result = json.loads(subprocess.check_output(['node', str(fixture)], input=json.dumps(graph), text=True))
+        self.assertEqual(set(result['direct']), {'project', 'avery', 'jordan', 'morgan'})
+        self.assertEqual(result['hops']['riverbend'], 2)
+        self.assertEqual(result['path'], {'nodes': ['project', 'avery', 'riverbend'], 'edges': ['avery-round', 'avery-employer']})
+        self.assertEqual(result['retainedDirection']['subject'], 'avery')
+        self.assertEqual(result['retainedDirection']['object'], 'project')
+        self.assertTrue(all(result[key] for key in ['onlyRecordedEdges', 'equalFrontier', 'changedFrontier', 'bounded',
+            'currentContext', 'staleWithheld', 'changedContextRejected', 'wrongBriefRejected', 'wrongRevisionRejected', 'wrongContextRejected', 'overBudgetRejected']))
+
+    @unittest.skipUnless(shutil.which('node'), 'Node is unavailable for the actual client projection fixture')
     def test_actual_client_projection_preserves_references_and_missingness(self):
         from examples.relationship_brief_demo import seed as seed_brief
         with Store(':memory:') as store:

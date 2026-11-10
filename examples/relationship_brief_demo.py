@@ -31,6 +31,21 @@ def seed(store):
                 {'type': 'assertion', 'id': 'avery-email', 'subject': 'avery', 'predicate': 'rm:contact-point',
                  'value': {'kind': 'email', 'address': 'avery@example.org'}, 'source_ids': ['reply']}]
     store.submit(actions, request_id='synthetic-brief-seed')
+    # Context is real synthetic graph data, separate from the prepared answer.
+    context = [('riverbend', 'Riverbend Ventures', 'organization'), ('robin', 'Robin Chen', 'person'),
+               ('forum', 'Founders Forum', 'project'), ('taylor', 'Taylor Brooks', 'person'),
+               ('studio', 'Northline Studio', 'organization'), ('sam', 'Sam Patel', 'person')]
+    context_actions = [{'type': 'source', 'id': 'network-context', 'uri': 'synthetic://brief/network',
+                        'content': 'Synthetic context: Avery works at Riverbend and knows Robin; Jordan participates in Founders Forum and knows Taylor; Morgan works at Northline and knows Sam.',
+                        'metadata': {'synthetic': True, 'title': 'Example network context'}}]
+    context_actions += [{'type': 'entity', 'id': rid, 'label': label, 'entity_type': kind} for rid, label, kind in context]
+    for rid, subject, predicate, target in [('avery-employer', 'avery', 'employed-by', 'riverbend'),
+            ('avery-robin', 'avery', 'knows', 'robin'), ('jordan-forum', 'jordan', 'participant-in', 'forum'),
+            ('jordan-taylor', 'jordan', 'knows', 'taylor'), ('morgan-employer', 'morgan', 'employed-by', 'studio'),
+            ('morgan-sam', 'morgan', 'knows', 'sam')]:
+        context_actions.append({'type': 'assertion', 'id': rid, 'subject': subject, 'predicate': predicate,
+                                'object': target, 'source_ids': ['network-context']})
+    store.submit(context_actions, request_id='synthetic-map-context')
     service = Service(store)
     token = store.create_grant('synthetic external brief processor', ['read', 'write'])
     ids = ['avery-round', 'jordan-round', 'morgan-round', 'avery-intro']
