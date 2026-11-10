@@ -48,6 +48,8 @@ Keep consumer tools, owner administration and peer replication separate. A clien
 
 ## Client-led work and optional UI
 
+**A26 implementation:** [Relationship briefs](RELATIONSHIP-BRIEF.md) are a discovered extension of the existing tools. `memory_derive.view` stores the client's selected groups and supporting assertion IDs; `memory_graph.brief_id` returns only their validated paths and current, attributed interpretation. The optional App uses those results for the light Brief view and the same core fields for inline CRUD. No conversation list, model service or new grant is introduced. [Executed qualification](RELATIONSHIP-BRIEF-VALIDATION.md) separates the synthetic SDK host from installed peers and actual provider products.
+
 External clients perform extraction, reasoning and summary generation using bounded RM reads and attributed writes. RM remains usable with no model configured internally. Safe repeated writes already use request IDs; a shared task/checkpoint/job convention, richer contributor queries and maintained-summary freshness are further integration work. Do not present a future work-claiming tool as an existing endpoint or assume RM can start work in an idle consumer chat.
 
 The [sampling specification](https://modelcontextprotocol.io/specification/2026-07-28/client/sampling), checked 9 November 2026, deprecates sampling and recommends that new implementations not adopt it. Current RM must not depend on sampling or require provider API credentials; future internal executors would be separately scoped. A host-supplied model name is reported provenance, not proof that RM independently verified execution by that model.

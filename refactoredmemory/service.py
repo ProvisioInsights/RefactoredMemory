@@ -4,6 +4,7 @@ from __future__ import annotations
 from .store import AuthorizationError, ValidationError
 from . import knowledge
 from .workspace import Workspace, MANAGED, contribution
+from .relationship_brief import VIEW as BRIEF_VIEW, capability as brief_capability
 
 
 def obj(properties=None, required=()):
@@ -81,9 +82,9 @@ TOOLS = [
 ]
 
 TOOLS += [
-    {"name": "memory_graph", "description": "Explore a bounded incoming/outgoing neighborhood of sourced claims. Optional graph UI; text/structured results remain useful without it.",
+    {"name": "memory_graph", "description": "Read a selected client-prepared relationship brief by brief_id, or explore a bounded incoming/outgoing neighborhood. Rehydrates actual sourced paths and current input freshness; client interpretation is not verification. Optional UI with structured/text fallback.",
      "_meta": {"ui": {"resourceUri": "ui://refactoredmemory/graph.html"}},
-     "inputSchema": obj({"start": STRING, "depth": {"type": "integer", "minimum": 1, "maximum": 2}, "limit": {"type": "integer", "minimum": 1, "maximum": 100}, "include_mentions": {"type": "boolean"}}, ["start"])},
+     "inputSchema": obj({"start": STRING, "depth": {"type": "integer", "minimum": 1, "maximum": 2}, "limit": {"type": "integer", "minimum": 1, "maximum": 100}, "include_mentions": {"type": "boolean"}, "brief_id": STRING}, ["start"])},
     {"name": "memory_inspect", "description": "Inspect an identity or assertion revision, scoped owner reviews, comments, linked artifacts and freshness.", "inputSchema": obj({"target_id": STRING}, ["target_id"])},
     {"name": "memory_context", "description": "Assemble bounded task context with source references, time, attribution and coverage. Deterministic selection only; the connected LLM handles reasoning.",
      "inputSchema": obj({"subject": STRING, "budget_chars": {"type": "integer", "minimum": 1000, "maximum": 24000}, "limit": {"type": "integer", "minimum": 1, "maximum": 100}}, ["subject"])},
@@ -98,7 +99,7 @@ TOOLS += [
     {"name": "memory_correct", "description": "Append a sourced correction to specified current heads, retaining prior evidence and history. Reload after a conflict; does not confer owner authority on an agent.",
      "inputSchema": obj({"target_id": STRING, "expected_heads": {**IDS, "minItems": 1}, "reason": {"type": "string", "minLength": 1, "maxLength": 8192}, "value": {}, "object": STRING, "operation": {"enum": ["correct", "retract", "reclassify", "invalidate"]}, "predicate": STRING, "field_update": FIELD_UPDATE, "valid_to": TIME, **REQUEST}, ["target_id", "expected_heads", "reason", "request_id"])},
     {"name": "memory_derive", "description": "Save a client-generated brief/summary with pinned inputs and a declared causal input frontier. RM checks inputs and computes freshness; it does not generate text or call a model.",
-     "inputSchema": obj({"subject": STRING, "title": {"type": "string", "minLength": 1, "maxLength": 256}, "text": {"type": "string", "minLength": 1, "maxLength": 16384}, "inputs": INPUTS, "input_frontier": FRONTIER, "predecessor": STRING, **REQUEST}, ["subject", "title", "text", "inputs", "input_frontier", "request_id"])},
+     "inputSchema": obj({"subject": STRING, "title": {"type": "string", "minLength": 1, "maxLength": 256}, "text": {"type": "string", "minLength": 1, "maxLength": 16384}, "inputs": INPUTS, "input_frontier": FRONTIER, "predecessor": STRING, "view": BRIEF_VIEW, **REQUEST}, ["subject", "title", "text", "inputs", "input_frontier", "request_id"])},
     {"name": "memory_artifacts", "description": "Read linked derived artifacts with current input freshness; summaries are not independent corroboration.", "inputSchema": obj({"subject": STRING}, ["subject"])},
     {"name": "memory_tasks", "description": "Read client-led jobs and checkpoints. No internal model worker is running; status filtering applies within a bounded page.",
      "inputSchema": obj({"status": {"enum": ["open", "running", "completed", "failed"]}, "limit": {"type": "integer", "minimum": 1, "maximum": 100}, "offset": {"type": "integer", "minimum": 0, "maximum": 1000000}})},
@@ -315,7 +316,7 @@ class Service:
         if name == "memory_search_entities":
             return self.store.search_entities(**arguments)
         if name == "memory_schema":
-            return {**self.store.knowledge_contract(), 'permissions': {
+            return {**self.store.knowledge_contract(), 'relationship_brief': brief_capability(), 'permissions': {
                 'write': 'write' in actor.get('scopes', []), 'correct': 'correct' in actor.get('scopes', []),
                 'owner_review': actor['kind'] == 'owner'}}
         return self.store.status()

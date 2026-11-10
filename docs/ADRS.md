@@ -631,6 +631,14 @@ Publish bounded schema discovery and supported input schemas, upgrade both peers
 
 Implement A24/L09–L12 and the core field contract before calling the standardized editor complete. Keep the App a focused visual client of that contract. FC01–FC08 are planned and must be reported separately from historical runtime and LM results; existing client-led processing continues without an internal model.
 
+# A26 Answer-focused relationship briefs
+
+**Status:** Owner selected the light Relationship Brief on 9 November 2026; documented before implementation. [The contract](RELATIONSHIP-BRIEF.md) defines RB01–RB06. Actual source, browser and deployment results need separate receipts.
+
+Use an optional structured view on the existing pinned derived artifact, with grouped selected records and client-supplied reasons. Read it through the existing graph tool; core rehydrates real bounded supporting paths and verifies active pinned inputs. No new knowledge database, model runtime, invented relationship or UI-owned field semantics. Client prose stays attributed interpretation. Stale inputs suppress the explanation rather than making it appear current after an edit.
+
+The light brief is the primary visual target. Grouped result rows and inline fields carry the main task; a small selected path and readable evidence explain relevance. Retain ordinary current connections as an honest fallback, generalized Records search, expanded editing, host themes and existing safe-retry/navigation guards. Do not add conversations, ambient source sharing or numerical relevance/verification scores.
+
 # A25 Contract-driven editor and controlled two-peer rollout
 
 **Status:** Authorized 9 November 2026 and documented before code changes; core/shared editor implemented with [executed qualification](FIELD-EDITOR-VALIDATION.md). The private two-peer rollout is separately observed there; the real-data pilot remains partial and correction authority is pending. **Related:** A02/A05/A06/A20/A21/A23/A24, PRD L06/L09–L12, [editor and rollout acceptance](FIELD-EDITOR-ROLLOUT.md).

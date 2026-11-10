@@ -297,12 +297,15 @@ class Workspace:
         return self.submit('correct', request_id, actions,
                            [self.guard(subject, claim['predicate'], rows)], reported)
 
-    def derive(self, subject, title, text, inputs, input_frontier, request_id, predecessor=None, reported=None):
+    def derive(self, subject, title, text, inputs, input_frontier, request_id, predecessor=None, reported=None, view=None):
         self.locate(subject)
         self.store._view(frontier=input_frontier)
         if any(not self.store._reference_visible(r['kind'], r['id'], input_frontier) for r in inputs):
             raise ValidationError('Input does not exist at the declared input frontier')
         pinned, sources, conditions = self.inputs(inputs)
+        if view is not None:
+            from .relationship_brief import project
+            project(self, subject, view, pinned)
         conditions += self.output_conditions(reported, inputs=inputs)
         rid = self.identity('derive', request_id)
         rows = self.heads(subject, 'rm:derived-memory')
@@ -312,7 +315,11 @@ class Workspace:
         fields = dict(kind='correct', predecessors=[predecessor], reason='Regenerate from pinned inputs') if predecessor else {}
         action = fact(rid, subject, 'rm:derived-memory', {'title': title, 'text': text,
                       'inputs': pinned, 'input_frontier': input_frontier,
-                      'artifact_id': old['value']['artifact_id'] if old else rid}, sources, **fields)
+                      'artifact_id': old['value']['artifact_id'] if old else rid,
+                      **({'view': view} if view is not None else {})}, sources, **fields)
+        if view is not None:
+            from .relationship_brief import validate_value
+            validate_value(self, action['value'])
         conditions.append(self.guard(subject, 'rm:derived-memory', rows))
         return self.submit('derive', request_id, [action], conditions, reported)
 
@@ -488,8 +495,32 @@ class Workspace:
                 'next_offset': offset + chars, 'withheld': False,
                 'meaning': 'Captured source record text; unresolved original evidence remains unresolved.'}
 
-    def graph(self, start, depth=1, limit=60, include_mentions=False):
+    def graph(self, start, depth=1, limit=60, include_mentions=False, brief_id=None):
         self.locate(start)
+        if brief_id is not None:
+            from .relationship_brief import project, validate_value, admitted_contribution
+            read_frontier = self.store.status()['frontier']
+            subject, artifact = self.locate(brief_id)
+            if artifact is None or subject != start or artifact['predicate'] != 'rm:derived-memory':
+                raise ValidationError('Select a derived brief for this subject')
+            value = artifact['value']
+            validate_value(self, value)
+            freshness = self.freshness(value['inputs'])
+            if freshness['state'] != 'current':
+                result = {'start': start, 'entities': [self.store.get_entity(start)], 'edges': [], 'paths': {},
+                        'brief': {'id': brief_id, 'freshness': freshness},
+                        'coverage': {'complete': False, 'selection_complete': False, 'depth': 0, 'limit': 6},
+                        'frontier': read_frontier, 'known_position': self.store.status()['known_position']}
+            else:
+                result = project(self, start, value['view'], value['inputs'])
+                result['brief'] = {'id': brief_id, 'title': value['title'], 'text': value['text'],
+                               'groups': value['view']['groups'], 'freshness': freshness,
+                               'input_frontier': value['input_frontier'],
+                               'contribution': admitted_contribution(artifact),
+                               'meaning': 'Attributed client interpretation; not verification or exhaustive relevance.'}
+            if self.store.status()['frontier'] != read_frontier:
+                raise ConflictError('Memory changed while reading brief inputs; reload')
+            return result
         frontier = self.store.status()['frontier']
         entities, edges, queue, visited = {}, {}, [start], set()
         complete = True
@@ -527,7 +558,7 @@ class Workspace:
                                 following.append(eid)
                     if row['subject'] not in entities or row['object'] not in entities:
                         continue
-                    keys = ('id', 'subject', 'predicate', 'object', 'source_ids', 'actor', 'status', 'preferred', 'conflicts', 'known_position')
+                    keys = ('id', 'subject', 'predicate', 'object', 'source_ids', 'actor', 'status', 'preferred', 'conflicts', 'known_position', 'valid_from', 'valid_to', 'time_precision', 'knowledge')
                     edges[row['id']] = {k: row[k] for k in keys if k in row}
                     edges[row['id']]['review'] = self.review_state(row)
             queue = list(dict.fromkeys(following))

@@ -1,5 +1,7 @@
 # Personal v1 architecture
 
+**Selected exploration direction, 10 November 2026:** [A26](ADRS.md#a26-answer-focused-relationship-briefs) and [the relationship-brief contract](RELATIONSHIP-BRIEF.md) add a bounded, client-prepared answer over existing derived artifacts. RM validates named graph paths and pinned input freshness; the App presents grouped records, the shared field editor and a small selected path. Client interpretation never becomes an independently verified claim. See [qualification](RELATIONSHIP-BRIEF-VALIDATION.md) for executed evidence and deployment boundaries.
+
 **Current implementation boundary:** [A25](ADRS.md#a25-contract-driven-editor-and-controlled-two-peer-rollout) and [the editor/rollout plan](FIELD-EDITOR-ROLLOUT.md) specify a bounded core field projection, a discovered extension of existing correction semantics, shared catalog-driven controls and a coordinated two-peer rollout. These reuse the current journal, grants and tools. No second data service, internal model or production bypass is introduced.
 
 **Client-led implementation, 9 November 2026:** The journal-backed workspace tools, pinned briefs, client task checkpoints and optional graph App are implemented in this branch. See [the workspace guide](CLIENT-LED-WORKSPACE.md) and [executed qualification](CLIENT-LED-VALIDATION.md). Historical requirements-only notes below describe their earlier documentation revision; named provider products still require separate live qualification.

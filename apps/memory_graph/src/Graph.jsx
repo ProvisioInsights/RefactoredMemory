@@ -1,6 +1,7 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useId, useMemo, useRef, useState } from 'react';
 import { forceSimulation, forceLink, forceManyBody, forceX, forceY, forceCollide } from 'd3-force';
 import { human } from './client';
+import { relationshipLabel } from './briefModel.js';
 
 const typeOf = node => node.classification?.canonical_types?.[0] || node.canonical_types?.[0] || node.entity_type;
 
@@ -8,12 +9,21 @@ function lines(label) {
   const words = label.split(' '); if (label.length < 19) return [label];
   const middle = Math.ceil(words.length / 2); return [words.slice(0, middle).join(' '), words.slice(middle).join(' ')];
 }
-export default function Graph({ data, selected, onSelect, fitSignal }) {
+export default function Graph({ data, selected, onSelect, fitSignal, compact = false }) {
+  const arrow = useId();
   const svg = useRef(null), drag = useRef(null);
   const [pan, setPan] = useState({ x: 0, y: 0, zoom: 1 });
   const [positions, setPositions] = useState({});
   const layout = useMemo(() => {
     if (!data) return { nodes: [], edges: [] };
+    if (compact) {
+      const others = data.entities.filter(n => n.id !== data.start);
+      const anchors = others.length === 1 ? [[110, 165]] : [[110, 245], [260, 65], [75, 65]];
+      const nodes = data.entities.map(n => ({ ...n, label: n.display_label || n.label,
+        ...Object.fromEntries(['x', 'y'].map((key, i) => [key, n.id === data.start ? [390, others.length === 1 ? 165 : 245][i] : anchors[others.findIndex(o => o.id === n.id)]?.[i] || 65])) }));
+      const byId = new Map(nodes.map(n => [n.id, n]));
+      return { nodes, edges: data.edges.map(e => ({ ...e, source: byId.get(e.subject), target: byId.get(e.object) })) };
+    }
     const direct = [...new Set(data.edges.flatMap(e => e.subject === data.start ? [e.object] : e.object === data.start ? [e.subject] : []))];
     const anchors = [[220, 170], [680, 170], [450, 640], [150, 540], [750, 540]];
     let outer = 0;
@@ -29,7 +39,7 @@ export default function Graph({ data, selected, onSelect, fitSignal }) {
       .force('collide', forceCollide().radius(n => n.id === data.start || typeOf(n) === 'project' ? 136 : 80)).stop();
     for (let n = 0; n < 180; n++) simulation.tick();
     return { nodes, edges: links };
-  }, [data]);
+  }, [data, compact]);
   const point = node => positions[data?.start + ':' + node.id] || node;
   React.useEffect(() => {
     if (!layout.nodes.length) return;
@@ -52,13 +62,27 @@ export default function Graph({ data, selected, onSelect, fitSignal }) {
     if (d.node) setPositions(old => ({ ...old, [data.start + ':' + d.node.id]: { x: d.origin.x + dx / pan.zoom, y: d.origin.y + dy / pan.zoom } }));
     else setPan({ ...d.pan, x: d.pan.x + dx, y: d.pan.y + dy });
   };
+  if (compact) return <svg className="connection-path" viewBox="0 0 500 330" role="group" aria-label="Selected supporting path">
+    <defs><marker id={arrow} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10Z" fill="context-stroke"/></marker></defs>
+    {layout.edges.map(edge => {
+      const a = edge.source, b = edge.target, dx = b.x - a.x, dy = b.y - a.y, distance = Math.hypot(dx, dy) || 1;
+      return <g key={edge.id} className={'path-edge' + (selected === edge.id ? ' selected-path' : '')} role="button" tabIndex="0" aria-label={`${a.label} ${human(edge.predicate)} ${b.label}`} onClick={() => onSelect(edge.id)} onKeyDown={e => { if (['Enter', ' '].includes(e.key)) { e.preventDefault(); onSelect(edge.id); } }}>
+        <title>{a.label} → {human(edge.predicate)} → {b.label}</title><line x1={a.x + dx * 57 / distance} y1={a.y + dy * 57 / distance} x2={b.x - dx * 57 / distance} y2={b.y - dy * 57 / distance} markerEnd={`url(#${arrow})`}/>
+        <rect x={(a.x + b.x) / 2 - 68} y={(a.y + b.y) / 2 - 13} width="136" height="26" rx="13"/>
+        <text x={(a.x + b.x) / 2} y={(a.y + b.y) / 2 + 5}>{relationshipLabel(edge).slice(0, 20)}</text>
+      </g>;
+    })}
+    {layout.nodes.map(node => <g className={'path-node ' + typeOf(node)} key={node.id} transform={`translate(${node.x} ${node.y})`} role="button" tabIndex="0" aria-label={`Open ${node.label}`} onClick={() => onSelect(node.id)} onKeyDown={e => { if (['Enter', ' '].includes(e.key)) { e.preventDefault(); onSelect(node.id); } }}>
+      <circle r="55"/><text textAnchor="middle">{(node.label.length > 11 ? [node.label.split(' ').slice(0, Math.ceil(node.label.split(' ').length / 2)).join(' '), node.label.split(' ').slice(Math.ceil(node.label.split(' ').length / 2)).join(' ')] : [node.label]).map((line, i, all) => <tspan key={i} x="0" dy={i ? 20 : all.length === 1 ? 6 : -4}>{line.length > 16 ? line.slice(0, 15) + '…' : line}</tspan>)}</text>
+    </g>)}
+  </svg>;
   return <div className="canvas-wrap">
     {!data && <div className="canvas-empty"><h2>Start with a person or project.</h2><p>Search above to explore their connections and evidence.</p></div>}
     <svg ref={svg} className={'graph ' + (layout.edges.length > 10 ? 'dense' : '')} viewBox="0 0 900 730" role="group" aria-label="Knowledge graph"
       onPointerDown={e => { if (e.target === svg.current) down(e, null); }} onPointerMove={move}
       onPointerUp={() => { drag.current = null; }} onPointerCancel={() => { drag.current = null; }}
       onWheel={e => setPan(p => ({ ...p, zoom: Math.max(.45, Math.min(2.5, p.zoom * (e.deltaY > 0 ? .9 : 1.1))) }))}>
-      <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke" /></marker></defs>
+      <defs><marker id={arrow} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke" /></marker></defs>
       <g transform={`translate(${pan.x} ${pan.y}) translate(450 365) scale(${pan.zoom}) translate(-450 -365)`}>
         {layout.edges.map(edge => {
           const a = point(edge.source), b = point(edge.target), dx = b.x - a.x, dy = b.y - a.y, distance = Math.hypot(dx, dy) || 1;
@@ -69,7 +93,7 @@ export default function Graph({ data, selected, onSelect, fitSignal }) {
           const active = selected === edge.id, label = human(edge.predicate);
           return <g key={edge.id} className={'edge ' + (active ? 'selected' : '')} onClick={() => onSelect(edge.id)}>
             <line x1={a.x + dx * from} y1={a.y + dy * from} x2={b.x - dx * to} y2={b.y - dy * to}
-              markerEnd="url(#arrow)" strokeDasharray={edge.review?.human_verified ? undefined : '4 5'} />
+              markerEnd={`url(#${arrow})`} strokeDasharray={edge.review?.human_verified ? undefined : '4 5'} />
             <g role="button" tabIndex="0" aria-label={`${edge.source.label} ${label} ${edge.target.label}`}
               onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(edge.id); } }}>
               <rect x={a.x + dx * center - Math.min(130, label.length * 4.3 + 8)} y={a.y + dy * center - 14} width={Math.min(260, label.length * 8.6 + 16)} height="28" rx="5" />

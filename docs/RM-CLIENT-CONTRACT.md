@@ -87,6 +87,12 @@ A withdrawal retains each named predecessor's value/target, start, precision, un
 
 ## UI and processing boundary
 
+### Focused relationship briefs
+
+Discover `memory_schema.relationship_brief` independently of the field catalog. [The relationship-brief contract](RELATIONSHIP-BRIEF.md) extends existing `memory_derive` with `view` and `memory_graph` with an exact `brief_id`. A connected client supplies the short answer, groups, reasons and named supporting claims. RM checks real paths, admitted attribution, pinned inputs and current authority; it does not select relevance with an internal model.
+
+Inline rows and expanded records use the same catalog, evidence, current correction grants and exact-request retries. Client-authored group titles and explanations are labeled as interpretation. Source-reference counts describe references, not independent corroboration. After supporting inputs change or disappear, the earlier explanation and selected paths are withheld until a client prepares a new view. A host result is refreshed through the current connection before becoming an editable view; display-only hosts cannot refresh or save.
+
 ### Shared editor capability
 
 Discover `memory_schema.field_editor.schema == "refactoredmemory.field-editor:v1"` separately from the immutable catalog. `memory_schema.permissions` describes this authenticated connection's observed write/correct/owner-review capabilities, not a promise that a later request remains authorized. Every write rechecks current permission.

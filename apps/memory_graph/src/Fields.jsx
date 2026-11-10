@@ -120,9 +120,10 @@ function FieldForm({ field, catalog, claim, allClaims, subject, subjectTypes, ca
     <Submission frozen={frozen} error={error} saving={saving} onRetry={save} onCancel={() => { lock(false); onCancel(); }}/></form>;
 }
 
-export default function Fields({ data, schema, call, available, onSaved, onSelect }) {
+export default function Fields({ data, schema, call, available, onSaved, onSelect, compact: compactMode = false }) {
   const { active: pending } = useContext(EditBoundary);
   const [showEmpty, setShowEmpty] = useState(false), [form, setForm] = useState(null), [add, setAdd] = useState('');
+  const [editing, setEditing] = useState(false);
   const [targets, setTargets] = useState({}), [panelError, setPanelError] = useState('');
   const catalog = schema?.field_catalog, projection = data?.field_view;
   const supported = catalog?.schema === 'refactoredmemory.fields:v1' && catalog.revision === 1 && schema?.field_editor?.schema === EDITOR_SCHEMA && projection?.digest_sha256 === catalog.digest_sha256;
@@ -140,22 +141,23 @@ export default function Fields({ data, schema, call, available, onSaved, onSelec
   const canAdd = !pending && available && supported && data?.permissions.write;
   const cancel = async () => { setForm(null); try { await onSaved(false); } catch (e) { setPanelError(e.message); } };
   if (!projection || !catalog) return <p className="warning">This runtime does not publish field editing. Existing evidence and history remain readable.</p>;
-  return <section className="field-panel" aria-label="Standard fields">
+  return <section className={'field-panel' + (compactMode ? ' compact-fields' : '') + (editing || form ? ' fields-editing' : '') + (data.entity.classification?.ambiguous ? ' type-ambiguous' : '')} aria-label="Standard fields">
     {panelError && <p role="alert" className="error">{panelError}</p>}
     <div className="field-panel-header"><h3>Standard fields</h3>{!projection.coverage.selection_only && <label className="check"><input type="checkbox" checked={showEmpty} onChange={e => setShowEmpty(e.target.checked)}/>Show empty optional fields</label>}</div>
+    {compactMode && <button className="primary correct-details" disabled={pending || !available || !supported || !(data.permissions.correct || data.permissions.write)} onClick={() => setEditing(!editing)}>{editing ? 'Finish reviewing fields' : data.permissions.correct ? 'Correct details' : 'Add details'}</button>}
     {!supported && <p className="warning">Field editing is unavailable until this connection supports the same catalog and editor contract.</p>}
     {data.entity.classification?.ambiguous && <p className="warning">Record type is disputed. Resolve the Type field before adding type-specific values. Existing claims can still be withdrawn.</p>}
     {!projection.coverage.complete && <p className="muted">Partial selection: an undisplayed field is not proof of absence.</p>}
     {visible.map(([field, info]) => {
       const definition = catalog.fields[field];
-      return <article className="field-card" key={field}><div className="field-card-heading"><strong>{definition.label}</strong>{definition.required_for_create && <small>Required on creation</small>}</div>
+      return <article className="field-card" data-field={field} key={field}><div className="field-card-heading"><strong>{definition.label}</strong>{definition.required_for_create && <small>Required on creation</small>}</div>
         {info.claim_ids.length ? info.claim_ids.map(id => {
           const claim = allClaims.find(c => c.id === id), mapping = projection.claims[id];
           const value = fieldValue(definition, claim), tag = tagOf(claim);
           const display = tag?.state === 'unknown' ? 'Explicitly unknown' : tag?.state === 'not_applicable' ? 'Not applicable' : definition.value_type === 'entity_reference' ? targets[claim.object] || 'Connected record · label not loaded' : mapping.editable_value_loaded ? compact(value) : claim.excerpt || 'Value not loaded';
-          return <div className="field-value" key={id}><p>{display}</p>{claim.object && <button type="button" className="text-action" onClick={() => onSelect(claim.object)}>Open connected record</button>}
-            <p className="muted">{mapping.qualification === 'explicit_v1' ? 'Declares field contract v1' : 'Legacy · unqualified'} · {claim.source_ids.length} source reference{claim.source_ids.length === 1 ? '' : 's'}</p>
-            {claim.valid_from && <p className="muted">From {claim.valid_from} · {claim.time_precision || 'precision not recorded'}</p>}{claim.valid_to && <p className="muted">Until {claim.valid_to}</p>}{tag?.validity_end === 'ongoing' && <p className="muted">Explicitly ongoing</p>}
+          return <div className="field-value" key={id}>{claim.object && compactMode ? <button type="button" className="text-action connected-field-value" onClick={() => onSelect(claim.object)}>{display}</button> : <p>{display}</p>}{claim.object && !compactMode && <button type="button" className="text-action" onClick={() => onSelect(claim.object)}>Open connected record</button>}
+            <p className="muted field-lineage">{mapping.qualification === 'explicit_v1' ? 'Declares field contract v1' : 'Legacy · unqualified'} · {claim.source_ids.length} source reference{claim.source_ids.length === 1 ? '' : 's'}</p>
+            {claim.valid_from && <p className="muted field-validity">From {claim.valid_from} · {claim.time_precision || 'precision not recorded'}</p>}{claim.valid_to && <p className="muted field-validity">Until {claim.valid_to}</p>}{tag?.validity_end === 'ongoing' && <p className="muted field-validity">Explicitly ongoing</p>}
             {definition.required_context?.includes('investment_status') && <p className="muted">Source-reported status: {qualifiersOf(claim).investment_status || 'Not established'} · Amount: {qualifiersOf(claim).amount == null ? 'Unknown' : compact(qualifiersOf(claim).amount)}</p>}
             {claim.alternatives?.length > 0 || claim.conflicts?.length > 0 ? <p className="warning">Competing claims are retained. Inspect all alternatives before resolving.</p> : null}
             <div className="field-actions"><button type="button" disabled={pending} onClick={() => onSelect(id)}>Evidence & history</button><button type="button" disabled={pending || !available || !supported || !data.permissions.correct || !mapping.editable_value_loaded || !info.applicable && field !== 'identity.type'} onClick={() => setForm({ field, claim, remove: false })}>Edit</button><button type="button" disabled={pending || !available || !supported || !data.permissions.correct || !mapping.editable_value_loaded} onClick={() => setForm({ field, claim, remove: true })}>Withdraw</button>

@@ -8,7 +8,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 from pathlib import Path
 
-from examples.client_led_demo import seed
+from examples.relationship_brief_demo import seed
 from refactoredmemory.mcp import decode_message
 from refactoredmemory.service import Service
 from refactoredmemory.store import Store
@@ -21,6 +21,7 @@ def main():
         seed(store)
         service = Service(store)
         token = store.create_grant('synthetic MCP App host', ['read', 'write', 'correct'], kind='owner')
+        reader = store.create_grant('synthetic read-only host', ['read'])
         app = service.resource('ui://refactoredmemory/graph.html', token)['contents'][0]['text'].encode()
 
         class Handler(BaseHTTPRequestHandler):
@@ -53,10 +54,10 @@ def main():
             def do_GET(self):
                 if not self.boundary():
                     return self.reply(403, {'error': 'Local synthetic host only'})
-                if self.path in ('/', '/?display'):
-                    return self.reply(200, host, True)
+                if self.path in ('/', '/?display', '/?readonly'):
+                    return self.reply(200, assets.read_bytes(), True)
                 if self.path == '/app':
-                    return self.reply(200, app, True)
+                    return self.reply(200, service.resource('ui://refactoredmemory/graph.html', token)['contents'][0]['text'].encode(), True)
                 self.reply(404, {'error': 'Not found'})
 
             def do_POST(self):
@@ -72,7 +73,11 @@ def main():
                     from refactoredmemory.field_contract import is_typed_capture
                     if not isinstance(data, dict) or (data.get('name') == 'memory_submit' and not is_typed_capture(data.get('arguments'))):
                         raise ValueError('Narrow synthetic workspace tools only')
-                    self.reply(200, service.call(data['name'], data.get('arguments', {}), token))
+                    selected_token = reader if self.headers.get('X-RM-Synthetic-Read-Only') == '1' else token
+                    result = service.call(data['name'], data.get('arguments', {}), selected_token)
+                    if data['name'] == 'memory_graph':
+                        result = dict(result, example_data=True)
+                    self.reply(200, result)
                 except (ValueError, TypeError, KeyError, PermissionError):
                     self.reply(400, {'error': 'Synthetic tool request rejected'})
 

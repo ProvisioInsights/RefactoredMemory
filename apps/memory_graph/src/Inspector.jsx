@@ -3,10 +3,10 @@ import Icon from './Icon';
 import { compact, human, requestId, displayName } from './client';
 import Fields from './Fields.jsx';
 
-function Source({ id, target, call, auto }) {
+export function Source({ id, target, call, auto, disabled = false }) {
   const [source, setSource] = useState(null), [error, setError] = useState('');
   const [expanded, setExpanded] = useState(false);
-  useEffect(() => { let stale = false; setSource(null); setExpanded(false);
+  useEffect(() => { let stale = false; setSource(null); setExpanded(false); setError('');
     if (auto) call('memory_evidence', { target_id: target, source_id: id, chars: 900 }).then(s => { if (!stale) setSource(s); }).catch(e => { if (!stale) setError(e.message); });
     return () => { stale = true; };
   }, [id, target, auto]);
@@ -17,8 +17,8 @@ function Source({ id, target, call, auto }) {
     {source?.title && <strong>{source.title}</strong>}
     {source?.excerpt && <blockquote>{source.excerpt}</blockquote>}
     {source?.date && <span className="muted">Captured source · {source.date}</span>}
-    <button onClick={() => read()}>Read source</button>{expanded && source?.has_more && <button onClick={() => read(source.next_offset)}>Next excerpt</button>}
-    {expanded && source?.offset > 0 && <button onClick={() => read(Math.max(0, source.offset - 4096))}>Previous excerpt</button>}
+    <button disabled={disabled} onClick={() => read()}>Read source</button>{expanded && source?.has_more && <button disabled={disabled} onClick={() => read(source.next_offset)}>Next excerpt</button>}
+    {expanded && source?.offset > 0 && <button disabled={disabled} onClick={() => read(Math.max(0, source.offset - 4096))}>Previous excerpt</button>}
     <details><summary>Source reference</summary><p className="muted">{id}</p><p className="muted">{source?.meaning}</p></details>
     </>}{error && <p role="alert">{error}</p>}</div>;
 }
