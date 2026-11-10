@@ -11,6 +11,8 @@
 | Aikido path scan | No reported issues across 17 changed source/fixture paths; later snapshot-boundary changes were rescanned separately. This is scanner output, not proof that all security risks are absent. |
 | Independent read-only review | Freshness race, authoritative actor attribution, malformed artifact envelope, queued host updates, creation compatibility and malformed display-only snapshots were addressed. Focused tests independently passed. |
 | Visual acceptance | [Root design QA](../design-qa.md): passed, using combined source/render comparisons and actual browser checks. |
+| Hosted revision `d6b256de4b1703f35e015c5e00b12bc7c3e45f4c` | [Run 42775612604](https://github.com/ProvisioInsights/RefactoredMemory/actions/runs/42775612604) passed. Linux ran 287 tests without skips; macOS ran 287 with three Linux-only skips. Both passed the three day-one journeys. |
+| Actual newly built NAS image | 43 field tests and 14 relationship-brief tests passed, each group with one absent Node fixture skip. The fixture passed locally and in hosted Linux/macOS. The image package and UI bytes match the sealed source, with a UID10001 probe. |
 
 ## Browser execution
 
@@ -29,3 +31,11 @@ Used the supported Codex in-app browser against the loopback, disposable in-memo
 No personal semantic records, client grants or source imports were changed by this synthetic qualification. Existing model correction denial remains effective. Private Mac/NAS rollout, prepared personal briefs, full corpus normalization and actual named-provider App support require their own observed receipts. Public transport remains outside this source/browser qualification.
 
 The first hosted run at `5360320` failed because the Node projection fixture indirectly imported the optional browser SDK before frontend dependency installation. Pure formatting was extracted into a dependency-free shared module; browser behavior and field meanings are unchanged. An initial NAS test mount also hid the sealed stage's root from UID10001. It was rejected as a harness failure; the corrected harness mounts only the sealed test/example directories and imports the actual image package. Neither failed attempt promoted a runtime.
+
+## Private installation observation
+
+Both private peers were upgraded to sealed runtime `d6b256de4b1703f35e015c5e00b12bc7c3e45f4c` on 10 November 2026. The NAS image retains its pinned Chainguard base, UID10001, read-only root, dropped capabilities and existing 2 GiB limit. Only memory/private sync ingress and the three specified Mac RM agents were restarted. Authorization-service image identities and start times were unchanged. No permissions, VLAN/firewall/VPN policy or public transport were changed.
+
+Existing consistent recovery checkpoints covered the unchanged pre-upgrade journal position; this run reused them rather than creating another full backup. After upgrade, complete immutable-record digests on both live peers matched the prior checkpoint across all 1,253,227 records. Private TLS frontiers matched with zero pending/rejected work. Four named guest and five named container destination denials passed after restart. IPv6 is disabled and IPv6 forwarding is off; IPv4 forwarding remains enabled for Docker, so these endpoint checks do not establish universal transit isolation.
+
+A fresh independent MCP SDK connection discovers the new brief contract and unchanged field catalog under the existing read/add grant; correction/owner review remain denied. Additional shared chats were not interrupted to refresh cached adapters. The owner launcher unlocked the real private interface in local Microsoft Edge, where a real recorded engagement and evidence were inspected without a save. The local view follows its OS/host theme; the selected light composition was separately qualified through the SDK reference host. No prepared personal brief, normalization or personal semantic write was created by this release. Exact image, endpoint, package, record, recovery and resource receipts remain in private commissioning reports outside Git.
