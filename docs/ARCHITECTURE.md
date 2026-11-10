@@ -1,5 +1,11 @@
 # Personal v1 architecture
 
+**Selected exploration direction, 10 November 2026:** [A26](ADRS.md#a26-answer-focused-relationship-briefs) and [the relationship-brief contract](RELATIONSHIP-BRIEF.md) add a bounded, client-prepared answer over existing derived artifacts. RM validates named graph paths and pinned input freshness; the App presents grouped records, the shared field editor and a small selected path. Client interpretation never becomes an independently verified claim. See [qualification](RELATIONSHIP-BRIEF-VALIDATION.md) for executed evidence and deployment boundaries.
+
+**Current implementation boundary:** [A25](ADRS.md#a25-contract-driven-editor-and-controlled-two-peer-rollout) and [the editor/rollout plan](FIELD-EDITOR-ROLLOUT.md) specify a bounded core field projection, a discovered extension of existing correction semantics, shared catalog-driven controls and a coordinated two-peer rollout. These reuse the current journal, grants and tools. No second data service, internal model or production bypass is introduced.
+
+**Client-led implementation, 9 November 2026:** The journal-backed workspace tools, pinned briefs, client task checkpoints and optional graph App are implemented in this branch. See [the workspace guide](CLIENT-LED-WORKSPACE.md) and [executed qualification](CLIENT-LED-VALIDATION.md). Historical requirements-only notes below describe their earlier documentation revision; named provider products still require separate live qualification.
+
 **Design clarification, 9 November 2026:** [A22/A23](ADRS.md#a22-client-led-processing-and-provider-independent-memory-roles) and [L01–L08](PRD.md#client-led-processing-and-review-direction) select client-led model processing, four memory roles, contributor attribution and the next graph-review interface. This requirements-only update does not refresh the historical deployment/qualification statements below or claim the new features are running.
 
 **Accepted deployment direction, 7 November 2026:** a normally available NAS-hosted Linux peer plus an independently writable Mac peer. The graph engine and NAS/OAuth/automatic-sync extension are implemented under [NAS-CONTRACT.md](NAS-CONTRACT.md). [Acceptance evidence](ACCEPTANCE-RESULTS.md) separates executed local checks from earlier baseline results and untested owner-device/provider deployment.
@@ -32,6 +38,14 @@ World time describes when a claim held. Knowledge time describes when a specific
 
 Correction, retraction, invalidation and reinstatement are distinct semantic operations. Competing sources are not automatically revisions of one claim. Concurrent revisions retain branches until an authorized resolution. Administrative deletion and physical erasure are separate from changing a historical belief. Return evidence, lineage, unresolved alternatives, temporal fidelity and coverage with answers. Derived indexes and summaries never become a second source of truth.
 
+## Core field contract and focused CRUD
+
+[A24](ADRS.md#a24-core-field-contract-and-focused-memory-crud) and [the core field contract](CORE-FIELD-CONTRACT.md) extend the existing type/predicate registry with shared fields, types/cardinality, requiredness, applicability and missing-state semantics. The starter catalog, discovery, explicitly tagged validation and shared editor are implemented under [the client contract](RM-CLIENT-CONTRACT.md). The private two-peer rollout has separate [execution evidence](FIELD-EDITOR-VALIDATION.md#private-rollout-observation); universal field activation is not enabled. Every newly governed write path must use core validation; MCP App forms, models, CLI/import adapters and peers cannot define competing semantics. Catalog changes use a controlled versioned rollout on both peers.
+
+Fields remain sourced assertions over immutable identities, with per-value evidence, temporal precision, conflicts and correction history. Not recorded, explicitly unknown and not applicable differ; withheld/partial views do not establish absence. Preserve the existing omitted-end/explicit-null time contract and prevent blank controls from inventing ongoing validity. Retraction, ended validity, archive and permanent erasure retain distinct meanings.
+
+The App is a focused graph/list explorer and CRUD editor over the same authenticated tools. Search-result actions, inline forms and expanded views reuse core definitions. Empty optional-field visibility and themes are presentation only. RM has no internal conversation, assistant/composer, model selector or task dashboard; surrounding chat belongs to the host. See [editor qualification](FIELD-EDITOR-VALIDATION.md) for focused implemented checks; the complete FC01–FC08 matrix and named hosts remain separate.
+
 ## Client-led processing and memory roles
 
 Connected applications and authorized external runners do the model work. RM supplies bounded authorized evidence, validates submitted records and preserves attribution, history and sync. It does not need an embedded model, provider API key or autonomous inference service. Target ChatGPT/Codex, Claude Chat/Cowork/Code, Gemini, Grok, local-model hosts/runners, Praxis and further compatible clients; each actual product connection must be qualified independently.
@@ -54,7 +68,7 @@ The client controls model execution and data submission. A selected graph view s
 
 For each contribution, distinguish requester, authenticated connection/grant, reported product/processor/model, method/job identity, input records/revisions/frontier, output IDs/action, admission/replication outcome and actual review. Trust authority established during admission; mark unknown or client-reported metadata honestly. A display line such as “suggested by this connection” must expand to evidence and history without inventing owner verification. Current provenance is a foundation; A23 defines the additional consistent contract and review experience to implement.
 
-Generated summaries retain their inputs and never overwrite canonical claims. Changed/corrected inputs require visible stale or unassessed freshness. User corrections append semantic actions; comments reference specific identities/claims/revisions. Per-claim review, concurrent branches and current permissions remain effective across clients and peer sync. The ordinary interface stays search/explore, Why?, Comment, Correct this and History; advanced provider machinery is not an end-user setup prerequisite.
+Generated summaries retain their inputs and never overwrite canonical claims. Changed/corrected inputs require visible stale or unassessed freshness. User corrections append semantic actions; existing comments reference specific identities/claims/revisions. Per-claim review, concurrent branches and current permissions remain effective across clients and peer sync. Under A24 the ordinary interface is search, graph/list exploration, evidence, CRUD and history; comments/jobs remain compatible capabilities rather than mandatory navigation. Provider machinery is not an end-user setup prerequisite.
 
 ## Durable operation and personal sync
 

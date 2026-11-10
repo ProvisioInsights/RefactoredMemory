@@ -10,3 +10,10 @@ oauth = ["PyJWT[crypto]==2.13.0", "cryptography==50.0.0"]
 
 [project.scripts]
 refactoredmemory = "refactoredmemory.cli:main"
+
+[tool.setuptools.package-data]
+refactoredmemory = ["ui/*.html", "contracts/*.json"]
+
+[tool.setuptools.packages.find]
+include = ["refactoredmemory*"]
+namespaces = false

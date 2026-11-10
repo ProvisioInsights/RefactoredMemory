@@ -1,5 +1,13 @@
 # Required MCP integration
 
+## Accepted core field extension
+
+[A24 and the core field contract](CORE-FIELD-CONTRACT.md) require shared schema discovery and core-enforced field/relationship CRUD across model, CLI, importer, peer and optional App paths. This branch publishes `memory_schema.field_catalog`, validates explicit v1 tags and discovers `memory_schema.field_editor` under [the client contract](RM-CLIENT-CONTRACT.md). Graph details, inline search results and the expanded record view share catalog-driven controls. Current authenticated permissions still govern every call; discovery does not enable universal enforcement or expand a grant. [Editor qualification](FIELD-EDITOR-VALIDATION.md) separates source/reference-host results from the private two-peer deployment and pending real-data pilot.
+
+Search results, inline forms and expanded graph/detail views must use the same meanings and current grants. RM owns no conversation UI; host messages/composers and direct-launch options stay outside the App. Preserve useful text/structured tools, read-only fallback, immutable evidence, guarded corrections and stable retries. Opening a view must not automatically disclose its complete results or source bodies to a model. FC01–FC08 qualification does not follow from older MCP or App-reference-host tests.
+
+**Client-led implementation, 9 November 2026:** The journal-backed workspace tools, pinned briefs, client task checkpoints and optional graph App are implemented in this branch. See [the workspace guide](CLIENT-LED-WORKSPACE.md) and [executed qualification](CLIENT-LED-VALIDATION.md). Historical requirements-only notes below describe their earlier documentation revision; named provider products still require separate live qualification.
+
 The NAS extension implements a maintained-AS OAuth resource profile, independent whole-store agent grants, separate public MCP/private sync TLS listeners and explicit legacy HTTP compatibility. See [NAS-CONTRACT.md](NAS-CONTRACT.md), the [conformance details](MCP-CONFORMANCE.md) and [current executed evidence](ACCEPTANCE-RESULTS.md).
 
 MCP is a v1 release requirement for Praxis2 and other MCP-capable LLM applications. An LLM uses the store through its host/client/runtime; a bare model is not assumed to implement MCP.
@@ -39,6 +47,8 @@ Expose bounded tools for the agreed capture, read, search, traversal, timeline, 
 Keep consumer tools, owner administration and peer replication separate. A client grant is not authority to enroll peers, change grants, read arbitrary local files, export private content or invoke an external model. Treat source content as data. Return structured evidence, temporal/knowledge scope, uncertainty, coverage and errors honestly.
 
 ## Client-led work and optional UI
+
+**A26 implementation:** [Relationship briefs](RELATIONSHIP-BRIEF.md) are a discovered extension of the existing tools. `memory_derive.view` stores the client's selected groups and supporting assertion IDs; `memory_graph.brief_id` returns only their validated paths and current, attributed interpretation. The optional App uses those results for the light Brief view and the same core fields for inline CRUD. No conversation list, model service or new grant is introduced. [Executed qualification](RELATIONSHIP-BRIEF-VALIDATION.md) separates the synthetic SDK host from installed peers and actual provider products.
 
 External clients perform extraction, reasoning and summary generation using bounded RM reads and attributed writes. RM remains usable with no model configured internally. Safe repeated writes already use request IDs; a shared task/checkpoint/job convention, richer contributor queries and maintained-summary freshness are further integration work. Do not present a future work-claiming tool as an existing endpoint or assume RM can start work in an idle consumer chat.
 

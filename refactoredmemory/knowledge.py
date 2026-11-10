@@ -1,6 +1,8 @@
 """Versioned knowledge annotations; evidence and actor authority remain separate."""
 from __future__ import annotations
 
+from . import field_contract
+
 PROFILE = "refactoredmemory.knowledge:v1"
 TYPE_PREDICATE = "rm:canonical-type"
 ATLAS_REVISION = "e36ebe821eafb3fc00093b6afcc2c4c6e0c4c30d"
@@ -380,6 +382,10 @@ FACT_DEFINITIONS = {
         "rm:contact-record": "A dated interaction observation within a scoped engagement.",
         "rm:prospect-record": "A source-reported prospect within a project; not an established conversation.",
         "rm:review-flag": "An independent source-linked quality review record.",
+        "rm:comment": "An attributed comment on an entity or specific assertion revision; not world evidence.",
+        "rm:review": "A revision-specific owner review; effective authority comes from authenticated admission.",
+        "rm:derived-memory": "A client-generated artifact with pinned evidence inputs and computed freshness.",
+        "rm:task-state": "A client-led work state with guarded updates and retained concurrent branches.",
     }.items()
 }
 
@@ -390,6 +396,7 @@ def annotation(action):
 
 
 def validate_annotation(action):
+    field_contract.validate_action(action)
     value = annotation(action)
     if value is None:
         return
@@ -422,6 +429,9 @@ def validate_annotation(action):
 
 
 def validate_endpoints(action, source_types, target_types):
+    field_contract.validate_subject(action, source_types)
+    if field_contract.is_withdrawal(action):
+        return
     if annotation(action) is None or "object" not in action:
         return
     definition = PREDICATES[action["predicate"]]
@@ -478,6 +488,14 @@ def contract():
             "categories": list(CATEGORIES), "predicates": PREDICATES,
             "fact_predicates": FACT_DEFINITIONS,
             "type_predicate": TYPE_PREDICATE,
+            "field_catalog": field_contract.catalog(),
+            "field_editor": {"schema": "refactoredmemory.field-editor:v1",
+                "inspection": "memory_inspect.field_view", "creation": "memory_submit",
+                "correction": "memory_correct.field_update",
+                "catalog_digest_required": True,
+                "legacy_mapping": "readable, not automatically qualified",
+                "removal": "memory_correct operation=retract for mistakes; operation=invalidate with valid_to for a supported end; evidence/history retained",
+                "entity_archive": False, "permanent_erasure": False},
             "limits": ["An annotation is not owner verification.",
                        "Unknown dates are not definite as-of matches.",
                        "Classification and subject matter are distinct.",

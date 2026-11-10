@@ -14,3 +14,6 @@ build/
 *.egg-info/
 .local/
 *.identity.json
+node_modules/
+
+apps/memory_graph/.reference-host/

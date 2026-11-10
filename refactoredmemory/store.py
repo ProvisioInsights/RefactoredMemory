@@ -112,6 +112,13 @@ def bounded_json(value, depth=0):
     canonical(value)
 
 
+def _name_at(row, at):
+    """Eligible current knowledge with no known temporal contradiction."""
+    return (row.get('status') in {'active', 'ended'}
+            and not (row.get('valid_from') and timestamp(row['valid_from']) > at)
+            and not (row.get('valid_to') and timestamp(row['valid_to']) <= at))
+
+
 class Store:
     def __init__(self, path, *, store_id=None, peer_id=None):
         self.path = str(path)
@@ -152,6 +159,7 @@ class Store:
             PRIMARY KEY(kind,id,operation_id));
         INSERT OR IGNORE INTO record_events SELECT kind,id,operation_id FROM records;
         CREATE INDEX IF NOT EXISTS records_lookup ON records(kind,subject,predicate);
+        CREATE INDEX IF NOT EXISTS records_predicate_subject ON records(kind,predicate,subject);
         CREATE INDEX IF NOT EXISTS records_object ON records(kind,object);
         CREATE TABLE IF NOT EXISTS requests(
             actor TEXT NOT NULL,id TEXT NOT NULL,digest TEXT NOT NULL,operation_id TEXT NOT NULL,
@@ -349,6 +357,10 @@ class Store:
         if not isinstance(actions, list) or not 1 <= len(actions) <= MAX_ACTIONS:
             raise ValidationError("Operation needs 1–500 actions")
         bounded_json(actions)
+        try:
+            knowledge.field_contract.validate_group(actions)
+        except ValueError as exc:
+            raise ValidationError(str(exc)) from exc
         if len(canonical(actions).encode()) > MAX_OPERATION - 4096:
             raise ValidationError("Operation exceeds 1 MiB")
         seen = set()
@@ -479,10 +491,12 @@ class Store:
         cutoff = json.loads(self._meta("knowledge_profile_cutoff") or "null")
         strict = cutoff is not None and body["seq"] > cutoff.get(body["origin"], 0)
         canonical_type_cache = {}
-        def canonical_types(entity_id):
-            if entity_id not in canonical_type_cache:
-                canonical_type_cache[entity_id] = self._canonical_types(entity_id, body["dependencies"])
-            return canonical_type_cache[entity_id]
+        def canonical_types(entity_id, post_group=False):
+            key = (entity_id, post_group)
+            if key not in canonical_type_cache:
+                canonical_type_cache[key] = self._canonical_types(entity_id, body["dependencies"],
+                    actions if post_group else (), body["actor"] if post_group else None)
+            return canonical_type_cache[key]
         for action in ordered:
             kind, id = action["type"], action["id"]
             old = self.read(kind, id)
@@ -508,10 +522,17 @@ class Store:
                         raise ValidationError("Missing assertion predecessor")
                     if (previous["subject"], previous["predicate"]) != (action["subject"], action["predicate"]):
                         raise ValidationError("A correction cannot move a claim to another subject or predicate")
-                if knowledge.annotation(action) is not None and "object" in action:
                     try:
+                        knowledge.field_contract.validate_predecessor(action, previous)
+                    except ValueError as exc:
+                        raise ValidationError(str(exc)) from exc
+                if knowledge.annotation(action) is not None and ("object" in action or
+                        knowledge.field_contract.declaration(action) is not None):
+                    try:
+                        tagged = knowledge.field_contract.declaration(action) is not None
                         knowledge.validate_endpoints(action,
-                            canonical_types(action["subject"]), canonical_types(action["object"]))
+                            canonical_types(action["subject"], tagged),
+                            canonical_types(action["object"], tagged) if "object" in action else set())
                     except ValueError as exc:
                         raise ValidationError(str(exc)) from exc
             elif kind in {"delete", "restore"}:
@@ -529,13 +550,15 @@ class Store:
         self.db.execute("UPDATE operations SET position=?,applied_at=? WHERE id=?", (position, utcnow(), body["id"]))
         self._setmeta("position", position)
 
-    def submit(self, actions, *, actor=None, request_id=None):
+    def submit(self, actions, *, actor=None, request_id=None, expected_heads=None, authorize=None):
         self._validate_actions(actions)
         actor = self._actor(actor)
         if request_id is not None:
             identifier(request_id, "request ID")
         digest = hashlib.sha256(canonical(actions).encode()).hexdigest()
         with self._transaction():
+            if authorize is not None and self._actor(authorize()) != actor:
+                raise AuthorizationError('Submitting authority changed')
             if request_id:
                 old = self.db.execute("SELECT * FROM requests WHERE actor=? AND id=?", (actor["id"], request_id)).fetchone()
                 if old:
@@ -544,6 +567,18 @@ class Store:
                     row = self.db.execute("SELECT position FROM operations WHERE id=?", (old["operation_id"],)).fetchone()
                     return {"operation_id": old["operation_id"], "known_position": row[0],
                             "action_ids": [a["id"] for a in actions], "duplicate": True}
+            # Check the current heads inside the write transaction, after retry
+            # lookup. Another connection cannot race a guarded workspace edit.
+            for condition in expected_heads or []:
+                if condition.get('kind') == 'source':
+                    source = self.get_source(condition['id'])
+                    if source is None or hashlib.sha256(canonical(source).encode()).hexdigest() != condition['sha256']:
+                        raise ConflictError('Input source changed or became unavailable')
+                    continue
+                current = self.query(subject=condition['subject'], predicate=condition['predicate'], limit=1000)
+                if (not current['coverage']['complete'] or
+                        sorted(a['id'] for a in current['assertions']) != sorted(condition['ids'])):
+                    raise ConflictError('Memory changed; reload before editing')
             frontier = self._frontier()
             seq = frontier.get(self.peer_id, 0) + 1
             body = {"schema": SCHEMA, "id": f"{self.peer_id}:{seq}", "store_id": self.store_id,
@@ -690,11 +725,23 @@ class Store:
             have = self._frontier()
             if any(seq > have.get(origin, 0) for origin, seq in frontier.items()):
                 raise ValidationError("Requested frontier is not available")
+            # Applied current knowledge is causally closed by admission. Review
+            # decoration must not decode the entire source journal per claim.
+            if frontier == have:
+                return current, dict(frontier)
+            cache_key = (tuple(sorted(frontier.items())), tuple(sorted(have.items())))
+            cache = getattr(self, '_closed_view_cache', {})
+            if cache_key in cache:
+                return current, dict(frontier)
             for row in self.db.execute("SELECT origin,seq,body FROM operations WHERE position IS NOT NULL"):
                 if row["seq"] <= frontier.get(row["origin"], 0):
                     deps = json.loads(row["body"])["dependencies"]
                     if any(frontier.get(k, 0) < v for k, v in deps.items()):
                         raise ValidationError("Requested frontier is not causally closed")
+            if len(cache) >= 16:
+                cache.pop(next(iter(cache)))
+            cache[cache_key] = True
+            self._closed_view_cache = cache
             return current, dict(frontier)
         position = current if known_at is None else known_at
         return position, self._frontier(position)
@@ -794,12 +841,12 @@ class Store:
                     children.setdefault(predecessor, []).append(a["id"])
                     previous = visible.get(predecessor)
                     # An inferred update cannot override the explicitly corrected owner belief.
-                    if previous and previous.get("kind") == "correct" and previous["actor"]["kind"] == "owner" and a["actor"]["kind"] != "owner":
+                    if previous and previous.get("kind") == "correct" and previous["actor"]["kind"] == "owner" and a["actor"]["kind"] != "owner" and a['predicate'] != 'rm:task-state':
                         continue
                     superseded.add(predecessor)
             heads = [a for a in visible.values() if a["id"] not in superseded and a.get("kind", "assert") != "retract"
                      and a["subject"] not in deleted and a.get("object") not in deleted]
-            owner_keys = {(a["subject"], a["predicate"]) for a in heads if a.get("kind") == "correct" and a["actor"]["kind"] == "owner"}
+            owner_keys = {(a["subject"], a["predicate"]) for a in heads if a.get("kind") == "correct" and a["actor"]["kind"] == "owner" and a['predicate'] != 'rm:task-state'}
             grouped = {}
             for a in heads:
                 grouped.setdefault((a["subject"], a["predicate"]), []).append(a)
@@ -841,6 +888,10 @@ class Store:
                 a["alternatives"] = [other["id"] for other in grouped.get((a["subject"], a["predicate"]), [])
                                      if not knowledge.multi_valued(a["predicate"]) and other["id"] != a["id"] and (assertion_value(other["id"]), other.get("object")) != (a.get("value"), a.get("object"))]
                 a["knowledge"] = knowledge.describe(a)
+                if a['predicate'] != 'rm:review':
+                    from .workspace import Workspace
+                    a['review'] = Workspace(self, {'id': 'projection', 'kind': 'agent'}).review_state(a, view)
+                    a['human_verified'] = a['review']['human_verified']
                 if excerpt_chars is not None and a["predicate"] == "content" and isinstance(a.get("value"), str):
                     content = a.pop("value")
                     start, matched = knowledge.excerpt_offset(content, folded_text, excerpt_chars)
@@ -855,7 +906,7 @@ class Store:
                     "inherited_history": json.loads(self._meta("restored_from") or "null")},
                     "frontier": view, "known_position": position}
 
-    def _canonical_types(self, entity_id, frontier=None):
+    def _canonical_types(self, entity_id, frontier=None, extra_actions=(), group_actor=None):
         entity = self.read("entity", entity_id)
         if entity is None:
             return set()
@@ -872,6 +923,12 @@ class Store:
             actor = self.db.execute("SELECT json_extract(body,'$.actor.kind') FROM operations WHERE id=?", (row["operation_id"],)).fetchone()[0]
             if actor == "owner" and claim.get("kind") == "correct":
                 owners.add(claim["id"])
+        for claim in extra_actions:
+            if (claim.get("type") == "assertion" and claim.get("subject") == entity_id
+                    and claim.get("predicate") == knowledge.TYPE_PREDICATE):
+                claims[claim["id"]] = claim
+                if isinstance(group_actor, dict) and group_actor.get("kind") == "owner" and claim.get("kind") == "correct":
+                    owners.add(claim["id"])
         superseded = {pred for claim in claims.values() for pred in claim.get("predecessors", [])
                       if pred not in owners or claim["id"] in owners}
         heads = [claim for id, claim in claims.items() if id not in superseded
@@ -905,13 +962,26 @@ class Store:
                 "legacy_history": "retained; not silently reclassified",
                 "raw_document_capture": "observation; no inferred relationships"}}
 
-    def get_entity(self, entity_id):
+    def get_entity(self, entity_id, *, frontier=None, valid_at=None):
         with self._lock:
             entity = None if entity_id in self._deleted() else self.read("entity", entity_id)
             if entity is not None:
-                types = sorted(self._canonical_types(entity_id))
+                types = sorted(self._canonical_types(entity_id, frontier))
                 entity["classification"] = {"canonical_types": types, "ambiguous": len(types) > 1,
                     "original_entity_type": entity["entity_type"]}
+                names = self.query(subject=entity_id, predicate="name", limit=100, frontier=frontier, valid_at=valid_at)
+                at = timestamp(valid_at or utcnow())
+                candidates = [r for r in names['assertions'] if _name_at(r, at)]
+                preferred = [r for r in candidates if r.get('preferred')]
+                candidates = preferred or candidates
+                labels = {r['value'] for r in candidates if isinstance(r.get('value'), str) and r['value'].strip()}
+                unresolved = any(not isinstance(r.get('value'), str) or not r['value'].strip() for r in candidates)
+                complete = names['coverage']['complete'] and not names['coverage'].get('administrative_suppression')
+                entity['display_label'] = next(iter(labels)) if len(labels) == 1 and complete and not unresolved else entity['label']
+                entity['display_name'] = {'assertion_ids': [r['id'] for r in candidates],
+                    'conflicted': len(labels) > 1 or unresolved and len(candidates) > 1,
+                    'unresolved': unresolved, 'complete': bool(complete),
+                    'meaning': 'Source-reported display name; original label retained, not verified legal identity.'}
             return entity
 
     def search_entities(self, text, *, limit=25):
@@ -919,16 +989,29 @@ class Store:
             raise ValidationError("Invalid entity search")
         with self._lock:
             deleted = self._deleted()
+            name_matches, names_complete = set(), True
+            at = timestamp(utcnow())
+            for predicate in ('name', 'alias'):
+                page = self.query(predicate=predicate, text=text, limit=1000)
+                names_complete &= page['coverage']['complete'] and not page['coverage'].get('administrative_suppression')
+                for row in page['assertions']:
+                    if not _name_at(row, at):
+                        continue
+                    values = row.get('value') if isinstance(row.get('value'), list) else [row.get('value')]
+                    if any(isinstance(value, str) and text.casefold() in value.casefold() for value in values):
+                        name_matches.add(row['subject'])
             # Names find candidates; they never establish shared identity.
             matches, total = [], 0
             for row in self.db.execute("SELECT id,body FROM records WHERE kind='entity' ORDER BY id"):
                 entity = json.loads(row["body"])
-                if entity["id"] not in deleted and text.casefold() in entity["label"].casefold():
+                if entity["id"] not in deleted and (text.casefold() in entity["label"].casefold() or entity['id'] in name_matches):
                     total += 1
                     if len(matches) < limit:
                         matches.append(entity)
             return {"entities": [self.get_entity(e["id"]) for e in matches],
-                    "matched": total, "has_more": total > limit,
+                    "matched": total, "has_more": total > limit or not names_complete,
+                    "coverage": {"name_claims_complete": bool(names_complete),
+                        "meaning": "Bounded current name/alias claims plus retained original labels; counts may be a lower bound."},
                     "identity_warning": "Matching names are candidates, not a merge decision."}
 
     def get_source(self, source_id):
@@ -983,7 +1066,7 @@ class Store:
             raise ValidationError("Traversal bounds exceeded")
         with self._lock:
             position, view = self._view(known_at, frontier)
-            entity = self.get_entity(start)
+            entity = self.get_entity(start, frontier=view, valid_at=valid_at)
             if entity:
                 events = self.db.execute("SELECT o.origin,o.seq FROM record_events e JOIN operations o ON o.id=e.operation_id WHERE e.kind='entity' AND e.id=?", (start,))
                 if not any(row["seq"] <= view.get(row["origin"], 0) for row in events):
@@ -1014,7 +1097,7 @@ class Store:
                             seen.add(target)
                             next_level.append(target)
                 queue = next_level
-            return {"entities": [self.get_entity(x) for x in sorted(seen)], "edges": list(edges.values()),
+            return {"entities": [self.get_entity(x, frontier=view, valid_at=valid_at) for x in sorted(seen)], "edges": list(edges.values()),
                     "coverage": {"complete": bool(complete), "depth": depth, "excluded_unknown_time": unknown},
                     "frontier": view, "known_position": position}
 

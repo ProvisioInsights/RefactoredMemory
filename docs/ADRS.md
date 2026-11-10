@@ -1,5 +1,7 @@
 # RefactoredMemory Architecture Decisions
 
+**Client-led implementation, 9 November 2026:** The journal-backed workspace tools, pinned briefs, client task checkpoints and optional graph App are implemented in this branch. See [the workspace guide](CLIENT-LED-WORKSPACE.md) and [executed qualification](CLIENT-LED-VALIDATION.md). Historical requirements-only notes below describe their earlier documentation revision; named provider products still require separate live qualification.
+
 **9 November 2026 clarification:** A22 accepts client-led processing and four memory roles; A23 accepts contributor attribution and the next graph/evidence/review interface direction. These decisions supplement the implemented personal-v1 baseline. They do not certify new UI, processing-job, lifecycle or hosted-client functionality.
 
 The existing deployment/test status paragraphs retain their recorded evidence scope. This design update does not refresh those operational observations or change either Praxis repository.
@@ -51,6 +53,8 @@ Versioned repository documentation is authoritative; the companion historical pl
 | A21 | Private session-scoped workload operations | Scoped access runbook prepared; actual VPN/SSH/NAS access not configured |
 | A22 | Client-led processing and provider-independent memory roles | Accepted design, 9 November; no internal LLM required; per-client and lifecycle qualification remains open |
 | A23 | Attributed contributions and portable graph review | Accepted interface direction, 9 November; uniform activity model, comments and MCP App implementation remain open |
+| A24 | Core field contract and focused memory CRUD | Accepted owner clarification, 9 November; core schema drives every client; catalog/tagged validation in source, rollout/UI and complete FC acceptance pending |
+| A25 | Contract-driven editor and controlled two-peer rollout | Authorized implementation, 9 November; docs precede core/UI work; FE01–FE08 require separate executed evidence |
 
 V1 is one person's useful knowledge store. It may contain knowledge about organizations and other people without implementing corporate ownership domains or multiple tenants. Retain stable IDs, provenance, clear local authority and versioned exports where useful; do not build enterprise abstractions solely to reserve a future feature. Later protection/deployment profiles need their own evidence and are not prerequisites for personal-v1 completion.
 
@@ -575,25 +579,85 @@ Derive effective actor and grant authority from authenticated admission, never f
 
 Expose “What did this connector add?”, “Which processor suggested this?” and “What did I correct?” using authoritative records, not a lossy UI-only log. Distinguish requested, admitted, rejected, synchronized and reviewed outcomes. Keep failed attempts in appropriately bounded operational records rather than fabricate graph mutations. Do not store tokens, private keys, raw credential-bearing configurations or unnecessary full prompts in activity history. Historical provenance does not override current access controls.
 
-## Simple review and the graph App
+## Focused explorer and the graph App
 
-The ordinary workflow is search/explore, **Why?**, **Comment**, **Correct this** and **History**. Show a short attribution line, with details available on demand. Users should not select a model for every action, configure processing pipelines or understand the internal memory roles. They still control connected clients, permissions and any external processing destination. Do not silently route private data to another provider.
+Under A24 the ordinary workflow is search, explore graph/list results, inspect evidence, create/edit/remove, and view history. Show a short attribution line, with details available on demand. The App has no conversations, assistant, composer, task dashboard or model selector. Existing comments are revision-linked annotations, not a required step or discussion product; client jobs remain integration infrastructure. Connected clients still control processing and external destinations. Do not silently route private data to another provider.
 
 Provide a focused graph neighborhood with people, organizations, projects and events, typed/labeled relationships, dates, and visibly distinct source-reported, inferred, disputed and owner-reviewed claims. Mentions, evidence links, hypotheses and business relationships are different meanings. Keep document chunks in the evidence panel rather than rendering every chunk as a peer identity. A selected edge opens its source passages, context, dates and uncertainty; graph connectivity alone is not proof.
 
 Use an optional portable [MCP App](https://modelcontextprotocol.io/extensions/apps/overview), checked 9 November 2026, served by RM and rendered in a capable host. The host must negotiate support, isolate the interface and mediate allowed tool calls. Keep useful structured/text tools without UI. Display-only hosts must not pretend to save edits or fetch additional neighborhoods. Embedding the App neither publishes RM nor makes it a new storage peer. Public transport, private sync and administration boundaries remain unchanged; local/private use is possible where the host's trust requirements are met.
 
-The App renders authoritative tool results and retains only temporary interaction state. Save comments to stable entity/assertion/revision references; exact predicates and comment schema require implementation review. Save corrections through normal append-only semantic actions and current permissions. Keep previous claims/sources and handle concurrent edits through guarded updates or retained branches. A reviewer confirms only specified claims/revisions; accepting a contribution, reviewing one claim or viewing the graph never verifies an entire document or connector.
+The App renders authoritative tool results and retains only temporary interaction state. A24 makes the shared field catalog and validation core responsibilities, reused by AI, CLI and UI callers. Save corrections through normal append-only semantic actions and current permissions. Keep previous claims/sources and handle concurrent edits through guarded updates or retained branches. Existing comments retain stable entity/assertion/revision references. A reviewer confirms only specified claims/revisions; accepting a contribution, reviewing one claim or viewing the graph never verifies an entire document or connector.
 
 Send only the context needed for the selected task through the host's model-context channel; do not automatically transmit the entire graph or source corpus when opening a view. A denied grant must produce a clear refusal, not a direct database-write fallback. Frontend scripts receive neither production credentials nor administrative/peer authority. The portable App and host bridge need independent implementation and end-to-end tests; this decision changes neither Praxis repository.
 
 ## Qualification and alternatives
 
-A standalone read-only explorer supports inspection but does not satisfy the requested comment/correction workflow. A vendor-only widget would restrict reuse; an unrestricted embedded browser would weaken isolation and authority. Start with the graph/evidence/review use case in one qualified host and synthetic data, preserve the non-UI tools, then qualify the other named clients separately.
+A read-only explorer supports inspection but does not satisfy authorized CRUD; it remains the correct fallback for a read-only connection. A vendor-only widget would restrict reuse; an unrestricted embedded browser would weaken isolation and authority. Start with focused graph/list CRUD and evidence in one qualified host using synthetic data, preserve the non-UI tools, then qualify the other named clients separately.
 
 LM03/LM05 must trace a synthetic client contribution to its evidence and processor, retain unknown/reported attribution, reject spoofed owner authority, inspect a bounded graph, save a comment and correction, show history and peer convergence, and refuse unauthorized or unavailable host capabilities. The list of target clients is a requirement, not a support matrix of passed integrations.
 
+# A24 Core field contract and focused memory CRUD
+
+**Status:** Accepted owner direction, 9 November 2026. The [starter catalog](FIELD-CATALOG-V1.md), [client contract](RM-CLIENT-CONTRACT.md), schema discovery and opt-in validation of explicitly tagged v1 writes are implemented in this branch. Shared field-driven source/UI checks are recorded under A25; no deployment, universal activation or full FC acceptance is implied. **Related:** A02, A05/A06, A16/A22/A23; PRD L06 and L09–L12; [Core field contract](CORE-FIELD-CONTRACT.md), FC01–FC08.
+
+## Decision and KISS boundary
+
+Standardization is a core semantic contract, not a form framework. Extend RM's existing registry with versioned field applicability, types, cardinality, requiredness, missing states and deterministic validation. RM validates, stores, retrieves, attributes and synchronizes. Connected AI platforms perform interpretation, extraction, organization and synthesis. The App renders the same definitions and uses the same authorized semantic operations as other clients.
+
+Keep a single admission path and one source of semantic truth. Do not add a UI-owned schema/database, separate CRUD service, internal LLM or orchestration platform. Start with common identity/contact fields and registered relationships; no universal ontology or giant required profile is needed. Schema changes are controlled versioned deployment changes, not ordinary model writes.
+
+The focused interface is search, graph/list exploration, evidence, create/edit/remove and history. The App owns no conversation list, chat, assistant, composer, model selector or processing dashboard. Host conversations and optional direct/expanded launch remain outside it. Existing comments and client work/checkpoints keep compatibility without becoming the ordinary interface. Display modes and named clients require their own qualification.
+
+## Semantic and authority consequences
+
+Fields project sourced assertions over stable identities. Multiple values, dates, alternatives and per-value sources remain visible; a form cannot overwrite history or flatten uncertainty. Requiredness depends on the operation. Optional empty fields may be hidden for browsing or exposed for editing, without deleting data or changing applicability. Not recorded, sourced unknown and not applicable are distinct; withheld and incomplete coverage are not global absence.
+
+Preserve the current time contract: omitted `valid_to` means ongoing, explicit `null` means unknown. A blank end-date control must not serialize as ongoing by omission. Version and test explicit state mappings before enabling new writes. Dates retain precision/timezone uncertainty. Legacy signed records remain readable and unchanged; deterministic normalization must preserve their original values.
+
+Create/edit/remove invokes the core under the current authenticated grant, expected heads, catalog revision and stable request identity. Validate dependent changes atomically and preserve conflicts, evidence and reasons. Retraction, actual end of validity, record archive and permanent erasure are different operations. Do not expose unsupported lifecycle actions as working controls. A UI click cannot self-assign owner review, and a denied save cannot fall back to direct storage or owner credentials.
+
+Consumer edit guards apply at origin admission. Peer replay uses current authenticated peer/origin policy and the recorded contract/enforcement frontier, not a copy of the original consumer grant or a fresh expected-head check on historical operations. Preserve signatures, dependencies, idempotency and retained concurrent branches without reauthorizing revoked consumer writes.
+
+The same small set of typed inputs, pickers and errors serves search-result CRUD, inline editing and expanded graph/detail views. Source material remains untrusted. Opening a form does not automatically disclose its fields or source bodies to a model. Use host-mediated calls and the existing trust boundary.
+
+## Alternatives, rollout and acceptance
+
+UI-only requiredness permits divergent AI and CLI writes. A model-owned schema makes ordinary input able to change meaning. A second mutable record database loses temporal/evidence fidelity. These alternatives are rejected. Preserve a bounded core catalog and existing canonical graph, with presentation-only preferences in clients.
+
+Publish bounded schema discovery and supported input schemas, upgrade both peers, and exercise compatible and unsupported writers before enabling a new enforcement profile. Preserve legacy records, backups and restore behavior. FC01–FC08 require independent-client/core validation, missingness/time round trips, scoped atomic CRUD, concurrency/retries, focused accessible UI, compatibility and data-boundary evidence. Existing LM tests and visual concepts do not pass these new cases. This revision changes no runtime, personal data, grants, deployment or Praxis repository.
+
 # Next work
+
+Implement A24/L09–L12 and the core field contract before calling the standardized editor complete. Keep the App a focused visual client of that contract. FC01–FC08 are planned and must be reported separately from historical runtime and LM results; existing client-led processing continues without an internal model.
+
+# A26 Answer-focused relationship briefs
+
+**10 November refinement:** the owner rejected the verbose rendering. The default is a concise answer and compact named links; fields, evidence, attribution and a connection graph open only on request. Preserve explicit material status and stale warnings without repeating operational metadata across the screen. Existing core contracts and permission boundaries are unchanged.
+
+**Status:** Owner selected the light Relationship Brief on 9 November 2026; documented before implementation. [The contract](RELATIONSHIP-BRIEF.md) defines RB01–RB06. Actual source, browser and deployment results need separate receipts.
+
+Use an optional structured view on the existing pinned derived artifact, with grouped selected records and client-supplied reasons. Read it through the existing graph tool; core rehydrates real bounded supporting paths and verifies active pinned inputs. No new knowledge database, model runtime, invented relationship or UI-owned field semantics. Client prose stays attributed interpretation. Stale inputs suppress the explanation rather than making it appear current after an edit.
+
+The light brief is the primary visual target. Grouped result rows and inline fields carry the main task; a small selected path and readable evidence explain relevance. Retain ordinary current connections as an honest fallback, generalized Records search, expanded editing, host themes and existing safe-retry/navigation guards. Do not add conversations, ambient source sharing or numerical relevance/verification scores.
+
+# A25 Contract-driven editor and controlled two-peer rollout
+
+**Status:** Authorized 9 November 2026 and documented before code changes; core/shared editor implemented with [executed qualification](FIELD-EDITOR-VALIDATION.md). The private two-peer rollout is separately observed there; the real-data pilot remains partial and correction authority is pending. **Related:** A02/A05/A06/A20/A21/A23/A24, PRD L06/L09–L12, [editor and rollout acceptance](FIELD-EDITOR-ROLLOUT.md).
+
+## Decision
+
+Make the core field contract usable end to end: discover definitions/digest, project sourced current fields through existing inspection, and reuse typed controls in search-result and graph/detail editing. Existing submit performs atomic typed creation/additions. Extend existing correction with discovered, digest-checked field state/time/context updates and current-head guards, preserving evidence/lineage and identical-request retries. Keep unqualified legacy mappings visibly distinct. A UI click or source statement grants no extra authority.
+
+Remove work/model management from primary App navigation while keeping those tools compatible. The App explores and edits memory; surrounding conversation belongs to the host. Opening or editing does not send record/source contents into model context.
+
+Derive display names and search candidates from sourced active name/alias claims while retaining immutable labels and unresolved alternatives. A display label is not verified legal identity. Do not collapse conditional investment interest, bounded amounts, existing equity ownership and completed funding during the investor pilot; unsupported terms remain explicit legacy/review cases.
+
+Qualify synthetic lifecycle behavior, preserve fresh consistent snapshots and the original immutable records, then upgrade both private writing peers using sealed operator-controlled releases. Keep public ingress off and preserve independent recovery. Complete a scoped evidence-backed Forgence investor pilot through the authorized client; flag ambiguity and retain denied changes as pending rather than using a different identity to force them through.
+
+## Acceptance and evidence boundary
+
+FE01–FE08 define discovery/projection, minimal creation, typed edits, failures, focused UI, offline/restart/restore, exact private deployment and the real-data pilot. Historical tests and a passing build do not pass these cases. Record source, test artifact, deployed identity and actual client outcome separately. This decision authorizes the implementation sequence; it is not evidence that any new code is deployed or any real data has been changed.
 
 Carry A22/A23 and PRD L01–L08 into the next integration work: external client processing, four memory roles, portable tools, attribution and simple graph/evidence/review. Record LM01–LM06 outcomes separately from earlier tests. Internal intelligence remains optional future work. Existing implementation/deployment evidence retains its original scope; this documentation update creates no runtime, provider, host-trust or permission changes.
 

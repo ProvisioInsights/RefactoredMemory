@@ -1,0 +1,20 @@
+{
+  "name": "refactoredmemory-graph-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "build:reference": "vite build --config reference.config.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/ext-apps": "2.0.4",
+    "d3-force": "3.0.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "vite": "8.3.6",
+    "vite-plugin-singlefile": "2.3.4"
+  }
+}

@@ -1,5 +1,7 @@
 # Knowledge profile and migration boundary
 
+**Accepted extension; partial source implementation:** [Core fields and focused CRUD](CORE-FIELD-CONTRACT.md) and A24 put per-type fields, applicability, missingness and operation validation in RM's core. The existing registry/enforcement below is the migration foundation, not a complete field-form catalog. UI visibility never changes semantic meaning; new encodings and all write adapters require versioned compatibility and FC01–FC08 evidence before rollout.
+
 The versioned `refactoredmemory.knowledge:v1` annotation restores structured
 knowledge meaning without replacing immutable identities, signed operation
 history, evidence, or the existing assertion envelope. The annotation lives in

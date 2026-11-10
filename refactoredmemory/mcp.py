@@ -15,7 +15,7 @@ import threading
 import uuid
 from http.server import BaseHTTPRequestHandler
 
-from .store import CapacityError
+from .store import CapacityError, ConflictError
 
 PROTOCOL_VERSION = "2026-07-28"
 LEGACY_VERSION = "2025-11-25"
@@ -86,6 +86,9 @@ class Dispatcher:
         self.legacy_stdio = legacy_stdio
         self._legacy_initialized = False
 
+    def resources(self):
+        return getattr(self.service, 'resources', lambda: [])()
+
     def dispatch(self, message, token, *, legacy_http=False, http_auth_errors=False):
         request_id = _request_id(message)
         if not isinstance(message, dict) or message.get("jsonrpc") != "2.0":
@@ -131,7 +134,7 @@ class Dispatcher:
             if self.legacy_stdio:
                 self._legacy_initialized = True
             return {"jsonrpc": "2.0", "id": request_id, "result": {
-                "protocolVersion": LEGACY_VERSION, "capabilities": {"tools": {}},
+                "protocolVersion": LEGACY_VERSION, "capabilities": {"tools": {}, **({'resources': {}} if self.resources() else {})},
                 "serverInfo": dict(SERVER_INFO), "instructions": INSTRUCTIONS,
             }}
         legacy = (legacy_http or (self.legacy_stdio and self._legacy_initialized)) and not modern
@@ -165,10 +168,31 @@ class Dispatcher:
         try:
             if method == "server/discover" and not legacy:
                 return complete({"supportedVersions": [PROTOCOL_VERSION],
-                                 "capabilities": {"tools": {}}, "instructions": INSTRUCTIONS,
+                                 "capabilities": {"tools": {}, **({'resources': {}} if self.resources() else {})}, "instructions": INSTRUCTIONS,
                                  "ttlMs": 0, "cacheScope": "private"})
             if method == "ping" and legacy:
                 return complete({})
+            if method in ('resources/list', 'resources/templates/list', 'resources/read'):
+                try:
+                    self.service.auth(token, 'read')
+                except PermissionError as error:
+                    if http_auth_errors and _is_oauth_error(error):
+                        raise
+                    return _error(request_id, 403, 'Access denied')
+                if method == 'resources/read':
+                    if set(params) - {'uri', '_meta'} or not isinstance(params.get('uri'), str):
+                        return _error(request_id, -32602, 'Resource URI required')
+                    try:
+                        result = self.service.resource(params['uri'], token)
+                    except ValueError:
+                        return _error(request_id, -32602, 'Unknown resource')
+                else:
+                    if set(params) - {'cursor', '_meta'} or params.get('cursor') is not None:
+                        return _error(request_id, -32602, 'Invalid resource cursor')
+                    result = {'resources': self.service.resources()} if method == 'resources/list' else {'resourceTemplates': []}
+                if not legacy:
+                    result.update(ttlMs=0, cacheScope='private')
+                return complete(result)
             if method == "tools/list":
                 if params.get("cursor") is not None:
                     return _error(request_id, -32602, "Invalid cursor; tool list fits one page")
@@ -187,6 +211,9 @@ class Dispatcher:
                     return _error(request_id, -32602, "Unknown tool")
                 try:
                     value = self.service.call(name, arguments, token)
+                except ConflictError:
+                    return complete({'content': [{'type': 'text', 'text': 'Memory changed or the request conflicts. Reload current revisions and retry with a new request ID.'}],
+                                     'structuredContent': {'error': 'conflict', 'reload_required': True}, 'isError': True})
                 except CapacityError as error:
                     reason = (error.reason if error.reason in ("low_disk", "store_limit")
                               else "capacity_unavailable")
@@ -342,7 +369,7 @@ def make_handler(service, *, allowed_origins=(), allowed_hosts=(),
             or not metadata_path.startswith("/.well-known/oauth-protected-resource")
             or any(c in metadata_path for c in "?#\r\n")):
         raise ValueError("Invalid OAuth metadata path")
-    known_methods = {"server/discover", "initialize", "ping", "tools/list", "tools/call",
+    known_methods = {"server/discover", "initialize", "ping", "tools/list", "tools/call", 'resources/list', 'resources/templates/list', 'resources/read',
                      "notifications/initialized", "notifications/cancelled"}
 
     class MCPHandler(BaseHTTPRequestHandler):
@@ -568,8 +595,8 @@ def make_handler(service, *, allowed_origins=(), allowed_hosts=(),
                     # Legacy clients do not require mirrored method/name headers;
                     # if supplied, they must not contradict the actual request.
                     expected = {"Mcp-Method": method}
-                    if method == "tools/call" and isinstance(params, dict):
-                        expected["Mcp-Name"] = params.get("name")
+                    if method in ('tools/call', 'resources/read') and isinstance(params, dict):
+                        expected["Mcp-Name"] = params.get('uri' if method == 'resources/read' else 'name')
                     try:
                         for name, value in expected.items():
                             if name in self.headers and _decoded_header(self.headers[name]) != value:

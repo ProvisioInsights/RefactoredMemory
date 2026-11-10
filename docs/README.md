@@ -1,5 +1,9 @@
 # Documentation index
 
+**Current interface, 10 November 2026:** [A26 and the relationship-brief contract](RELATIONSHIP-BRIEF.md) define the selected light Brief view: a concise client-written answer, grouped records, shared fields and a small supporting path. [Executed qualification](RELATIONSHIP-BRIEF-VALIDATION.md) records source/browser checks and the private Mac/NAS rollout separately. [The field client contract](RM-CLIENT-CONTRACT.md) remains authoritative for CRUD; named provider App support, broader normalization and the full FC matrix are not implied. Historical planning statements below retain their original scope.
+
+**Client-led implementation, 9 November 2026:** The journal-backed workspace tools, pinned briefs, client task checkpoints and optional graph App are implemented in this branch. See [the workspace guide](CLIENT-LED-WORKSPACE.md) and [executed qualification](CLIENT-LED-VALIDATION.md). Historical requirements-only notes below describe their earlier documentation revision; named provider products still require separate live qualification.
+
 **9 November 2026 design update:** [L01–L08/LM01–LM06](PRD.md#client-led-processing-and-review-direction) and [A22/A23](ADRS.md#a22-client-led-processing-and-provider-independent-memory-roles) make connected LLMs the current processing executors, define four memory roles and require portable tools, contributor attribution and a simple graph-review direction. Internal intelligence is optional future work. This requirements update does not refresh the historical qualification baseline below or claim new functionality/client passes.
 
 **Current stage:** personal-v1 and the NAS/OAuth/automatic-sync extension are implemented and under qualification. The owner's 7 November 2026 **“Proceed”** and subsequent NAS build instruction remain in force. The [implementation contract](CONTRACT.md) and [NAS contract](NAS-CONTRACT.md) define the implemented boundaries; [acceptance evidence](ACCEPTANCE-RESULTS.md) records what actually ran. Actual owner Mac/NAS and hosted-client qualification remain separate.
@@ -7,6 +11,8 @@
 **Tracking:** Linear setup is paused at the owner's request. Use the [repository tracking plan](tracking/README.md) meanwhile. No action to create a Linear team is currently needed, and Linear availability is not a product or documentation gate.
 
 ## Reading order and authority
+
+**Current interface/core clarification:** A24 and L09–L12 make the shared field contract an RM-core responsibility. The MCP App is a focused graph/list explorer and CRUD client, not a conversation or model/task-management workspace. [Core fields and focused CRUD](CORE-FIELD-CONTRACT.md) defines missingness, typed operations and FC01–FC08; the starter catalog and opt-in validator exist in source; rollout, field-driven UI and full acceptance remain pending.
 
 | Document | Purpose | Status and authority |
 | --- | --- | --- |
@@ -19,6 +25,10 @@
 | [Research](RESEARCH.md) | Source ledger, supplied measurements, limitations and outstanding research. | Public-safe summary; full historical private evidence remains in its authorized sources. |
 | [Execution prompt](EXECUTION_PROMPT.md) | Instructions for continuing the authorized implementation and qualification. | Matches accepted requirements and the explicit Proceed already received. |
 | [Implementation contract](CONTRACT.md) | Shared operation, temporal, authority and recovery APIs. | Implemented contract; limits remain explicit. |
+| [Core field contract](CORE-FIELD-CONTRACT.md) | Shared field definitions, missingness, evidence, typed CRUD and focused UI. | A24 accepted direction; source catalog/tagged validation implemented; rollout, UI and complete FC acceptance pending. |
+| [Field catalog v1](FIELD-CATALOG-V1.md) | Concrete 52-definition starter generated from packaged core definitions. | Published in source; no automatic legacy rewrite, universal activation or deployed/UI claim. |
+| [RM client contract](RM-CLIENT-CONTRACT.md) | Exact discovery, v1 tags, typed operations, missing/time encodings and client obligations. | Explicit tagged assertions validate in the core; deployment and remaining FC acceptance stay separate. |
+| [Field contract validation](FIELD-CONTRACT-VALIDATION.md) | Executed source, fixture, package, security and independent-review evidence. | 252 local tests, three platform skips; full FC, UI, client and deployed-peer qualification remain separate. |
 | [NAS contract](NAS-CONTRACT.md) | Accepted NAS/OAuth/automatic-sync extension. | Implemented extension contract; actual deployment and hosted-client evidence remain separate. |
 | [NAS deployment](NAS-DEPLOYMENT.md) | Isolated VM/container, tunnel and TLS deployment. | Device configuration requires actual NAS qualification. |
 | [NAS commissioning](NAS-COMMISSIONING.md) | Explicit bootstrap, private credential handoff, stop/restart and memory/authorization-server recovery. | Locally exercised operator procedures; actual host execution pending. |
@@ -33,7 +43,7 @@
 ## Organization and maintenance
 
 - Keep product requirements in the PRD, decisions and rationale in the ADRs/decision register, and supporting evidence in the research ledger. Update the affected documents together when an accepted decision changes.
-- A22/A23 and L01–L08 are the current processing/review direction. Preserve Q6 automatic admission and Q8 owner-correction preference. Q9's earlier MCP+CLI-only scope is the historical baseline; the graph MCP App is now the next interface direction. Mark the new LM acceptance cases planned until executed.
+- A22/A23 preserve client-led processing and attribution; A24/L09–L12 put shared fields in the core and narrow the App to exploration and CRUD. Preserve Q6 automatic admission, Q8 owner-correction preference and legacy comment/job records. Q9's MCP+CLI-only scope is historical; host qualification remains separate. Keep FC01–FC08 planned until executed and do not relabel old LM evidence as new field/UI acceptance.
 - Keep architecture source in `diagrams/`; show a readable view in the architecture document. Avoid creating competing diagram versions with different scope.
 - Keep tracking artifacts in `tracking/`. The structured plan is the maintained backlog source; its Markdown view is a readable export. These are prepared items, not actual Linear issue IDs or live statuses.
 - Preserve C01–C30/M01–M25 and ADR identifiers when changing scope; classify later work explicitly. Corporate tenancy, product encryption and transitive mesh must not become accidental personal-v1 gates.

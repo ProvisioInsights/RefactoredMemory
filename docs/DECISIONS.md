@@ -1,10 +1,13 @@
 # Personal v1 decisions
 
+**Client-led implementation, 9 November 2026:** The journal-backed workspace tools, pinned briefs, client task checkpoints and optional graph App are implemented in this branch. See [the workspace guide](CLIENT-LED-WORKSPACE.md) and [executed qualification](CLIENT-LED-VALIDATION.md). Historical requirements-only notes below describe their earlier documentation revision; named provider products still require separate live qualification.
+
 Updated 9 November 2026. The owner's 7 November **“Proceed”** remains in force. The 9 November clarification selects client-led LLM processing, cross-provider access, simple graph review and contributor attribution under A22/A23. This records requirements and design direction; it does not claim that the new interfaces, lifecycle controls or client qualification are implemented.
 
 | Decision | Status | Consequence |
 | --- | --- | --- |
 | Product identity | Accepted | RefactoredMemory; reuse this repository and the selected cloud environment. |
+| Shared fields and focused CRUD | Accepted owner clarification, 9 November 2026; catalog/tagged validation in source, rollout/UI pending | A24 and the core field contract put typed fields, missingness, validation and CRUD semantics in RM. AI clients process; the App renders the same contract for search/graph/list editing, with no internal conversation or model/task dashboard. Preserve legacy evidence, grants and history; FC01–FC08 are planned. |
 | V1 purpose | Accepted | One owner's personal knowledge store. People and organizations may be subjects of knowledge without becoming tenants or separate corporate owners. |
 | Two personal peers (Q1) | Accepted | Both accept offline writes, query locally and synchronize. Convergence and recovery are v1 requirements. |
 | First runtime pair (Q2) | Accepted | Owner's Mac plus a Linux workload on the RS822+ NAS. NAS is the normal MCP endpoint; both peers remain independently writable. DSM stays on the main LAN; isolate the workload separately. Actual NAS access/deployment remains pending. |

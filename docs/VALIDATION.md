@@ -1,5 +1,7 @@
 # Personal v1 validation and migration
 
+**Client-led implementation, 9 November 2026:** The journal-backed workspace tools, pinned briefs, client task checkpoints and optional graph App are implemented in this branch. See [the workspace guide](CLIENT-LED-WORKSPACE.md) and [executed qualification](CLIENT-LED-VALIDATION.md). Historical requirements-only notes below describe their earlier documentation revision; named provider products still require separate live qualification.
+
 This matrix defines qualification requirements. Actual executed results are recorded in [ACCEPTANCE-RESULTS.md](ACCEPTANCE-RESULTS.md), [MCP-CONFORMANCE.md](MCP-CONFORMANCE.md) and [SYNC-PROTOCOL.md](SYNC-PROTOCOL.md). The owner explicitly authorized implementation on 7 November 2026; new product code and tests are in scope. Tests, benchmarks and demonstration files are synthetic-only.
 
 | V1 area | Required evidence | Historical mapping |
