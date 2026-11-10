@@ -12,9 +12,14 @@ assert.throws(() => checkedInspection(edge, { kind: 'edge', id: 'avery-employer'
 assert.equal(contractRows(node, { ...catalog, digest_sha256: 'wrong' }), null);
 const rows = contractRows(node, catalog), all = contractRows(node, catalog, true);
 assert.equal(rows.find(r => r.id === 'contact.email').values[0].text, 'avery@example.org');
-assert.equal(rows.some(r => r.id === 'contact.phone'), false);
-assert.equal(all.find(r => r.id === 'contact.phone').empty, 'not_recorded');
+assert.equal(rows.some(r => r.id === 'identity.aliases'), false);
+assert.equal(all.find(r => r.id === 'identity.aliases').empty, 'not_recorded');
+assert.equal(rows.find(r => r.id === 'contact.phone').values[0].text, '+1 202-555-0104');
+assert.equal(rows.find(r => r.id === 'contact.url').values[0].text, 'https://example.org/avery');
+assert.equal(rows.find(r => r.id === 'date.last_contacted').values[0].text, '2026-11-04');
 const profile = profileSections(rows, node.entity);
+assert.equal(profile.find(([name]) => name === 'About')[1].find(f => f.id === 'profile.role').paired, true);
+assert.equal(profile.find(([name]) => name === 'About')[1].find(f => f.id === 'identity.description').paired, false);
 assert.equal(profile.flatMap(([, fields]) => fields).some(f => f.id === 'identity.name'), false);
 assert.equal(profile.find(([name]) => name === 'About')[1].some(f => f.id === 'identity.description'), true);
 assert.equal(profile.find(([name]) => name === 'Contact')[1].some(f => f.id === 'contact.email'), true);

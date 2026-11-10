@@ -130,3 +130,31 @@
  .map-inspector{grid-column:2;grid-row:1/3;margin-top:4px;max-height:min(780px,calc(100dvh - 170px));min-height:320px}
 }
 @media(min-width:1100px){.quiet-brief:has(.has-inspector){max-width:1420px}.quiet-brief .brief-main:has(.has-inspector){grid-template-columns:minmax(0,1fr) 360px}}
+/* Compact profiles retain the same catalog and value states. */
+.map-inspector-header{padding:16px 18px 9px}
+.map-inspector-header h2{font-size:23px;margin:5px 0}
+.map-inspector .tabs{padding-inline:18px}
+.map-inspector .tabs button{padding-block:10px}
+.map-inspector-body{padding:12px 18px}
+.inspector-profile-section h3{margin-top:10px;font-size:11px}
+.inspector-profile-section .inspector-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px;margin-bottom:10px}
+.inspector-profile-section .inspector-fields>div{grid-column:1/-1;padding-block:7px;gap:10px}
+.inspector-profile-section .inspector-fields>.inspector-paired{grid-column:auto;display:block}
+.inspector-paired dt{margin-bottom:2px;font-size:11px}
+.inspector-fields dd{line-height:1.5}
+.inspector-background dd{font-size:13px;line-height:1.6}
+.inspector-field-options{margin-bottom:8px}
+.inspector-field-options summary{margin-block:5px 9px}
+.inspector-legacy-label{display:block;color:var(--muted);font-size:10px}
+.map-inspector-actions{padding:10px 18px}
+.map-inspector-actions button{padding:7px 9px}
+.map-gesture-hint{font-size:11px;color:var(--muted);margin:10px 0 -5px}
+.map-back{font-size:12px;padding:6px 9px;min-height:32px;background:transparent;color:var(--accent)}
+@media(pointer:coarse){.map-gesture-hint{display:none}}
+.map-breadcrumbs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:10px 0 0;font-size:12px}
+.map-breadcrumbs button{border:0;background:transparent!important;padding:3px 0;color:var(--accent);font-size:12px;text-align:left;overflow-wrap:anywhere}
+.map-breadcrumbs button:hover{text-decoration:underline}
+.map-breadcrumbs>span{color:var(--muted);margin-inline:2px}
+.map-breadcrumbs strong{font-size:12px;color:var(--ink);font-weight:650;overflow-wrap:anywhere}
+.map-trace-mark{fill:none;stroke:#b38742;stroke-width:2;pointer-events:none}
+.map-link.traversed:not(.active){stroke:#b38742;stroke-opacity:.8;stroke-width:2.5}

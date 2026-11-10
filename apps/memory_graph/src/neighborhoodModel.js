@@ -42,6 +42,12 @@ export function pathTo(model, id) {
   return { nodes: nodes.reverse(), edges: edges.reverse() };
 }
 
+export function travelTrace(graph, trail) {
+  const walked = [...trail.map(n => n.id), graph?.start];
+  return { previous: trail.at(-1)?.id, edges: new Set((graph?.edges || []).filter(edge => walked.some((id, i) => i > 0 &&
+    (walked[i - 1] === edge.subject && id === edge.object || walked[i - 1] === edge.object && id === edge.subject))).map(edge => edge.id)) };
+}
+
 export const sameFrontier = (a, b) => JSON.stringify(Object.entries(a || {}).sort()) === JSON.stringify(Object.entries(b || {}).sort());
 
 export function checkedContext(brief, context, start, briefId) {

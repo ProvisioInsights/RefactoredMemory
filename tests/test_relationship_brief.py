@@ -188,6 +188,10 @@ class RelationshipBriefTests(unittest.TestCase):
         self.assertEqual(set(result['direct']), {'project', 'avery', 'jordan', 'morgan'})
         self.assertEqual(result['hops']['riverbend'], 2)
         self.assertEqual(result['path'], {'nodes': ['project', 'avery', 'riverbend'], 'edges': ['avery-round', 'avery-employer']})
+        self.assertEqual(result['tracedEdges'], ['avery-employer', 'avery-round'])
+        self.assertEqual(result['previousFocus'], 'avery')
+        self.assertTrue(result['noInventedTrailEdge'])
+        self.assertTrue(result['emptyTrace'])
         self.assertEqual(result['retainedDirection']['subject'], 'avery')
         self.assertEqual(result['retainedDirection']['object'], 'project')
         self.assertTrue(all(result[key] for key in ['onlyRecordedEdges', 'equalFrontier', 'changedFrontier', 'bounded',

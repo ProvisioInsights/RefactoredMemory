@@ -44,8 +44,10 @@ export function profileSections(rows, entity, { hidden = [], showIdentity = fals
     if (!showIdentity && !important && headerValue && row.values.length === 1 && row.values[0].text === headerValue) continue;
     const section = row.id.startsWith('relationship.') ? 'Connections' : row.id.startsWith('date.') ? 'Dates' : row.id.startsWith('contact.') || row.id === 'profile.preferred_channel' ? 'Contact' : 'About';
     if (!sections.has(section)) sections.set(section, []);
-    sections.get(section).push({ ...row, important });
+    const paired = row.values.length === 1 && !important && row.values[0].text.length <= 60 && ['profile.location', 'profile.role', 'profile.organization', 'profile.preferred_channel', 'contact.phone'].includes(row.id) || row.definition.value_type === 'calendar_date' && row.values.length === 1 && !important;
+    sections.get(section).push({ ...row, important, paired });
   }
+  sections.get('Contact')?.sort((a, b) => Number(a.paired) - Number(b.paired));
   return [...sections].sort((a, b) => ['About', 'Contact', 'Connections', 'Dates'].indexOf(a[0]) - ['About', 'Contact', 'Connections', 'Dates'].indexOf(b[0]));
 }
 

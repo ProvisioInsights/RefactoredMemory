@@ -9,7 +9,7 @@ def seed(store):
         ('meeting', 'Meeting note', '2026-10-28', 'Synthetic example: Avery reviewed the fundraising round. No commitment or completed investment was established.'),
         ('reply', 'Email reply', '2026-11-04', 'Synthetic example: Avery wrote, "Happy to discuss the round next week." This is not a commitment.'),
         ('deck', 'Materials request', '2026-10-30', 'Synthetic example: Jordan requested the deck before a follow-up.'),
-        ('intro', 'Introduction note', '2026-10-26', 'Synthetic example: Morgan introduced Avery to the Forgence fundraising discussion. Avery is an investor contact at Riverbend Ventures in Example City; no investment commitment is recorded.')]
+        ('intro', 'Introduction note', '2026-10-26', 'Synthetic example: Morgan introduced Avery to the Forgence fundraising discussion. Avery is an investor contact at Riverbend Ventures in Example City; no investment commitment is recorded. Example contact card: +1 202-555-0104, https://example.org/avery; preferred channel is email.')]
     actions = [{'type': 'source', 'id': rid, 'uri': 'synthetic://brief/' + rid, 'content': content,
                 'metadata': {'synthetic': True, 'title': title, 'date': date}} for rid, title, date, content in sources]
     for rid, label, kind in [('project', 'Forgence', 'organization')] + [(rid, label, 'person') for rid, label in people]:
@@ -34,9 +34,16 @@ def seed(store):
                        ('project', 'Synthetic organization record used to review fundraising connections.')]:
         actions.append({'type': 'assertion', 'id': rid + '-description', 'subject': rid,
                         'predicate': 'description', 'value': value, 'source_ids': ['meeting', 'intro']})
-    for key, value in [('role', 'Investor contact'), ('location', 'Example City'), ('relationship-origin', 'Introduced by Morgan during the fundraising discussion')]:
+    for key, value in [('role', 'Investor contact'), ('location', 'Example City'), ('relationship-origin', 'Introduced by Morgan during the fundraising discussion'), ('preferred-channel', 'Email')]:
         actions.append({'type': 'assertion', 'id': 'avery-profile-' + key, 'subject': 'avery',
                         'predicate': 'rm:profile-property', 'value': {'property': key, 'reported_value': value}, 'source_ids': ['intro']})
+    actions += [
+        {'type': 'assertion', 'id': 'avery-phone', 'subject': 'avery', 'predicate': 'rm:contact-point',
+         'value': {'kind': 'phone', 'address': '+1 202-555-0104'}, 'source_ids': ['intro']},
+        {'type': 'assertion', 'id': 'avery-url', 'subject': 'avery', 'predicate': 'rm:contact-point',
+         'value': {'kind': 'url', 'address': 'https://example.org/avery'}, 'source_ids': ['intro']},
+        {'type': 'assertion', 'id': 'avery-last-contact', 'subject': 'avery', 'predicate': 'rm:reported-date',
+         'value': {'property': 'last-contacted', 'date': '2026-11-04', 'precision': 'day'}, 'source_ids': ['reply']}]
     store.submit(actions, request_id='synthetic-brief-seed')
     # Context is real synthetic graph data, separate from the prepared answer.
     context = [('riverbend', 'Riverbend Ventures', 'organization'), ('robin', 'Robin Chen', 'person'),
