@@ -1,48 +1,42 @@
-# Relationship Brief design QA
+# Quiet Relationship Brief QA
 
 **final result: passed**
 
-## Evidence and state
+## Current target and evidence
 
-- Source visual truth: `docs/design/relationship-brief-target.png`, the owner's selected light Relationship Brief.
-- Browser-rendered implementation: `docs/design/relationship-brief-implemented.png`.
-- Working synthetic host: `http://127.0.0.1:59262/`, official MCP Apps AppBridge with actual RM Service calls against a disposable in-memory store.
-- Source: 1487 × 1058 pixels. Browser screenshot: 1487 × 1098 pixels at a 1487 × 1098 CSS viewport, 1 screenshot pixel per CSS pixel. The 40-pixel fixture toolbar is cropped, without scaling, to 1487 × 1058. The App's scrolling content area is 1472 × 1058 CSS pixels; its 15-pixel scrollbar is retained.
-- Matched state: light theme, the three fictional people shown, Avery selected, Fields open, small supporting path and evidence beside it. Fixture counts and actual assertion predicates differ deliberately from conceptual text; no personal data is in either image.
-- Full-view combined comparison: private `final-light-comparison.png`; source and implementation were opened together in the same comparison image. Focused field comparison: private `final-fields-comparison.png`. Captures live in the private commissioning run `relationship-brief-20261110T060734Z` outside Git.
+The owner's 10 November feedback supersedes the original default-open presentation: “too much distracting data” and “verbose mode.” Keep the selected ivory/teal visual language, but show the answer and relevant names first. Fields, evidence, history and the connection explanation open deliberately. The wire contract and stored knowledge remain unchanged.
 
-## Findings and comparison history
+Source visual references: `docs/design/relationship-brief-target.png` (original selected direction) and `docs/design/relationship-brief-implemented.png` (prior rendered baseline). Current implementation screenshot: `docs/design/relationship-brief-quiet.png`. The original screenshot's open fields/sidebar are intentionally removed from the default, rather than treated as fidelity requirements after this feedback.
 
-1. **P2, first comparison: repeated field metadata displaced the other primary people below the fold.** Fixed with the same shared field editor's compact summary, one explicit review action, type badges and evidence/history on demand. The third and final captures show Avery, Jordan and Morgan together at the target viewport.
-2. **P2, first comparison: the preparation/control stack competed with the answer.** Shortened the view selector and kept record creation on Records. Brief/Connections and prepared-view controls now appear only on Explore. Final browser readback verified populated and empty type filters and read-only creation being disabled.
-3. **P2, first comparison: compact graph labels overlapped and names extended beyond their nodes.** Bounded the selected path, split names into readable lines and allocated separate relationship labels. The final full-view comparison shows three real identities and three actual assertion edges without label collisions.
-4. **P2, source review: malformed display-only snapshots could throw during rendering.** Guarded group/item members and validated the graph envelope and directly rendered text before replacing state. Actual JavaScript fixture regressions reject malformed entities, claims and attribution. This fix changes no visible normal-state layout.
+The current preview is `http://127.0.0.1:59262/`, using actual RM Service calls, the official SDK AppBridge and disposable in-memory example data. Browser screenshot 1487×1098, 1 screenshot pixel per CSS pixel; its35-pixel test toolbar is cropped without scaling to1487×1058. App width1487 and scroll width1487. The prior baseline is1487×1058, with its original scrollbar retained. Theme and topic match; the default expansion state and shorter fixture copy change intentionally.
 
-No actionable P0/P1/P2 finding remains in the compared states.
+Combined full-view comparison `04-before-after.png` and focused row comparison `08-rows-comparison.png` were opened and judged with both versions in the same image. They are retained in the private commissioning run `brief-simplification-20261110T075137Z`. A current-run capture `01-before.png` separately records the large automatically displayed evidence region the user encountered; it is not presented as the same scroll state as the new default.
 
-## Required fidelity surfaces
+## Findings and fixes
 
-- **Typography:** retained the source's editorial serif hierarchy for the product name, answer, groups and names, paired with compact sans-serif controls and metadata. Full and focused comparisons confirm readable weights, wrapping and hierarchy. Small annotations are slightly more compact than the concept to accommodate real field/provenance information.
-- **Spacing and layout:** ivory canvas, horizontal navigation, approximately two-thirds records and one-third explanation, thin dividers and modest rounding follow the selected composition. Fields remain inline; no conversation navigation was introduced. Additional evidence naturally scrolls.
-- **Colors:** warm light surface, dark ink, muted secondary text and teal action/selection states match the intended palette. Host-selected dark mode was separately captured and inspected; meaning is also written in labels.
-- **Images/assets:** this screen contains no photographic or illustrative assets. Existing library icons are reused. The path is a functional SVG rendering of actual graph data, not a substitute raster illustration or invented decorative network. Captures are sharp at 1:1 density.
-- **Copy/content:** actual predicates, source-reference counts, uncertainty and attributed client interpretation replace the mock's implied certainty. “Funding discussed” does not mean completed funding; unknown amounts remain explicit. “Prepared view” selects saved client output, not an internal AI process.
+- **P1: default-open fields, graph and evidence overwhelmed the selected answer.** Default selection/expansion is now empty. Opening a name reveals the existing shared fields; View connection and Map are explicit actions. Initial browser readback contains no field tabs, source excerpts, source counts or connection panel.
+- **P2: each relationship repeated dates, qualifiers, source counts, reasons and Review actions.** Rows now contain one name and a short reason. Meaningful funding status and disputed identity type remain visible. Unknown/legacy investment terms stay inspectable and use “review terms” rather than implying completed funding.
+- **P2: preparation and caution prose competed with results.** One saved view no longer repeats its title in a selector. Background attribution/coverage sits behind About this view. Stale-state and access limits remain explicit. A single name action replaces redundant Review/source-count actions.
+- **P2: narrow rendering stacked a second verbose screen below the list.** The default has one content column and no trailing explanation. All three example records fit the narrow capture. The optional explanation can still stack when the user requests it.
 
-## Interaction and responsive checks
+No actionable P0/P1/P2 finding remains in these compared states. Earlier QA evidence remains in Git history and the private archived report; it does not claim this refinement was deployed to personal peers.
 
-Browser checks exercised search, Records, actual type filtering and empty state, row collapse/reopen, shared fields, evidence, history, minimal record creation and correction. A deliberately lost response after a committed save kept the form locked; retry sent identical arguments/request ID, recovered the receipt, and withheld the now-stale explanation. A late host result remained queued and was freshly read before opening. Display-only and actual read-only grants were checked separately. All edits used disposable synthetic data.
+## Fidelity surfaces
 
-Narrow browser viewport 390 × 914 produced a 375 × 844 CSS App content area with equal client and scroll widths: no horizontal overflow. Host light/dark themes were inspected. Fresh normal reload produced zero new uncaught browser exceptions. Earlier deliberate connection-reset errors belong to the unknown-outcome test; they are not described as ordinary runtime success. These are browser/reference-host checks, not physical-device or named-provider qualification.
+- **Typography:** retained the serif product/name hierarchy, reduced heading size and changed supporting copy to compact sans-serif. Names remain readable links. The focused comparison confirms fewer competing weights and no truncation of the short examples.
+- **Spacing/layout:** one centered list replaces the permanent split pane. Thin dividers, a small List/Map control and a single summary keep the original visual language. Whitespace follows the end of the answer instead of another panel of metadata.
+- **Color/tokens:** existing warm paper, ink and teal remain; dark mode uses the same host tokens. Material status is written, not conveyed only by color.
+- **Assets:** no new raster/decorative assets. Existing functional data SVG and icons remain. The small graph is available on request, rather than used as ambient decoration.
+- **Copy/content:** fictional fixture prose is shorter and still distinguishes discussion from commitment. Real-client explanations are not automatically rewritten or summarized by RM. General fallback links remain labeled as recorded connections.
 
-## Implementation checklist
+## Executed checks
 
-- [x] Match the selected light hierarchy and native, bounded connection path.
-- [x] Reuse core fields and existing authenticated CRUD semantics.
-- [x] Preserve uncertainty, immutable history and current grant enforcement.
-- [x] Test pending/unknown saves, stale client output and malformed snapshots.
-- [x] Verify desktop, narrow, dark, display-only, read-only and empty states.
-- [x] Keep the synthetic preview independent of personal stores.
+- App and official-SDK reference builds passed. Fourteen relationship-brief tests and20 field-editor tests passed. These are focused checks, not a rerun of the full287-test suite for this source revision.
+- Actual browser: initial compact list; click name→standard fields; Evidence tab→exact source; View connection→supporting path; Map edge→the correct record explanation; read-only fields/correction disabled; display-only initial snapshot.
+- Deliberately dropped a200 response after an actual synthetic correction committed. List/Map, record navigation, field controls and View connection stayed disabled. Retry sent identical arguments/request ID and recovered the committed result. Only disposable fixture data was changed; the fixture was reset before handoff.
+- Narrow390×914 browser capture: App width and scroll width both390; no horizontal overflow. Light/dark captures were inspected. Fresh normal reload produced zero new uncaught exceptions; the earlier deliberate reset is failure-injection evidence.
+- Aikido scan of five changed code/fixture files reported no issues. Current git diff whitespace check passed.
 
-## Follow-up polish and gaps
+## Scope and remaining polish
 
-P3: adjust spacing for unusually long real-world names after actual use; keep their full identity accessible. Named ChatGPT, Codex, Claude and Praxis App rendering and physical mobile behavior remain separate qualification tasks. Source/browser acceptance does not itself establish a private installation upgrade.
+This refinement updates the source and synthetic preview only. The personal Mac/NAS installation remains at the prior qualified runtime; its data, grants and services were not changed. The saved brief/field API is unchanged. Actual named-provider rendering, full accessibility conformance and physical mobile behavior remain separately unverified. P3: unusually long real-world names still warrant a later focused layout pass in the optional graph.

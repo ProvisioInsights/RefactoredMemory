@@ -633,6 +633,8 @@ Implement A24/L09–L12 and the core field contract before calling the standardi
 
 # A26 Answer-focused relationship briefs
 
+**10 November refinement:** the owner rejected the verbose rendering. The default is a concise answer and compact named links; fields, evidence, attribution and a connection graph open only on request. Preserve explicit material status and stale warnings without repeating operational metadata across the screen. Existing core contracts and permission boundaries are unchanged.
+
 **Status:** Owner selected the light Relationship Brief on 9 November 2026; documented before implementation. [The contract](RELATIONSHIP-BRIEF.md) defines RB01–RB06. Actual source, browser and deployment results need separate receipts.
 
 Use an optional structured view on the existing pinned derived artifact, with grouped selected records and client-supplied reasons. Read it through the existing graph tool; core rehydrates real bounded supporting paths and verifies active pinned inputs. No new knowledge database, model runtime, invented relationship or UI-owned field semantics. Client prose stays attributed interpretation. Stale inputs suppress the explanation rather than making it appear current after an edit.

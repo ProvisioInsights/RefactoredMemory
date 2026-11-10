@@ -4,6 +4,8 @@
 
 ## Product behavior
 
+**10 November usability refinement:** default to a compact answer and named links. Keep fields, source excerpts, qualifiers, provenance and the selected graph closed until requested. A record opens the shared fields; evidence/history remain one tab away, and the connection explanation is an explicit action. Avoid repeating the same reason in the row, sidebar and warning copy. Material status, ambiguity and stale-state warnings still apply. This changes presentation and read timing, not saved data, grants or the wire contract.
+
 Explore opens a brief rather than drawing every available neighbor. The selected record can be inspected and corrected inline using the existing field contract. A small connection path explains why that record appears. Evidence and history remain available. Records remains the general identity browser. No RM conversation list, chat composer, model picker or automatic source sharing is added.
 
 An external client selects the useful records and prepares the explanation. RM validates references, bounded paths, pinned inputs and current access. It neither calls a model nor treats client-written prose as verified fact. Without a prepared brief, show a plainly labeled bounded collection of direct connections; do not invent a question answer or claim exhaustive relevance.

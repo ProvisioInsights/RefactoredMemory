@@ -35,17 +35,17 @@ def seed(store):
     token = store.create_grant('synthetic external brief processor', ['read', 'write'])
     ids = ['avery-round', 'jordan-round', 'morgan-round', 'avery-intro']
     result = service.call('memory_derive', {
-        'subject': 'project', 'title': 'People connected to the raise',
-        'text': 'Two conversations to review, plus one potential introduction.',
+        'subject': 'project', 'title': 'Fundraising connections',
+        'text': 'Two discussions and an introduction.',
         'inputs': [{'kind': 'assertion', 'id': rid} for rid in ids],
         'input_frontier': store.status()['frontier'], 'request_id': 'synthetic-brief',
         'reported': {'application': 'Synthetic external client', 'method': 'source-grounded example selection'},
         'view': {'schema': 'refactoredmemory.relationship-brief:v1', 'groups': [
             {'title': 'Direct discussions', 'items': [
                 {'entity_id': 'avery', 'claim_ids': ['avery-round', 'morgan-round', 'avery-intro'],
-                 'why': 'Reviewed the round and replied to a follow-up. No commitment is established.'},
+                 'why': 'Reviewed the round and replied. No commitment recorded.'},
                 {'entity_id': 'jordan', 'claim_ids': ['jordan-round'],
-                 'why': 'Requested materials before a follow-up; funding is not established.'}]},
+                 'why': 'Requested the deck before a follow-up.'}]},
             {'title': 'Introduction recorded', 'items': [{'entity_id': 'morgan', 'claim_ids': ['morgan-round'],
-                 'why': 'Connected Avery with the discussion. A connector is not automatically an investor.'}]}]}}, token)
+                 'why': 'Introduced Avery to the round.'}]}]}}, token)
     return next(rid for rid in result['action_ids'] if store.read('assertion', rid))

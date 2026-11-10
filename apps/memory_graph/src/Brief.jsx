@@ -25,15 +25,12 @@ export function RecordView({ data, schema, call, available, pending, onSaved, on
   </div>;
 }
 
-export function ResultGroups({ groups, selected, inlineId, onChoose, pending, detail, schema, call, available, onSaved, onSelect, tab, setTab, typeFilter }) {
+export function ResultGroups({ groups, prepared, selected, inlineId, onChoose, pending, detail, schema, call, available, onSaved, onSelect, tab, setTab, typeFilter, onConnection }) {
   const filtered = groups.map(group => ({ ...group, items: group.items.filter(r => !typeFilter || (r.entity.classification?.canonical_types || [r.entity.entity_type]).includes(typeFilter)) })).filter(g => g.items.length);
   return <div className="brief-results">{filtered.map(group => <section className="brief-group" key={group.title}><h2>{group.title}</h2>{group.items.map(row => <article className={'brief-result' + (selected === row.entity_id ? ' selected-result' : '')} key={row.entity_id}>
-    <div className="brief-result-heading"><button className="record-choice" disabled={pending} aria-expanded={inlineId === row.entity_id} onClick={() => onChoose(row, true)}><strong>{displayName(row.entity)}<small className="record-type">{row.entity.classification?.ambiguous ? 'Type disputed' : row.entity.classification?.canonical_types?.[0] || row.entity.entity_type}</small></strong><span>{row.relationship}{row.date ? ` · reported from ${row.date}` : ' · date not recorded'}</span></button>
-      <div className="row-basis"><p>{row.why}</p>{row.context && <p className="muted relationship-context">{row.context}</p>}</div>
-      <button className="source-count" disabled={pending || !available} onClick={() => { onChoose(row); setTab('Evidence'); }}>{row.sourceCount} source reference{row.sourceCount === 1 ? '' : 's'}</button>
-      <button className="review-record" disabled={pending || !available} onClick={() => onChoose(row)}>Review</button>
+    <div className="brief-result-heading"><button className="record-choice" disabled={pending} aria-expanded={inlineId === row.entity_id} onClick={() => onChoose(row, true)}><span className="record-name"><strong>{displayName(row.entity)}</strong>{row.entity.classification?.ambiguous && <small>Type disputed</small>}{row.connection?.predicate === 'invests-in' && <small>{row.relationship === 'invests in' ? 'Investment record · review terms' : row.relationship}</small>}</span><span className="row-reason">{prepared ? row.why : row.connection?.predicate === 'invests-in' ? 'Terms and evidence in details' : row.relationship}</span></button>
     </div>
-    {inlineId === row.entity_id && <RecordView data={detail?.entity.id === selected ? detail : null} schema={schema} call={call} available={available} pending={pending} onSaved={onSaved} onSelect={onSelect} tab={tab} setTab={setTab} claimIds={row.claim_ids}/>}
+    {inlineId === row.entity_id && <><div className="record-detail-actions"><button disabled={pending || !available} onClick={onConnection}>View connection</button></div><RecordView data={detail?.entity.id === selected ? detail : null} schema={schema} call={call} available={available} pending={pending} onSaved={onSaved} onSelect={onSelect} tab={tab} setTab={setTab} claimIds={row.claim_ids}/></>}
   </article>)}</section>)}{!filtered.length && <p className="empty-state">No connections in this selection match the filter. Search for another record or broaden the view.</p>}</div>;
 }
 
