@@ -158,3 +158,17 @@
 .map-breadcrumbs strong{font-size:12px;color:var(--ink);font-weight:650;overflow-wrap:anywhere}
 .map-trace-mark{fill:none;stroke:#b38742;stroke-width:2;pointer-events:none}
 .map-link.traversed:not(.active){stroke:#b38742;stroke-opacity:.8;stroke-width:2.5}
+/* Navigation retains one canvas; marks interpolate in the same SVG coordinate system. */
+.map-controls{min-height:32px;flex-wrap:nowrap;gap:12px}
+.map-controls label,.map-controls>span,.map-back{flex:none;white-space:nowrap}
+.map-controls small{white-space:nowrap}
+.map-breadcrumbs{min-height:32px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;padding-top:8px}
+.map-breadcrumbs button,.map-breadcrumbs strong{white-space:nowrap;flex:none}
+.map-gesture-hint{height:18px;margin:5px 0 0;font-size:11px;line-height:18px;white-space:nowrap}
+.map-node-label{transition:fill 620ms ease,font-size 620ms ease}
+.map-mark{transition:fill 620ms ease,stroke 620ms ease}
+.map-mode .breadcrumb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:21px}
+.map-mode .brief-header h1{font-size:34px;line-height:1.2}
+@media(pointer:coarse){.map-gesture-hint{display:block}}
+@media(prefers-reduced-motion:reduce){.map-node-label,.map-mark{transition:none}}
+@media(max-width:600px){.map-controls{gap:8px;font-size:11px}.map-controls label{font-size:11px}.map-controls small{display:none}.map-mode .brief-header h1{font-size:29px}.map-gesture-hint{font-size:10px}}

@@ -158,6 +158,19 @@ class RelationshipBriefTests(unittest.TestCase):
             finally:restored.close()
 
     @unittest.skipUnless(shutil.which('node'), 'Node is unavailable for the actual client projection fixture')
+    def test_neighborhood_motion_preserves_positions_membership_and_real_edges(self):
+        from examples.relationship_brief_demo import seed as seed_brief
+        with Store(':memory:') as store:
+            seed_brief(store)
+            token = store.create_grant('synthetic motion reader', ['read'])
+            service = Service(store)
+            payload = {key: service.call('memory_graph', {'start': target, 'depth': 2, 'limit': 16}, token)
+                       for key, target in [('before', 'project'), ('after', 'avery'), ('third', 'riverbend')]}
+            fixture = Path(__file__).parent / 'fixtures/neighborhood-motion-client.mjs'
+            result = json.loads(subprocess.check_output(['node', str(fixture)], input=json.dumps(payload), text=True))
+            self.assertEqual(result['result'], 'passed')
+
+    @unittest.skipUnless(shutil.which('node'), 'Node is unavailable for the actual client projection fixture')
     def test_map_inspector_uses_actual_contracts_selection_and_record_types(self):
         from examples.relationship_brief_demo import seed as seed_brief
         with Store(':memory:') as store:
