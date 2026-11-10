@@ -1,4 +1,4 @@
-import { human, compact, displayName } from './client.js';
+import { human, compact, displayName } from './format.js';
 
 export const BRIEF_SCHEMA = 'refactoredmemory.relationship-brief:v1';
 const groupNames = { capital: 'Capital relationships', employment: 'Work and organizations', network: 'People and introductions', structural: 'Related projects and records', occurrence: 'Participation and events' };
